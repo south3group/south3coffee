@@ -12,7 +12,7 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/Signup" element={<Signup />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </>
   );
