@@ -1,9 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import axios from 'axios';
 
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
-import axios from 'axios';
 
 function Login() {
   const [account, setAccount] = useState('');
@@ -37,14 +37,12 @@ function Login() {
         })
         .then((res) => {
           localStorage.setItem('token', res.data.data.token);
-          console.log('登入成功', account, password, res.data);
           navigate('/member/profile');
         })
         .catch((err) => {
           const msg = err.response?.data?.message || '發生錯誤';
           setModalMsg(msg);
           setIsOpen(true);
-          console.log(err);
         });
     }
   }
@@ -136,7 +134,7 @@ function Login() {
 
           <div className="text-center mb-3">
             <Link
-              to="/Signup"
+              to="/signup"
               className="text-coffee-bright text-decoration-none small"
             >
               還不是會員？
