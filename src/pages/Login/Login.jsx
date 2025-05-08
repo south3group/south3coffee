@@ -16,35 +16,37 @@ function Login() {
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/login`;
 
-  function accountHandler(e) {
-    setAccount(e.target.value);
-  }
-
-  function passwordHandler(e) {
-    setPassword(e.target.value);
-  }
-
   function loginHandler() {
+    const accountRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
+
     if (account.trim() === '' || password.trim() === '') {
       setModalMsg('帳號密碼不可為空');
       setIsOpen(true);
       return;
-    } else {
-      axios
-        .post(route, {
-          email: account,
-          password: password,
-        })
-        .then((res) => {
-          localStorage.setItem('token', res.data.data.token);
-          navigate('/member/profile');
-        })
-        .catch((err) => {
-          const msg = err.response?.data?.message || '發生錯誤';
-          setModalMsg(msg);
-          setIsOpen(true);
-        });
+    } else if (!accountRegex.test(account)) {
+      setModalMsg('使用者不存在或密碼輸入錯誤');
+      setIsOpen(true);
+      return;
+    } else if (!passwordRegex.test(password)) {
+      setModalMsg('使用者不存在或密碼輸入錯誤');
+      setIsOpen(true);
+      return;
     }
+    axios
+      .post(route, {
+        email: account,
+        password: password,
+      })
+      .then((res) => {
+        localStorage.setItem('token', res.data.data.token);
+        navigate('/member/profile');
+      })
+      .catch((err) => {
+        const msg = err.response?.data?.message || '發生錯誤';
+        setModalMsg(msg);
+        setIsOpen(true);
+      });
   }
 
   return (
@@ -76,7 +78,7 @@ function Login() {
               </label>
               <input
                 value={account}
-                onChange={accountHandler}
+                onChange={(e) => setAccount(e.target.value)}
                 type="email"
                 className="form-control"
                 id="memberEmail"
@@ -94,7 +96,7 @@ function Login() {
               </label>
               <input
                 value={password}
-                onChange={passwordHandler}
+                onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 className="form-control"
                 id="memberPassword"

@@ -19,50 +19,45 @@ function Signup() {
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/Signup`;
 
-  function accountHandler(e) {
-    setAccount(e.target.value);
-  }
-
-  function passwordHandler(e) {
-    setPassword(e.target.value);
-  }
-
-  function checkPasswordHandler(e) {
-    setCheckPassword(e.target.value);
-  }
-
-  function memberNameHandler(e) {
-    setMemberName(e.target.value);
-  }
-
   function signupHandler() {
-    if (
-      account.trim() === '' ||
-      password.trim() === '' ||
-      checkPassword.trim() === '' ||
-      memberName.trim() === ''
-    ) {
-      setModalMsg('註冊欄位不可為空');
-      setIsOpen(true);
-    } else if (password !== checkPassword) {
-      setModalMsg('密碼與確認密碼內容需一致');
-      setIsOpen(true);
-    } else {
-      axios
-        .post(route, {
-          email: account,
-          password: password,
-          name: memberName,
-        })
-        .then((res) => {
-          navigate('/member/profile');
-        })
-        .catch((err) => {
-          const msg = err.response?.data?.message || '發生錯誤';
-          setModalMsg(msg);
-          setIsOpen(true);
-        });
+    const accountRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
+    const nameRegex = /^[A-Za-z0-9\u4e00-\u9fa5]{2,10}$/;
+
+    if( account.trim()==='' || password.trim()==='' || checkPassword.trim()==='' || memberName.trim()==='' ){
+        setModalMsg('欄位未填寫正確')
+        setIsOpen(true);
+        return;
+    }else if(!accountRegex.test(account)){
+        setModalMsg('信箱格式錯誤');
+        setIsOpen(true);
+        return;
+    }else if(!passwordRegex.test(password)) {
+        setModalMsg('密碼不符合規則，需要包含英文數字大小寫，最短8個字，最長16個字');
+        setIsOpen(true);
+        return;
+    }else if(password !==checkPassword ){
+        setModalMsg('密碼與確認密碼內容需一致')
+        setIsOpen(true);
+    }else if(!nameRegex.test(memberName)){
+        setModalMsg('會員名稱長度需為 2~10 字，且不得包含特殊字元或空白');
+        setIsOpen(true);
+        return;
     }
+    axios
+      .post(route, {
+        email: account,
+        password: password,
+        name: memberName,
+      })
+      .then((res) => {
+        navigate('/member/profile');
+      })
+      .catch((err) => {
+        const msg = err.response?.data?.message || '發生錯誤';
+        setModalMsg(msg);
+        setIsOpen(true);
+      });
   }
 
   return (
@@ -98,7 +93,7 @@ function Signup() {
                   id="memberEmail"
                   placeholder="請輸入Email"
                   value={account}
-                  onChange={accountHandler}
+                  onChange={(e) => setAccount(e.target.value)}
                 />
               </div>
               <div className="mb-2">
@@ -112,9 +107,9 @@ function Signup() {
                   type="password"
                   className="form-control"
                   id="memberPassword"
-                  placeholder="請輸入X-X字元的英數，不含中文及特殊符號"
+                  placeholder="需要包含英文數字大小寫，最短8個字，最長16個字"
                   value={password}
-                  onChange={passwordHandler}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               <div className="mb-2">
@@ -130,7 +125,7 @@ function Signup() {
                   id="checkMemberPassword"
                   placeholder="請輸入與上方相同的密碼"
                   value={checkPassword}
-                  onChange={checkPasswordHandler}
+                  onChange={(e) => setCheckPassword(e.target.value)}
                 />
               </div>
               <div className="mb-2">
@@ -144,9 +139,9 @@ function Signup() {
                   type="text"
                   className="form-control"
                   id="memberName"
-                  placeholder="請輸入會員名稱，可以是中英數，不含特殊符號"
+                  placeholder="最少2個字元，最長10字元，不得包含特殊字元與空白"
                   value={memberName}
-                  onChange={memberNameHandler}
+                  onChange={(e) => setMemberName(e.target.value)}
                 />
               </div>
             </div>
