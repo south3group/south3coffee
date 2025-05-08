@@ -306,6 +306,10 @@ $warning: $yellow !default;
 $danger: $red !default;
 $light: $gray-100 !default;
 $dark: $gray-900 !default;
+$coffee:        #73512a ;
+$coffee-bright:  #b98b0e ;
+$coffee-deep:   #4b3316 ;
+$coffee-light:  #f8eee9 ;
 // scss-docs-end theme-color-variables
 
 // scss-docs-start theme-colors-map
@@ -318,6 +322,10 @@ $theme-colors: (
   'danger': $danger,
   'light': $light,
   'dark': $dark,
+  "coffee": $coffee,
+  "coffee-bright": $coffee-bright,
+  "coffee-deep" : $coffee-deep,
+  "coffee-light": $coffee-light,
 ) !default;
 // scss-docs-end theme-colors-map
 

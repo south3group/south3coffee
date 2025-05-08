@@ -1,8 +1,14 @@
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+
+import "./assets/styles/user-all.scss"
+
 function App() {
   return (
     <>
-      <h1>Home</h1>
-      <button className="btn btn-primary">Test</button>
+      <ScrollToTop />
+      <Routes>
+      </Routes>
     </>
   );
 }
