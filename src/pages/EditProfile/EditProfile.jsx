@@ -198,14 +198,7 @@ function EditProfile() {
       return false;
     };
 
-    if (userData.userAddress.trim() === '') {
-      setFieldErr((prev) => ({
-        ...prev,
-        userAddress: '該欄位為必填欄位',
-      }));
-      setFormValidated(true);
-      isError = true;
-    } else if (!isValidTaiwanAddress(userData.userAddress)) {
+    if (!isValidTaiwanAddress(userData.userAddress)) {
       setFieldErr((prev) => ({
         ...prev,
         userAddress: '地址無效，請重新輸入有效的台灣地址',
