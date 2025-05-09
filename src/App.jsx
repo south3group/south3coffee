@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import "./assets/styles/user-all.scss"
-
 import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup'
