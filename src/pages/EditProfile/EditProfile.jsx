@@ -51,6 +51,40 @@ function EditProfile() {
       const apiUrl = import.meta.env.VITE_API_URL;
       const route = `${apiUrl}/api/v1/users/membership/profile`;
 
+      useEffect(() => {
+        const token = localStorage.getItem("token");
+        // console.log("token", token);
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+    
+        axios
+          .get(route, {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((res) => {
+            const data = res.data?.data?.user;
+            setUserData({
+              userName: data.name || "",
+              userGender: data.gender || "",
+              userBirth: data.birth_date ? new Date(data.birth_date) : null,
+              userPhone: data.phone || "",
+              userAddress: data.address || "",
+            });
+          })
+          .catch((err) => {
+            setModalTitle("錯誤訊息");
+            setModalMsg("伺服器錯誤");
+            setModalType("toLogin");
+            setIsOpen(true);
+          });
+      }, [navigate]);
+
       function editHandler(e) {
         e.preventDefault();
         const token = localStorage.getItem("token");
