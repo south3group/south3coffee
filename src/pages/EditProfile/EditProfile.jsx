@@ -472,6 +472,41 @@ function EditProfile() {
           </div>
         </MemberSidebar>
       </div>
+
+
+      {/* Modal */}
+      {isOpen && (
+        <div
+          className="modal show fade d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">{modalTitle}</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCloseModal}
+                ></button>
+              </div>
+              <div className="modal-body">{modalMsg}</div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCloseModal}
+                >
+                  關閉
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
