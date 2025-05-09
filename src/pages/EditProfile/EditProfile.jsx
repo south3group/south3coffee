@@ -198,7 +198,7 @@ function EditProfile() {
       return false;
     };
 
-    if (!isValidTaiwanAddress(userData.userAddress)) {
+    if (userData.userAddress.trim() !== "" && !isValidTaiwanAddress(userData.userAddress)) {
       setFieldErr((prev) => ({
         ...prev,
         userAddress: '地址無效，請重新輸入有效的台灣地址',
