@@ -86,6 +86,7 @@ function EditProfile() {
 
   function editHandler(e) {
     e.preventDefault();
+    let isError = false;
     const token = localStorage.getItem('token');
 
     // 未登入
@@ -102,14 +103,14 @@ function EditProfile() {
         userName: '該欄位為必填欄位',
       }));
       setFormValidated(true);
-      return;
+      isError = true;
     } else if (!namePattern.test(userData.userName)) {
       setFieldErr((prev) => ({
         ...prev,
         userName: '姓名格式錯誤，請輸入 2 至 10 字元的姓名',
       }));
       setFormValidated(true);
-      return;
+      isError = true;
     }
 
     // 性別
@@ -119,7 +120,7 @@ function EditProfile() {
         userGender: '請選擇性別',
       }));
       setFormValidated(true);
-      return;
+      isError = true;
     }
 
     // 生日
@@ -133,14 +134,14 @@ function EditProfile() {
         userBirth: '該欄位為必填欄位',
       }));
       setFormValidated(true);
-      return;
+      isError = true;
     } else if (!isValidDateObject(userData.userBirth)) {
       setFieldErr((prev) => ({
         ...prev,
         userBirth: '生日格式錯誤，請重新選擇日期',
       }));
       setFormValidated(true);
-      return;
+      isError = true;
     }
 
     // 手機
@@ -151,14 +152,14 @@ function EditProfile() {
         userPhone: '該欄位為必填欄位',
       }));
       setFormValidated(true);
-      return;
+      isError = true;
     } else if (!phoneRegex.test(userData.userPhone)) {
       setFieldErr((prev) => ({
         ...prev,
         userPhone: '手機號碼不符合台灣格式',
       }));
       setFormValidated(true);
-      return;
+      isError = true;
     }
 
     // 地址
@@ -203,13 +204,17 @@ function EditProfile() {
         userAddress: '該欄位為必填欄位',
       }));
       setFormValidated(true);
-      return;
+      isError = true;
     } else if (!isValidTaiwanAddress(userData.userAddress)) {
       setFieldErr((prev) => ({
         ...prev,
         userAddress: '地址無效，請重新輸入有效的台灣地址',
       }));
       setFormValidated(true);
+      isError = true;
+    }
+
+    if(isError === true){
       return;
     }
 
@@ -304,9 +309,6 @@ function EditProfile() {
             <h4 className="display-6 text-coffee-deep mb-2">個人資訊</h4>
             <p className="text-coffee">Information</p>
             <form
-              className={`needs-validation ${
-                formValidated ? "was-validated" : ""
-              }`}
               noValidate
               onSubmit={editHandler}
             >
@@ -370,7 +372,7 @@ function EditProfile() {
                 </label>
                 <div className=" d-flex  flex-wrap align-items-center column-gap-2">
                   <div
-                    className={`form-control ${
+                    className={`form-control datepicker-style ${
                       (formValidated && !userData.userBirth) ||
                       fieldErr.userBirth
                         ? "is-invalid"
