@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 function MemberSidebar({ children }){
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -46,8 +46,10 @@ function MemberSidebar({ children }){
             <div className="px-2">
               <strong>
                 <div className="d-flex flex-column d-md-block align-bottom align-items-center pb-2">
+                <Link to="/" className="navbar-brand d-flex align-items-center">
                   <i className="bi bi-cup-hot-fill fs-4 pe-md-2"></i>
                   <span className="fs-md-5">築豆咖啡</span>
+                </Link>
                 </div>
               </strong>
               <div className="d-flex flex-column flex-md-row align-items-center py-3">
