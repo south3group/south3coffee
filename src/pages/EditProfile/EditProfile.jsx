@@ -124,6 +124,9 @@ function EditProfile() {
     }
 
     // 生日
+    const today = new Date();
+    const birthday = new Date(userData.userBirth)
+
     function isValidDateObject(date) {
       return date instanceof Date && !isNaN(date.getTime());
     }
@@ -135,7 +138,7 @@ function EditProfile() {
       }));
       setFormValidated(true);
       isError = true;
-    } else if (!isValidDateObject(userData.userBirth)) {
+    } else if (!isValidDateObject(userData.userBirth) || birthday > today) {
       setFieldErr((prev) => ({
         ...prev,
         userBirth: '生日格式錯誤，請重新選擇日期',
