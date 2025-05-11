@@ -1,11 +1,13 @@
+import { Link } from "react-router-dom";
+
 function Navbar(){
   return(
     <nav className="navbar navbar-expand-lg navbar-dark bg-coffee px-lg-5 sticky-top shadow ">
-      <div className="container-fluid " style={{ maxWidth: '1000px' }}>
-        <a className="navbar-brand" href="#">
-          <i className="bi bi-cup-hot-fill pe-3 fs-5"></i>
-          <span className="text-sm align-middle">築豆咖啡</span>
-        </a>
+      <div className="container-fluid" style={{ maxWidth: '1000px' }}>
+      <Link to="/" className="navbar-brand">
+        <i className="bi bi-cup-hot-fill pe-3 fs-5"></i>
+        <span className="text-sm align-middle">築豆咖啡</span>
+      </Link>
 
         {/* 漢堡選單按鈕 */}
         <button
