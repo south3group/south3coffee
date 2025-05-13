@@ -5,7 +5,7 @@ import axios from 'axios';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 
-function Login() {
+const Login = ()=>{
   const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -16,21 +16,29 @@ function Login() {
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/login`;
 
-  function loginHandler() {
-    const accountRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const clearInputs = ()=>{
+    setAccount('');
+    setPassword('');
+  }
+
+  const loginHandler = ()=>{
+    const accountRegex = /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
 
     if (account.trim() === '' || password.trim() === '') {
       setModalMsg('帳號密碼不可為空');
-      setIsOpen(true);
+      setIsOpen(true)
+      clearInputs();
       return;
-    } else if (!accountRegex.test(account)) {
+    } else if (!accountRegex.test(account) || account.length > 100) {
       setModalMsg('使用者不存在或密碼輸入錯誤');
-      setIsOpen(true);
+      setIsOpen(true)
+      clearInputs();
       return;
     } else if (!passwordRegex.test(password)) {
       setModalMsg('使用者不存在或密碼輸入錯誤');
-      setIsOpen(true);
+      setIsOpen(true)
+      clearInputs();
       return;
     }
     axios
@@ -40,12 +48,14 @@ function Login() {
       })
       .then((res) => {
         localStorage.setItem('token', res.data.data.token);
+        clearInputs();
         navigate('/member/profile');
       })
       .catch((err) => {
         const msg = err.response?.data?.message || '發生錯誤';
         setModalMsg(msg);
         setIsOpen(true);
+        clearInputs();
       });
   }
 
@@ -83,7 +93,7 @@ function Login() {
                 className="form-control"
                 id="memberEmail"
                 placeholder="請輸入會員帳號"
-                required
+                maxLength={100}
               />
             </div>
 
@@ -101,7 +111,6 @@ function Login() {
                 className="form-control"
                 id="memberPassword"
                 placeholder="請輸入密碼"
-                required
               />
             </div>
 

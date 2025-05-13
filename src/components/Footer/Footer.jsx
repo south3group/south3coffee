@@ -1,4 +1,4 @@
-function Footer(){
+const Footer = ()=>{
     return(
       <footer className="bg-coffee text-light p-5 mt-0" >
         <div className='container w-100' style={{ maxWidth: '1000px' }}>
@@ -15,7 +15,7 @@ function Footer(){
                 <a href="#" className='link-light text-decoration-none'>商品資訊</a>
               </div>
               <div>
-                <a href="#" className='link-light text-decoration-none'>商品資訊</a>
+                <a href="#" className='link-light text-decoration-none'>聯絡我們</a>
               </div>
             </div>  
           </div>

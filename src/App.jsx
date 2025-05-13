@@ -14,7 +14,7 @@ import Admin from './pages/Admin/Admin';
 
 import "./assets/styles/user-datepicker.scss"
 
-function App() {
+const App = ()=>{
   return (
     <>
       <ScrollToTop />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
-function MemberSidebar({ children }){
+const MemberSidebar = ({ children })=>{
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const navigate = useNavigate();

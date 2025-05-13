@@ -5,7 +5,7 @@ import axios from 'axios';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 
-function Signup() {
+const Signup = ()=>{
   const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
@@ -19,8 +19,8 @@ function Signup() {
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/Signup`;
 
-  function signupHandler() {
-    const accountRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const signupHandler = ()=>{
+    const accountRegex = /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
     const nameRegex = /^[A-Za-z0-9\u4e00-\u9fa5]{2,10}$/;
 
@@ -28,17 +28,18 @@ function Signup() {
         setModalMsg('欄位未填寫正確')
         setIsOpen(true);
         return;
-    }else if(!accountRegex.test(account)){
+    }else if(!accountRegex.test(account) || account.length > 100){
         setModalMsg('信箱格式錯誤');
         setIsOpen(true);
         return;
     }else if(!passwordRegex.test(password)) {
-        setModalMsg('密碼不符合規則，需要包含英文數字大小寫，最短8個字，最長16個字');
+        setModalMsg('密碼不符合規則，需要包含英文數字大小寫，最短8個字，最長16個字，且不能包含特殊符號');
         setIsOpen(true);
         return;
     }else if(password !==checkPassword ){
         setModalMsg('密碼與確認密碼內容需一致')
         setIsOpen(true);
+        return;
     }else if(!nameRegex.test(memberName)){
         setModalMsg('會員名稱長度需為 2~10 字，且不得包含特殊字元或空白');
         setIsOpen(true);
@@ -94,6 +95,7 @@ function Signup() {
                   placeholder="請輸入Email"
                   value={account}
                   onChange={(e) => setAccount(e.target.value)}
+                  maxLength={100}
                 />
               </div>
               <div className="mb-2">
