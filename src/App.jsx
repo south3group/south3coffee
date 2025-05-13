@@ -10,6 +10,7 @@ import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup'
 import EditProfile from './pages/EditProfile/EditProfile';
 import Contact from './pages/Contact/Contact';
+import Admin from './pages/Admin/Admin';
 
 import "./assets/styles/user-datepicker.scss"
 
@@ -23,6 +24,7 @@ const App = ()=>{
         <Route path="/signup" element={<Signup />} />
         <Route path="/member/profile" element={<EditProfile />}></Route>
         <Route path="/contact" element={<Contact />}></Route>
+        <Route path="/admin" element={<Admin />}></Route>
       </Routes>
     </>
   );
