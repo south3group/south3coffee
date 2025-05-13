@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function Navbar(){
+const Navbar = ()=>{
   return(
     <nav className="navbar navbar-expand-lg navbar-dark bg-coffee px-lg-5 sticky-top shadow ">
       <div className="container-fluid" style={{ maxWidth: '1000px' }}>

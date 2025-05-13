@@ -13,7 +13,7 @@ import Contact from './pages/Contact/Contact';
 
 import "./assets/styles/user-datepicker.scss"
 
-function App() {
+const App = ()=>{
   return (
     <>
       <ScrollToTop />

@@ -9,7 +9,7 @@ import Footer from '../../components/Footer/Footer';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
-function EditProfile() {
+const EditProfile = ()=>{
   const [userData, setUserData] = useState({
     userName: '',
     userGender: '',
@@ -87,7 +87,7 @@ function EditProfile() {
       });
   }, [navigate]);
 
-  function editHandler(e) {
+  const editHandler = (e)=>{
     e.preventDefault();
     let isError = false;
     const token = localStorage.getItem('token');
@@ -127,7 +127,7 @@ function EditProfile() {
     }
 
     // 生日
-    function isValidDateObject(date) {
+    const isValidDateObject = (date)=>{
       return date instanceof Date && !isNaN(date.getTime());
     }
 
