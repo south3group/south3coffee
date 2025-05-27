@@ -311,6 +311,7 @@ $coffee-bright:  #b98b0e ;
 $coffee-deep:   #4b3316 ;
 $coffee-light:  #E8DAB5 ;
 $coffee-line:  #B7A18F ;
+$coffee-bg:  #fff7f7;
 // scss-docs-end theme-color-variables
 
 // scss-docs-start theme-colors-map
@@ -328,6 +329,7 @@ $theme-colors: (
   "coffee-deep" : $coffee-deep,
   "coffee-light": $coffee-light,
   "coffee-line" : $coffee-line,
+  "coffee-bg" : $coffee-bg,
 ) !default;
 // scss-docs-end theme-colors-map
 
