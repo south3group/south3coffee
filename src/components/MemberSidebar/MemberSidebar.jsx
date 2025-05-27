@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { images } from "../../constants/image";
 
 const MemberSidebar = ({ children })=>{
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -40,47 +41,42 @@ const MemberSidebar = ({ children })=>{
       <>
         <div className="d-flex min-vh-100">
           <aside
-            className={`sidebar ${sidebarOpen ? "open" : ""}  bg-coffee-light d-flex flex-column py-4 px-3`}
+            className={`sidebar ${sidebarOpen ? "open" : ""}  bg-coffee d-flex flex-column py-4 px-4`}
           >
-            {/* 標題+打招呼 */}
-            <div className="px-2">
+            {/* 標題 + profile */}
+            <div>
               <strong>
-                <div className="d-flex flex-column d-md-block align-bottom align-items-center pb-2">
-                <Link to="/" className="navbar-brand d-flex align-items-center">
-                  <i className="bi bi-cup-hot-fill fs-4 pe-md-2"></i>
-                  <span className="fs-md-5">築豆咖啡</span>
-                </Link>
+                <div className="d-flex flex-column d-md-block align-bottom align-items-center py-3">
+                  <Link to="/" className="navbar-brand d-flex align-items-center">
+                    <img src={images.logoIcon} alt="coffee logo" className="px-2" style={{width:"50px",heigh:"auto"}}/>
+                    <span className="text-coffee-light fs-3">築豆咖啡</span>
+                  </Link>
                 </div>
               </strong>
-              <div className="d-flex flex-column flex-md-row align-items-center py-3">
-                <i className="bi bi-person-circle fs-4 me-md-2"></i>
-                <p className="m-0 ">Hi! 南三!</p>
+              <div className="d-flex flex-column flex-md-row align-items-center py-2 ">
+                <img src={images.profile} alt="profile photo" className="mx-3" />
+                <span className="m-0 text-white">Hi ! Jenny !</span>
               </div>
             </div>
   
             {/* 選單 */}
             <div className="overflow-auto">
               { sidebarItems.map((item, i) => (
-                <div key={i}>
                   <a
+                    key={i}
                     href="#"
                     onClick={()=> navigate(item.path)}
-                    className={`sidebar-link ${location.pathname === item.path  ? "active" : ""}`}
+                    className={`sidebar-link ${location.pathname === item.path  ? "active" : ""} `}
                   >
-                    <div className="px-2 px-md-4">{item.title}</div>
+                    <span className="ms-4">{item.title}</span>
                   </a>
-                </div>
               ))}
             </div>
   
             {/* 登出 */}
-            <div className="mt-auto">
-              <a href="#" className="sidebar-logout-link text-decoration-none mb-5" onClick={handleLogout}>
-                <div className="d-flex justify-content-center align-items-center">
-                  登出
-                </div>
+              <a href="#" className="sidebar-logout mt-auto border border-coffee-line d-block text-center text-decoration-none py-3 mb-4" onClick={handleLogout}>
+                <span className="text-white">登出</span>
               </a>
-            </div>
           </aside>
               
           {/* 內容 */}

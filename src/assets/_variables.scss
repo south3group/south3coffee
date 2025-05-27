@@ -309,7 +309,8 @@ $dark: $gray-900 !default;
 $coffee:        #68482D ;
 $coffee-bright:  #b98b0e ;
 $coffee-deep:   #4b3316 ;
-$coffee-light:  #f8eee9 ;
+$coffee-light:  #E8DAB5 ;
+$coffee-line:  #B7A18F ;
 // scss-docs-end theme-color-variables
 
 // scss-docs-start theme-colors-map
@@ -326,6 +327,7 @@ $theme-colors: (
   "coffee-bright": $coffee-bright,
   "coffee-deep" : $coffee-deep,
   "coffee-light": $coffee-light,
+  "coffee-line" : $coffee-line,
 ) !default;
 // scss-docs-end theme-colors-map
 
