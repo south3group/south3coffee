@@ -310,6 +310,48 @@ $coffee:        #73512a ;
 $coffee-bright:  #b98b0e ;
 $coffee-deep:   #4b3316 ;
 $coffee-light:  #f8eee9 ;
+
+$coffee-primary-1000: #2A1D12;
+$coffee-primary-900: #3E2B1B;
+$coffee-primary-800: #533A24;
+$coffee-primary-700: #68482D;
+$coffee-primary-600: #82664E;
+$coffee-primary-500: #9C846F;
+$coffee-primary-400: #B7a18F;
+$coffee-primary-300: #C4B040;
+$coffee-primary-200 : #DECEC1;
+$coffee-primary-100: #EBDDD1;
+$coffee-primary-000: #F1ECE9;
+
+$coffee-secondary-1000: #3F3008;
+$coffee-secondary-900: #5F480B;
+$coffee-secondary-800: #7E600F;
+$coffee-secondary-700: #9E7813;
+$coffee-secondary-600: #B1913C;
+$coffee-secondary-500: #C3A964;
+$coffee-secondary-400: #D6C28D;
+$coffee-secondary-300: #E8DAB5;
+$coffee-secondary-200: #F2E7CA;
+$coffee-secondary-100: #FBF3DE;
+$coffee-secondary-000: #FDFAF2;
+
+$coffee-grey-1000: #111111;
+$coffee-grey-900: #1A1A1A;
+$coffee-grey-800: #222222;
+$coffee-grey-700: #2B2B2B;
+$coffee-grey-600: #555555;
+$coffee-grey-500: #7E7E7E;
+$coffee-grey-400: #ABABAB;
+$coffee-grey-300: #BDBDBD;
+$coffee-grey-200: #E7E7E7;
+$coffee-grey-100: #F7F7F7;
+$coffee-grey-000: #FCFCFC;
+
+$coffee-stars: #FAC612;
+$coffee-notification: #FF0000;
+$coffee-success: #2E9C5E;
+$coffee-bg-light: #FFF7F7;
+$coffee-bg-dark: #3E2B1B;
 // scss-docs-end theme-color-variables
 
 // scss-docs-start theme-colors-map
@@ -326,6 +368,37 @@ $theme-colors: (
   "coffee-bright": $coffee-bright,
   "coffee-deep" : $coffee-deep,
   "coffee-light": $coffee-light,
+
+  "coffee-primary-1000": $coffee-primary-1000,
+  "coffee-primary-900": $coffee-primary-900,
+  "coffee-primary-800": $coffee-primary-800,
+  "coffee-primary-700": $coffee-primary-700,
+  "coffee-primary-600": $coffee-primary-600,
+  "coffee-primary-500": $coffee-primary-500,
+  "coffee-primary-400": $coffee-primary-400,
+  "coffee-primary-300": $coffee-primary-300,
+  "coffee-primary-200": $coffee-primary-200,
+  "coffee-primary-100": $coffee-primary-100,
+  "coffee-primary-000": $coffee-primary-000,
+
+  "coffee-secondary-1000": $coffee-secondary-1000,
+  "coffee-secondary-900": $coffee-secondary-900,
+  "coffee-secondary-800": $coffee-secondary-800,
+  "coffee-secondary-700": $coffee-secondary-700,
+  "coffee-secondary-600": $coffee-secondary-600,
+  "coffee-secondary-500": $coffee-secondary-500,
+  "coffee-secondary-400": $coffee-secondary-400,
+  "coffee-secondary-300": $coffee-secondary-300,
+  "coffee-secondary-200": $coffee-secondary-200,
+  "coffee-secondary-100": $coffee-secondary-100,
+  "coffee-secondary-000": $coffee-secondary-000,
+
+  "coffee-stars": $coffee-stars,
+  "coffee-notification": $coffee-notification,
+  "coffee-success": $coffee-success,
+  "coffee-bg-light": $coffee-bg-light,
+  "coffee-bg-dark": $coffee-bg-dark,
+
 ) !default;
 // scss-docs-end theme-colors-map
 
