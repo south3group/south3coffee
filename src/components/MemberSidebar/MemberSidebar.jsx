@@ -4,6 +4,7 @@ import { images } from '../../constants/image';
 
 const MemberSidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,6 +20,7 @@ const MemberSidebar = ({ children }) => {
   // 控制登出>刪掉token&轉跳Login
   const handleLogout = () => {
     localStorage.removeItem('token');
+    setToken(null);
     navigate('/Login');
   };
 

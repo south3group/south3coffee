@@ -1,0 +1,225 @@
+@import './font-classes';
+@import '../variables';
+@import 'bootstrap';
+
+$header-height: 62px;
+
+// 容器寬度
+.container-width {
+  padding: 0 16px !important;
+
+  @media (min-width: 768px) {
+    max-width: 1296px;
+    margin: 0 auto;
+  }
+}
+
+// 手機版選單
+.mobile-menu {
+  position: fixed;
+  top: $header-height;
+  right: 0;
+  width: 50%;
+  height: calc(100% - #{$header-height});
+  background-color: $coffee-primary-000;
+  z-index: 1000;
+  padding: 8px;
+  gap: 8px;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  transition: transform 0.3s ease-in-out;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: 1rem;
+      a,
+      button {
+        text-decoration: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: $coffee-primary-600;
+        height: auto;
+        max-height: none;
+        width: 100%;
+        padding: 8px;
+        text-align: left;
+        margin-top: 8px;
+        outline: none;
+        border: none;
+        &:focus {
+          outline: none;
+          box-shadow: none;
+        }
+      }
+
+      .submenu {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        a {
+          display: inline-block;
+          padding: 8px 16px;
+          width: auto;
+        }
+      }
+    }
+  }
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  top: $header-height;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 990;
+}
+
+.hamburger-btn {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 20px;
+  padding: 0;
+  position: relative;
+  z-index: 1100;
+
+  span {
+    display: block;
+    height: 2px;
+    background-color: $coffee-primary-000;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+    margin: 2px 0;
+  }
+
+  &:hover span {
+    background-color: $coffee-primary-300;
+  }
+}
+
+// 桌面版選單
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .logo-icon {
+    width: 27.73px;
+    height: auto;
+  }
+  .logo-text {
+    font-size: 24px;
+    line-height: 150%;
+    @extend .semibold-text;
+  }
+}
+
+.navbar-menu {
+  white-space: nowrap;
+  gap: 8px;
+
+  .nav-link {
+    padding: 8px 16px !important;
+    height: auto;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:hover {
+      background-color: $coffee-primary-300;
+      color: $coffee-primary-700;
+    }
+
+    &:active {
+      background-color: $coffee-primary-700;
+      color: $coffee-primary-000;
+    }
+  }
+
+  .nav-user-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px !important;
+    padding: 8px 16px !important;
+    height: 40px;
+
+    &:hover {
+      background-color: $coffee-primary-300;
+      color: $coffee-primary-700;
+    }
+
+    &:active {
+      background-color: $coffee-primary-700;
+      color: $coffee-primary-000;
+    }
+
+    .nav-profile {
+      width: 32px;
+      height: 32px;
+    }
+  }
+}
+
+// hover 時展開 menu
+.dropdown-toggle::after {
+  display: none;
+}
+
+.hover-dropdown {
+  position: relative;
+
+  .dropdown {
+    &-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background-color: white;
+      height: auto;
+      max-height: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      padding: 8px;
+      min-width: 112px;
+      margin-top: 8px;
+
+      &.show {
+        display: block;
+      }
+
+      &-about {
+        min-width: 192px;
+      }
+    }
+
+    &-item {
+      color: $coffee-primary-600;
+      text-decoration: none;
+      height: 48px;
+      line-height: 48px;
+      text-align: center;
+      padding: 0;
+
+      &:hover {
+        background-color: $coffee-primary-300;
+        color: $coffee-primary-700;
+      }
+
+      &:active {
+        background-color: $coffee-primary-700;
+        color: $coffee-primary-000;
+      }
+    }
+  }
+}
