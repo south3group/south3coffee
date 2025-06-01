@@ -105,7 +105,7 @@ const MemberSidebar = ({ children }) => {
           {/* 登出 */}
           <button
             type="button"
-            className="sidebar-logout mt-auto mx-auto border border-coffee-line text-center text-decoration-none py-3 mb-4"
+            className="sidebar-logout mt-auto mx-auto border border-primary-300 text-center text-decoration-none py-3 mb-4"
             style={{ width: '210px' }}
             onClick={handleLogout}
           >

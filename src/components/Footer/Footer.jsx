@@ -32,7 +32,7 @@ const Footer = ()=>{
             </div>
           </div>
   
-              <span className="d-block text-center text-md-start mt-lg-3" style={{ fontSize: '16px  ' }}>
+              <span className="d-block text-center text-md-start mt-lg-3">
                 &copy;2025 築豆咖啡 All Rights Reserved.
               </span>
   

@@ -127,13 +127,13 @@ const Login = ()=>{
           <div>
             <button
               type="button"
-              className="btn btn-coffee w-100 mb-3"
+              className="btn btn-coffee-primary-700 btn-style w-100 mb-3"
               onClick={loginHandler}
             >
               登入
             </button>
 
-            <button type="button" className="btn btn-outline-coffee w-100 mb-3">
+            <button type="button" className="btn btn-outline-coffee-primary-700 btn-style w-100 mb-3">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
                 alt="google logo"
@@ -144,15 +144,14 @@ const Login = ()=>{
           </div>
 
           <div className="text-center mb-3">
-            <Link
-              to="/signup"
-              className="text-coffee-bright text-decoration-none small"
-            >
-              還不是會員？
-              <span className="fw-bolder text-decoration-underline">
-                馬上註冊加入
-              </span>
-            </Link>
+            <span className='text-coffee-grey-600'>
+            還不是會員？
+            </span>
+              <Link
+                to="/signup"
+                className=" text-decoration-none "
+              >馬上註冊加入
+              </Link>
           </div>
         </div>
       </div>

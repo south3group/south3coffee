@@ -1,15 +1,24 @@
-@import './styles/fonts.scss';
+// 自定義變數.字型
+@import './styles/variables';
+@import './styles/fonts';
 
-// 這個檔案用來客製 bootstrap
-@import '../../node_modules/bootstrap/scss/functions';
-@import '../../node_modules/bootstrap/scss/mixins';
-
-
-// 這個用來客製變數
-@import './variables.scss';
-
+// 引入 bootstrap
 @import '../../node_modules/bootstrap/scss/bootstrap';
 
+
+//base-settings和工具類別
+@import './base/common';
+@import './styles/font-classes';
+
+
+//layouts(放全站共用 css 樣式:版型、固定位置、背景色等）
+@import './styles/layouts/header';
+@import './styles/layouts/footer';
+
+
+//小元件(button、card等) css 樣式
+
+@import './styles/user-all.scss';
+@import './styles/user-datepicker.scss';
 @import './styles/user-sidebar.scss';
-@import './styles/navbar.scss';
-@import './styles/footer.scss';
+@import './styles/navbar.scss'
