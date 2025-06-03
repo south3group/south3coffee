@@ -1,11 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../store/authSlice';
 import axios from 'axios';
 
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 
-const Login = ()=>{
+const Login = () => {
   const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -16,28 +18,31 @@ const Login = ()=>{
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/login`;
 
-  const clearInputs = ()=>{
+  const dispatch = useDispatch();
+
+  const clearInputs = () => {
     setAccount('');
     setPassword('');
-  }
+  };
 
-  const loginHandler = ()=>{
-    const accountRegex = /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const loginHandler = () => {
+    const accountRegex =
+      /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
 
     if (account.trim() === '' || password.trim() === '') {
       setModalMsg('帳號密碼不可為空');
-      setIsOpen(true)
+      setIsOpen(true);
       clearInputs();
       return;
     } else if (!accountRegex.test(account) || account.length > 100) {
       setModalMsg('使用者不存在或密碼輸入錯誤');
-      setIsOpen(true)
+      setIsOpen(true);
       clearInputs();
       return;
     } else if (!passwordRegex.test(password)) {
       setModalMsg('使用者不存在或密碼輸入錯誤');
-      setIsOpen(true)
+      setIsOpen(true);
       clearInputs();
       return;
     }
@@ -47,7 +52,16 @@ const Login = ()=>{
         password: password,
       })
       .then((res) => {
-        localStorage.setItem('token', res.data.data.token);
+        const token = res.data.data.token;
+        const name = res.data.data.user.name;
+        const role = 'USER';
+
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
+        localStorage.setItem('username', name);
+
+        dispatch(setCredentials({ token, role, username: name }));
+
         clearInputs();
         navigate('/member/profile');
       })
@@ -57,7 +71,7 @@ const Login = ()=>{
         setIsOpen(true);
         clearInputs();
       });
-  }
+  };
 
   return (
     <>
@@ -133,7 +147,10 @@ const Login = ()=>{
               登入
             </button>
 
-            <button type="button" className="btn btn-outline-coffee-primary-700 btn-style w-100 mb-3">
+            <button
+              type="button"
+              className="btn btn-outline-coffee-primary-700 btn-style w-100 mb-3"
+            >
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
                 alt="google logo"
@@ -144,14 +161,10 @@ const Login = ()=>{
           </div>
 
           <div className="text-center mb-3">
-            <span className='text-coffee-grey-600'>
-            還不是會員？
-            </span>
-              <Link
-                to="/signup"
-                className=" text-decoration-none "
-              >馬上註冊加入
-              </Link>
+            <span className="text-coffee-grey-600">還不是會員？</span>
+            <Link to="/signup" className=" text-decoration-none ">
+              馬上註冊加入
+            </Link>
           </div>
         </div>
       </div>
@@ -192,6 +205,6 @@ const Login = ()=>{
       <Footer />
     </>
   );
-}
+};
 
 export default Login;

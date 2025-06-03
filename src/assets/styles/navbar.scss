@@ -1,15 +1,16 @@
 @import './font-classes';
 @import '../styles/variables';
 
-$header-height: 62px;
+$header-height: 74.75px;
 
 // 容器寬度
 .container-width {
-  padding: 0 16px !important;
+  padding: 0 16px;
 
   @media (min-width: 768px) {
     max-width: 1296px;
     margin: 0 auto;
+    padding: 0;
   }
 }
 
@@ -21,13 +22,12 @@ $header-height: 62px;
   width: 50%;
   font-size: 1.6rem;
   height: calc(100% - #{$header-height});
-  background-color: $coffee-primary-000;
+  background-color: $coffee-grey-000;
   z-index: 1000;
   padding: 8px;
   gap: 8px;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
   overflow-y: auto;
-  transition: transform 0.3s ease-in-out;
 
   ul {
     list-style: none;
@@ -43,6 +43,7 @@ $header-height: 62px;
         justify-content: space-between;
         align-items: center;
         color: $coffee-primary-600;
+        background-color: $coffee-grey-000;
         height: auto;
         max-height: none;
         width: 100%;
@@ -51,9 +52,20 @@ $header-height: 62px;
         margin-top: 8px;
         outline: none;
         border: none;
+
         &:focus {
           outline: none;
           box-shadow: none;
+        }
+
+        &:hover {
+          background-color: $coffee-primary-300;
+          color: $coffee-primary-700;
+        }
+
+        &:active {
+          background-color: $coffee-primary-800;
+          color: $coffee-primary-000;
         }
       }
 
@@ -71,6 +83,15 @@ $header-height: 62px;
   }
 }
 
+.profile-btn {
+  padding: 0 16px !important;
+
+  .mobile-profile {
+    width: 40px;
+    height: 40px;
+  }
+}
+
 .mobile-menu-overlay {
   position: fixed;
   top: $header-height;
@@ -85,20 +106,22 @@ $header-height: 62px;
   border: none;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  width: 24px;
-  height: 20px;
-  padding: 0;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 4px;
+  width: auto;
+  height: 100%;
   position: relative;
   z-index: 1100;
 
   span {
     display: block;
+    width: 18px;
     height: 2px;
     background-color: $coffee-primary-000;
     border-radius: 1px;
     transition: all 0.3s ease;
-    margin: 2px 0;
   }
 
   &:hover span {
@@ -107,6 +130,10 @@ $header-height: 62px;
 }
 
 // 桌面版選單
+.nav-brand {
+  padding: 16px 8px;
+}
+
 .nav-logo {
   display: flex;
   align-items: center;
@@ -117,6 +144,7 @@ $header-height: 62px;
     height: auto;
   }
   .logo-text {
+    font-size: 2.4rem;
     line-height: 150%;
     @extend .semibold-text;
   }
@@ -126,13 +154,14 @@ $header-height: 62px;
   white-space: nowrap;
   gap: 8px;
 
-  .nav-link {
+  .nav-link-custom {
     padding: 8px 16px !important;
     height: auto;
     display: flex;
     align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: $coffee-primary-000;
 
     &:hover {
       background-color: $coffee-primary-300;
@@ -140,7 +169,7 @@ $header-height: 62px;
     }
 
     &:active {
-      background-color: $coffee-primary-700;
+      background-color: $coffee-primary-800;
       color: $coffee-primary-000;
     }
   }
@@ -158,7 +187,7 @@ $header-height: 62px;
     }
 
     &:active {
-      background-color: $coffee-primary-700;
+      background-color: $coffee-primary-800;
       color: $coffee-primary-000;
     }
 
@@ -177,32 +206,30 @@ $header-height: 62px;
 .hover-dropdown {
   position: relative;
 
-  .dropdown {
-    &-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      background-color: white;
-      height: auto;
-      max-height: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      padding: 8px;
-      min-width: 112px;
-      margin-top: 8px;
+  .dropdown-menu-custom {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background-color: white;
+    height: auto;
+    max-height: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    min-width: 112px;
+    margin-top: 8px;
 
-      &.show {
-        display: block;
-      }
-
-      &-about {
-        min-width: 192px;
-      }
+    &.show {
+      display: block;
     }
 
-    &-item {
+    &.dropdown-menu-custom-about {
+      min-width: 192px;
+    }
+
+    .dropdown-item-custom {
       color: $coffee-primary-600;
       font-size: 1.6rem;
       text-decoration: none;
@@ -217,7 +244,7 @@ $header-height: 62px;
       }
 
       &:active {
-        background-color: $coffee-primary-700;
+        background-color: $coffee-primary-800;
         color: $coffee-primary-000;
       }
     }

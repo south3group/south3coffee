@@ -1,13 +1,31 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { checkAuth, logout } from '../../store/authSlice';
 import { images } from '../../constants/image';
 
 const MemberSidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+
+  const dispatch = useDispatch();
+  const { token, username, isAuthChecked } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthChecked && !token) {
+      dispatch(logout());
+      navigate('/login');
+    }
+  }, [isAuthChecked, token, dispatch, navigate]);
 
   const sidebarItems = [
     { title: '會員中心', path: '/member' },
@@ -17,11 +35,10 @@ const MemberSidebar = ({ children }) => {
     { title: '願望清單', path: '/member/wishlist' },
   ];
 
-  // 控制登出>刪掉token&轉跳Login
+  // 登出
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setToken(null);
-    navigate('/Login');
+    dispatch(logout());
+    navigate('/login');
   };
 
   // 控制收合
@@ -41,6 +58,78 @@ const MemberSidebar = ({ children }) => {
 
   return (
     <>
+      {/* 手機版 */}
+      <nav className="navbar d-md-none bg-coffee-primary-700 sticky-top shadow nav-brand">
+        <div className="container-fluid container-width">
+          <Link to="/" className="navbar-brand nav-logo">
+            <img
+              src={images.logoIcon}
+              alt="coffee logo"
+              className="logo-icon"
+            />
+            <span className="logo-text text-coffee-secondary-300">
+              築豆咖啡
+            </span>
+          </Link>
+          
+          {/* 使用者大頭貼 */}
+          <div className="user-dropdown-wrapper">
+            <button
+              className="border-0 bg-transparent profile-btn"
+              onClick={() => {
+                setUserDropdownOpen(!userDropdownOpen);
+                setMenuOpen(false);
+              }}
+            >
+              <img
+                src={images.profile}
+                alt="user"
+                className="d-md-none rounded-circle mobile-profile"
+              />
+            </button>
+
+            {userDropdownOpen && (
+              <>
+                {/* 遮罩，還沒做完 */}
+                <div
+                  className="mobile-menu-overlay"
+                  onClick={() => setUserDropdownOpen(false)}
+                ></div>
+
+                {/* 使用者選單 */}
+                <div className="mobile-menu d-md-none">
+                  <ul className="px-0">
+                    {sidebarItems.map((item, i) => (
+                      <li key={i}>
+                        <Link
+                          to={item.path}
+                          className="dropdown-item"
+                          onClick={() => setUserDropdownOpen(false)}
+                        >
+                          {item.title}
+                        </Link>
+                      </li>
+                    ))}
+                    <li>
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setUserDropdownOpen(false);
+                        }}
+                        className="dropdown-item"
+                      >
+                        登出
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* 桌電版 */}
       <div className=" d-flex min-vh-100">
         <aside
           className={`sidebar ${sidebarOpen ? 'open' : ''}  bg-coffee d-none d-md-flex flex-column`}
@@ -82,7 +171,9 @@ const MemberSidebar = ({ children }) => {
                     alt="profile photo"
                     className="mx-3"
                   />
-                  <span className="m-0 text-white">Hi ! Jenny !</span>
+                  <span className="m-0 text-white">
+                    Hi ! {username || '使用者'} !
+                  </span>
                 </div>
               </div>
 
@@ -92,7 +183,6 @@ const MemberSidebar = ({ children }) => {
                   <Link
                     key={i}
                     to={item.path}
-                    onClick={() => navigate(item.path)}
                     className={`sidebar-link ${location.pathname === item.path ? 'active' : ''} `}
                   >
                     <span className="ms-4">{item.title}</span>

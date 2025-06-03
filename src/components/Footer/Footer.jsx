@@ -1,44 +1,68 @@
-import { images } from "../../constants/image";
+import { Link } from 'react-router-dom';
+import { images } from '../../constants/image';
 
-const Footer = ()=>{
-    return(
-      <footer className="bg-coffee-primary-700 text-light py-5 mt-0" >
-        <div className='container container-width w-100'>
-        
-          <div className='d-flex flex-column flex-md-row justify-content-between align-items-center text-center mb-4 ps-4'>
-            <img src={images.logo} alt="coffee logo" className="footer-logo mx-auto mx-md-0 d-block mb-3 mb-md-0"/>
-            <div className='d-flex flex-column flex-md-row justify-content-evenly align-items-center gap-3'>
-              <a href="#" className='px-mb-5 link-light text-decoration-none'>商品資訊</a>
-              <a href="#" className='link-light text-decoration-none pe-4'>聯絡我們</a>
-            </div>  
+const Footer = () => {
+  return (
+    <footer className="bg-coffee-primary-700 text-coffee-primary-000 p-0 m-0">
+      <div className="container container-custom w-100">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center text-center">
+          <Link to="/" className="navbar-brand footer-logo mb-5 mb-md-0">
+            <img
+              src={images.logoIcon}
+              alt="coffee logo"
+              className="logo-icon"
+            />
+            <span className="logo-text text-coffee-secondary-300">
+              築豆咖啡
+            </span>
+          </Link>
+          <div className="d-flex flex-column flex-md-row justify-content-evenly align-items-center footer-top">
+            <Link to="/" className="footer-top-link">
+              商品資訊
+            </Link>
+            <Link to="/" className="footer-top-link">
+              聯絡我們
+            </Link>
           </div>
-  
-          <div className='d-flex flex-column flex-md-row justify-content-between mt-0 align-items-center align-items-md-start mb-4'>
-            <div className='mb-md-0'>
-              <ul className='list-unstyled fw-lighter'>
-                <li className='mb-2'><i className="bi bi-clock me-3"></i>營業時間：平日9:00 ~ 10:00</li>
-                <li className='mb-2'><i className="bi bi-telephone me-3"></i>客服專線：09XX-XXXXXX</li>
-                <li className='mb-2'><i className="bi bi-envelope me-3"></i>客服信箱：Service@travel.com</li>
-                <li className='mb-2'><i className="bi bi-geo-alt me-3"></i>聯絡地址：新北市板橋區仁愛路XXX號</li>
-              </ul>
-            </div>
-  
-            <div className="d-flex">
-              {["facebook", "instagram", "line"].map((platform) => (
-                <a key={platform} href="#" className="text-white px-3 flex">
-                  <i className={`bi bi-${platform} fs-5`}></i>
-                </a>
-              ))}
-            </div>
-          </div>
-  
-              <span className="d-block text-center text-md-start mt-lg-3">
-                &copy;2025 築豆咖啡 All Rights Reserved.
-              </span>
-  
         </div>
-      </footer>
-    )
-  }
 
-  export default Footer;
+        <div className="d-flex flex-column flex-md-row justify-content-between  align-items-center m-0">
+          <div className="text-center text-md-start mb-5 mb-md-0">
+            <ul className="list-unstyled fw-lighter footer-info-item">
+              <li>
+                <i className="bi bi-clock footer-info-icon"></i>
+                營業時間：平日9:00 ~ 10:00
+              </li>
+              <li>
+                <i className="bi bi-telephone footer-info-icon"></i>
+                客服專線：09XX-XXXXXX
+              </li>
+              <li>
+                <i className="bi bi-envelope footer-info-icon"></i>
+                客服信箱：Service@travel.com
+              </li>
+              <li>
+                <i className="bi bi-geo-alt footer-info-icon"></i>
+                聯絡地址：新北市板橋區仁愛路XXX號
+              </li>
+            </ul>
+          </div>
+
+          <div className="d-flex justify-content-center justify-content-md-end align-self-center align-self-md-start footer-media">
+            {['facebook', 'instagram', 'line'].map((platform) => (
+              <a key={platform} href="#" className="text-white px-3">
+                <i className={`bi bi-${platform} footer-media-item`}></i>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <span className="d-block text-center text-md-start mt-mb-3">
+          &copy;2025 築豆咖啡 All Rights Reserved.
+        </span>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
