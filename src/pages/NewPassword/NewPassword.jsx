@@ -1,43 +1,28 @@
 import { useState } from 'react';
-
-import { Link, useNavigate } from 'react-router-dom';
+// import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
 import { images } from '../../constants/image';
 
-const Signup = () => {
-  const [account, setAccount] = useState('');
+const NewPassword = () => {
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
-  const [memberName, setMemberName] = useState('');
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/Signup`;
 
   const signupHandler = () => {
-    const accountRegex =
-      /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
-    const nameRegex = /^[A-Za-z0-9\u4e00-\u9fa5]{2,10}$/;
 
-    if (
-      account.trim() === '' ||
-      password.trim() === '' ||
-      checkPassword.trim() === '' ||
-      memberName.trim() === ''
-    ) {
+    if (password.trim() === '' || checkPassword.trim() === '') {
       setModalMsg('欄位未填寫正確');
-      setIsOpen(true);
-      return;
-    } else if (!accountRegex.test(account) || account.length > 100) {
-      setModalMsg('信箱格式錯誤');
       setIsOpen(true);
       return;
     } else if (!passwordRegex.test(password)) {
@@ -50,19 +35,14 @@ const Signup = () => {
       setModalMsg('密碼與確認密碼內容需一致');
       setIsOpen(true);
       return;
-    } else if (!nameRegex.test(memberName)) {
-      setModalMsg('會員名稱長度需為 2~10 字，且不得包含特殊字元或空白');
-      setIsOpen(true);
-      return;
     }
     axios
-      .post(route, {
-        email: account,
-        password: password,
-        name: memberName,
+      .patch(route, {
+        newPassword: password,
+        checkNewPassword: checkPassword,
       })
       .then((res) => {
-        navigate('/member/profile');
+        // navigate('/member/profile');
       })
       .catch((err) => {
         const msg = err.response?.data?.message || '發生錯誤';
@@ -82,28 +62,9 @@ const Signup = () => {
               alt="dark logo"
               className="logo-custom"
             />
-            <h4 className="auth-title text-center">
-              註冊會員
-            </h4>
+            <h4 className="auth-title text-center">設定新密碼</h4>
           </div>
           <form className="form-custom">
-            <div className="form-input-custom">
-              <label
-                htmlFor="memberEmail"
-                className="form-label form-label-custom text-coffee-primary-900"
-              >
-                電子信箱(將會成為會員帳號) *
-              </label>
-              <input
-                type="email"
-                className="form-control form-control-custom rounded-0"
-                id="memberEmail"
-                placeholder="請輸入Email"
-                value={account}
-                onChange={(e) => setAccount(e.target.value)}
-                maxLength={100}
-              />
-            </div>
             <div className="form-input-custom">
               <label
                 htmlFor="memberPassword"
@@ -136,22 +97,6 @@ const Signup = () => {
                 onChange={(e) => setCheckPassword(e.target.value)}
               />
             </div>
-            <div className="form-input-custom">
-              <label
-                htmlFor="memberName"
-                className="form-label form-label-custom text-coffee-primary-900"
-              >
-                會員名稱 *
-              </label>
-              <input
-                type="text"
-                className="form-control form-control-custom rounded-0"
-                id="memberName"
-                placeholder="最少2個字元，最長10字元，不得包含特殊字元與空白"
-                value={memberName}
-                onChange={(e) => setMemberName(e.target.value)}
-              />
-            </div>
           </form>
 
           <button
@@ -159,29 +104,9 @@ const Signup = () => {
             className="btn btn-coffee-primary-700 btn-style w-100 rounded-0 border-0"
             onClick={signupHandler}
           >
-            註冊會員
+            送出
           </button>
-
-          <button
-            type="button"
-            className="btn btn-outline-coffee-primary-400 text-coffee-primary-600 btn-style btn-style-light w-100 rounded-0"
-          >
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-              alt="google logo"
-              className="px-3"
-            />
-            透過 Google 註冊
-          </button>
-
-          <div className="text-center">
-            <span className="text-coffee-grey-600 btn-cta-text">
-              已經是會員？
-            </span>
-            <Link to="/login" className="text-decoration-none link-custom">
-              馬上登入
-            </Link>
-          </div>
+          <div className='empty-div-style'></div>
         </div>
       </div>
 
@@ -219,4 +144,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default NewPassword;

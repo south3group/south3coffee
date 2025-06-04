@@ -1,11 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../store/authSlice';
 import axios from 'axios';
 
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
+import { images } from '../../constants/image';
 
 const Login = () => {
   const [account, setAccount] = useState('');
@@ -24,6 +25,18 @@ const Login = () => {
     setAccount('');
     setPassword('');
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+  
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [isOpen]);
 
   const loginHandler = () => {
     const accountRegex =
@@ -46,6 +59,7 @@ const Login = () => {
       clearInputs();
       return;
     }
+
     axios
       .post(route, {
         email: account,
@@ -76,94 +90,92 @@ const Login = () => {
   return (
     <>
       <Navbar />
-      <div
-        className="login-bg d-flex justify-content-center align-items-center py-5"
-        style={{ minHeight: '100vh' }}
-      >
-        <div
-          className="bg-white p-5 opacity-90 shadow"
-          style={{ width: '450px' }}
-        >
-          <div>
-            <div className="d-flex flex-column justify-content-center align-items-center">
-              <i className="bi bi-cup-hot-fill fs-3"></i>
-              <span>築豆咖啡</span>
-            </div>
-            <h4 className="display-6 text-center mb-5">登入</h4>
+      <div className="auth-bg d-flex justify-content-center align-items-center ">
+        <div className="shadow auth-custom">
+          <div className="d-flex flex-column justify-content-center align-items-center">
+            <img
+              src={images.logoDark}
+              alt="dark logo"
+              className="logo-custom"
+            />
+            <h4 className="display-6 text-center text-coffee-primary-600">
+              登入
+            </h4>
           </div>
 
-          <form>
-            <div className="mt-4">
+          <form className="form-custom">
+            <div className="form-input-custom">
               <label
                 htmlFor="memberEmail"
-                className="form-label text-secondary small mb-1"
+                className="form-label form-label-custom text-coffee-primary-900"
               >
-                帳號
+                會員帳號
               </label>
               <input
                 value={account}
                 onChange={(e) => setAccount(e.target.value)}
                 type="email"
-                className="form-control"
+                className="form-control form-control-custom rounded-0"
                 id="memberEmail"
-                placeholder="請輸入會員帳號"
+                placeholder="請輸入會員帳號/Email"
                 maxLength={100}
               />
             </div>
 
-            <div className="mt-3">
+            <div className="form-input-custom">
               <label
                 htmlFor="memberPassword"
-                className="form-label text-secondary small mb-1"
+                className="form-label form-label-custom text-coffee-primary-900"
               >
-                密碼
+                會員密碼
               </label>
               <input
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
-                className="form-control"
+                className="form-control form-control-custom rounded-0"
                 id="memberPassword"
-                placeholder="請輸入密碼"
+                placeholder="請輸入會員密碼"
               />
             </div>
 
-            <div className="text-end mt-2 mb-5">
-              <a
+            <div className="text-end">
+              <Link
+                to="/forget"
                 href="#"
-                className="text-coffee-bright text-decoration-none small"
+                className="text-decoration-none link-custom"
               >
-                忘記密碼?
-              </a>
+                忘記密碼？
+              </Link>
             </div>
           </form>
 
-          <div>
-            <button
-              type="button"
-              className="btn btn-coffee-primary-700 btn-style w-100 mb-3"
-              onClick={loginHandler}
-            >
-              登入
-            </button>
+          <button
+            type="button"
+            className="btn btn-coffee-primary-700 btn-style w-100 rounded-0 border-0"
+            onClick={loginHandler}
+          >
+            登入
+          </button>
 
-            <button
-              type="button"
-              className="btn btn-outline-coffee-primary-700 btn-style w-100 mb-3"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-                alt="google logo"
-                className="me-2"
-              />
-              Google 帳號登入
-            </button>
-          </div>
+          <button
+            type="button"
+            className="btn btn-outline-coffee-primary-400 text-coffee-primary-600 btn-style btn-style-light w-100 rounded-0"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+              alt="google logo"
+              className="px-3"
+            />
+            透過 Google 登入
+          </button>
 
-          <div className="text-center mb-3">
-            <span className="text-coffee-grey-600">還不是會員？</span>
-            <Link to="/signup" className=" text-decoration-none ">
-              馬上註冊加入
+          <div className="text-center">
+            <span className="text-coffee-grey-600 btn-cta-text">
+              還不是會員？
+            </span>
+            <Link to="/signup" className="text-decoration-none link-custom">
+              馬上註冊
             </Link>
           </div>
         </div>
@@ -172,26 +184,27 @@ const Login = () => {
       {/* Modal */}
       {isOpen && (
         <div
-          className="modal show fade d-block"
+          className="modal show fade d-block custom-modal"
           tabIndex="-1"
           role="dialog"
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
         >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">登入失敗</h5>
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">登入失敗</h5>
                 <button
                   type="button"
-                  className="btn-close"
+                  className="custom-modal-close"
                   onClick={() => setIsOpen(false)}
-                ></button>
+                >
+                  ✕
+                </button>
               </div>
-              <div className="modal-body">{modalMsg}</div>
-              <div className="modal-footer">
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="custom-modal-btn"
                   onClick={() => setIsOpen(false)}
                 >
                   關閉

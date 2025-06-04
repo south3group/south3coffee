@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation  } from 'react-router-dom';
 import { images } from '../../constants/image';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,6 +17,7 @@ const Navbar = () => {
   const { token, username, role, isAuthChecked } = useSelector(
     (state) => state.auth,
   );
+  const location = useLocation();
 
   const navigate = useNavigate();
 
@@ -25,11 +26,11 @@ const Navbar = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isAuthChecked && !token) {
+    if (isAuthChecked && !token && !['/login', '/signup', '/forget', '/reset_password'].includes(location.pathname)) {
       dispatch(logout());
       navigate('/login');
     }
-  }, [isAuthChecked, token, dispatch, navigate]);
+  }, [isAuthChecked, token, dispatch, navigate, location.pathname]);
 
   // 控制選單
   useEffect(() => {
