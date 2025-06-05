@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation  } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { images } from '../../constants/image';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -14,7 +14,7 @@ const Navbar = () => {
   const [desktopUserDropdownOpen, setDesktopUserDropdownOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { token, username, role, isAuthChecked } = useSelector(
+  const { token, username, isAuthChecked } = useSelector(
     (state) => state.auth,
   );
   const location = useLocation();
@@ -26,7 +26,13 @@ const Navbar = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isAuthChecked && !token && !['/login', '/signup', '/forget', '/reset-password'].includes(location.pathname)) {
+    if (
+      isAuthChecked &&
+      !token &&
+      !['/login', '/signup', '/forget', '/reset-password'].includes(
+        location.pathname,
+      )
+    ) {
       dispatch(logout());
       navigate('/login');
     }
@@ -35,20 +41,21 @@ const Navbar = () => {
   // 控制選單
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!e.target.closest('.user-dropdown-wrapper')) {
+      if (!e.target.closest('.user')) {
         setUserDropdownOpen(false);
       }
+      if (!e.target.closest('.about')) {
+        setAboutDropdownOpen(false);
+      }
     };
-
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('click', handleClickOutside);
-    }, 0);
-
+  
+    document.addEventListener('click', handleClickOutside);
+  
     return () => {
-      clearTimeout(timeoutId);
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
+  
 
   const handleLogout = () => {
     dispatch(logout());
@@ -99,7 +106,7 @@ const Navbar = () => {
                     商品資訊
                   </Link>
                 </li>
-                <li>
+                <li className="about">
                   <button onClick={() => setSubMenuOpen(!subMenuOpen)}>
                     關於我們
                     <img
@@ -145,7 +152,7 @@ const Navbar = () => {
 
         {/* 使用者大頭貼 */}
         {token && (
-          <div className="user-dropdown-wrapper">
+          <div className="user">
             <button
               className="border-0 bg-transparent profile-btn"
               onClick={() => {
@@ -234,14 +241,14 @@ const Navbar = () => {
           >
             <button
               type="button"
-              className="nav-link nav-link-custom dropdown-toggle"
+              className="nav-link nav-link-custom dropdown-toggle "
             >
               關於我們
             </button>
             <ul
               className={`dropdown-menu dropdown-menu-custom dropdown-menu-custom-about rounded-0 ${aboutDropdownOpen ? 'show' : ''}`}
             >
-              <li>
+              <li z>
                 <Link to="/" className="dropdown-item dropdown-item-custom">
                   關於築豆的咖啡故事
                 </Link>
@@ -266,7 +273,9 @@ const Navbar = () => {
                 to="/member/profile"
                 type="button"
                 className="nav-link nav-link-custom dropdown-toggle nav-user-toggle"
-                onClick={() => setDesktopUserDropdownOpen(!desktopUserDropdownOpen)}
+                onClick={() =>
+                  setDesktopUserDropdownOpen(!desktopUserDropdownOpen)
+                }
               >
                 <img
                   src={images.profile}
