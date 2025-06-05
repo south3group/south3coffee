@@ -26,6 +26,7 @@ const Login = () => {
     setPassword('');
   };
 
+  // 控制 modal
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('modal-open');
@@ -73,6 +74,8 @@ const Login = () => {
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('username', name);
+
+        console.log('我要看看看',token)
 
         dispatch(setCredentials({ token, role, username: name }));
 

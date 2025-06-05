@@ -26,7 +26,7 @@ const Navbar = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isAuthChecked && !token && !['/login', '/signup', '/forget', '/reset_password'].includes(location.pathname)) {
+    if (isAuthChecked && !token && !['/login', '/signup', '/forget', '/reset-password'].includes(location.pathname)) {
       dispatch(logout());
       navigate('/login');
     }

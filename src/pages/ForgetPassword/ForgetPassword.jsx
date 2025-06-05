@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // import { Link, useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
@@ -9,12 +9,35 @@ import { images } from '../../constants/image';
 
 const ForgetPassword = () => {
   const [account, setAccount] = useState('');
+  const [cooldown, setCooldown] = useState(0);
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
 
   const apiUrl = import.meta.env.VITE_API_URL;
-  const route = `${apiUrl}/api/v1/users/Signup`;
+  const route = `${apiUrl}/api/v1/users/forget`;
+
+  // 倒數計時
+  useEffect(() => {
+    if (cooldown === 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
+  // 控制 modal
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [isOpen]);
 
   const emailHandler = () => {
     const accountRegex =
@@ -29,14 +52,15 @@ const ForgetPassword = () => {
       setIsOpen(true);
       return;
     }
-    // (待做) 查無此信箱也加進去格式錯誤裡
 
     axios
       .patch(route, {
         email: account,
       })
-      .then((res) => {
-        // navigate('/member/profile');
+      .then(() => {
+        setModalMsg('密碼重設信件已發送至信箱，請至信箱查收');
+        setIsOpen(true);
+        setCooldown(60);
       })
       .catch((err) => {
         const msg = err.response?.data?.message || '發生錯誤';
@@ -80,10 +104,11 @@ const ForgetPassword = () => {
 
           <button
             type="button"
-            className="btn btn-coffee-primary-700 btn-style w-100 rounded-0 border-0"
+            className={`btn btn-coffee-primary-700 btn-style w-100 rounded-0 border-0 ${cooldown > 0 ? 'disabled-btn' : ''}`}
             onClick={emailHandler}
+            disabled={cooldown > 0}
           >
-            送出信件
+            {cooldown > 0 ? `${cooldown} 秒後可再次發送信件` : '送出信件'}
           </button>
 
           <div className="text-center">
@@ -94,35 +119,39 @@ const ForgetPassword = () => {
         </div>
       </div>
 
+      {/* Modal */}
       {isOpen && (
-        <div className="modal show fade d-block" tabIndex="-1" role="dialog">
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="SignupModalLabel">
-                  註冊失敗
-                </h5>
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">系統通知</h5>
                 <button
                   type="button"
-                  className="btn-close"
-                  onClick={() => setIsOpen(false)}
-                ></button>
-              </div>
-              <div className="modal-body">{modalMsg}</div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
+                  className="custom-modal-close"
                   onClick={() => setIsOpen(false)}
                 >
-                  Close
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="custom-modal-btn"
+                  onClick={() => setIsOpen(false)}
+                >
+                  關閉
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
-
       <Footer />
     </>
   );

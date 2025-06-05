@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -19,7 +19,20 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL;
-  const route = `${apiUrl}/api/v1/users/Signup`;
+  const route = `${apiUrl}/api/v1/users/signup`;
+
+  // 控制 modal
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [isOpen]);
 
   const signupHandler = () => {
     const accountRegex =
@@ -61,7 +74,7 @@ const Signup = () => {
         password: password,
         name: memberName,
       })
-      .then((res) => {
+      .then(() => {
         navigate('/member/profile');
       })
       .catch((err) => {
@@ -82,9 +95,7 @@ const Signup = () => {
               alt="dark logo"
               className="logo-custom"
             />
-            <h4 className="auth-title text-center">
-              註冊會員
-            </h4>
+            <h4 className="auth-title text-center">註冊會員</h4>
           </div>
           <form className="form-custom">
             <div className="form-input-custom">
@@ -185,28 +196,33 @@ const Signup = () => {
         </div>
       </div>
 
+      {/* Modal */}
       {isOpen && (
-        <div className="modal show fade d-block" tabIndex="-1" role="dialog">
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="SignupModalLabel">
-                  註冊失敗
-                </h5>
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">註冊失敗</h5>
                 <button
                   type="button"
-                  className="btn-close"
-                  onClick={() => setIsOpen(false)}
-                ></button>
-              </div>
-              <div className="modal-body">{modalMsg}</div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
+                  className="custom-modal-close"
                   onClick={() => setIsOpen(false)}
                 >
-                  Close
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="custom-modal-btn"
+                  onClick={() => setIsOpen(false)}
+                >
+                  關閉
                 </button>
               </div>
             </div>

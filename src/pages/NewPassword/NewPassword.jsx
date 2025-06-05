@@ -1,5 +1,5 @@
-import { useState } from 'react';
-// import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import Navbar from '../../components/Navbar/Navbar';
@@ -10,15 +10,44 @@ const NewPassword = () => {
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
 
+  const token = new URLSearchParams(location.search).get('token');
+
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL;
-  const route = `${apiUrl}/api/v1/users/Signup`;
+  const route = `${apiUrl}/api/v1/users/reset-password`;
 
-  const signupHandler = () => {
+  useEffect(() => {
+    if (!token) {
+      setModalMsg('連結無效或已過期');
+      setIsOpen(true);
+    }
+  }, [token]);
+
+  // 控制 modal
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [isOpen]);
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
+  
+    if (modalMsg === '連結無效或已過期' || modalMsg === '密碼更新成功，請重新登入') {
+      navigate('/login');
+    }
+  };
+
+  const resetHandler = () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
 
     if (password.trim() === '' || checkPassword.trim() === '') {
@@ -37,17 +66,19 @@ const NewPassword = () => {
       return;
     }
     axios
-      .patch(route, {
-        newPassword: password,
-        checkNewPassword: checkPassword,
+      .patch(`${route}?token=${token}`, {
+        password: password,
+        password2: checkPassword,
       })
-      .then((res) => {
-        // navigate('/member/profile');
+      .then(() => {
+        setModalMsg('密碼更新成功，請重新登入');
+        setIsOpen(true);
       })
       .catch((err) => {
         const msg = err.response?.data?.message || '發生錯誤';
         setModalMsg(msg);
         setIsOpen(true);
+        console.log(err);
       });
   };
 
@@ -102,43 +133,47 @@ const NewPassword = () => {
           <button
             type="button"
             className="btn btn-coffee-primary-700 btn-style w-100 rounded-0 border-0"
-            onClick={signupHandler}
+            onClick={resetHandler}
           >
             送出
           </button>
-          <div className='empty-div-style'></div>
+          <div className="empty-div-style"></div>
         </div>
       </div>
 
+      {/* Modal */}
       {isOpen && (
-        <div className="modal show fade d-block" tabIndex="-1" role="dialog">
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="SignupModalLabel">
-                  註冊失敗
-                </h5>
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">系統通知</h5>
                 <button
                   type="button"
-                  className="btn-close"
-                  onClick={() => setIsOpen(false)}
-                ></button>
-              </div>
-              <div className="modal-body">{modalMsg}</div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setIsOpen(false)}
+                  className="custom-modal-close"
+                  onClick={handleCloseModal}
                 >
-                  Close
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="custom-modal-btn"
+                  onClick={handleCloseModal}
+                >
+                  關閉
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
-
       <Footer />
     </>
   );
