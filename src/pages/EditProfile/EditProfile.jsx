@@ -79,7 +79,7 @@ const EditProfile = () => {
           userAddress: data.address || '',
         });
       })
-      .catch((err) => {
+      .catch(() => {
         setModalTitle('錯誤訊息');
         setModalMsg('伺服器錯誤');
         setModalType('toLogin');
@@ -596,7 +596,7 @@ const EditProfile = () => {
           },
         },
       )
-      .then((res) => {
+      .then(() => {
         setModalTitle('更新通知');
         setModalMsg('會員資料更新成功！');
         setIsOpen(true);
@@ -668,20 +668,19 @@ const EditProfile = () => {
       <div className="d-flex flex-column min-vh-100">
         <div className="flex-grow-1">
           <MemberSidebar>
-            <div className="container w-100" style={{ maxWidth: '800px' }}>
-              <h4 className="display-6 text-coffee-deep mb-2">個人資訊</h4>
-              <p className="text-coffee">Information</p>
-              <form noValidate onSubmit={editHandler}>
-                <div className="mb-3">
+            <div className="container container-custom w-100">
+              <h4 className="content-title">個人資訊</h4>
+              <form className='form-custom' noValidate onSubmit={editHandler}>
+                <div className="form-input-custom">
                   <label
                     htmlFor="memberName"
-                    className="form-label text-secondary small mb-1"
+                    className="form-label form-label-custom text-coffee-primary-600"
                   >
                     姓名*
                   </label>
                   <input
                     type="text"
-                    className={`form-control ${
+                    className={`form-control form-control-custom rounded-0 ${
                       (formValidated && userData.userName.trim() === '') ||
                       fieldErr.userName
                         ? 'is-invalid'
@@ -700,17 +699,17 @@ const EditProfile = () => {
                       : fieldErr.userName}{' '}
                   </div>
                 </div>
-                <div className="mb-3">
+                <div className="form-input-custom">
                   <label
                     htmlFor="gender"
-                    className="form-label text-secondary small mb-1"
+                    className="form-label form-label-custom text-coffee-primary-600"
                   >
                     性別
                   </label>
                   <select
                     id="gender"
                     name="userGender"
-                    className="form-select"
+                    className="form-select form-control-custom w-100 rounded-0"
                     value={userData.userGender}
                     onChange={handleInputChange}
                   >
@@ -723,16 +722,16 @@ const EditProfile = () => {
                   </select>
                   <div className="invalid-feedback">{fieldErr.userGender}</div>
                 </div>
-                <div className="mb-3">
+                <div className="form-input-custom">
                   <label
                     htmlFor="birth"
-                    className="form-label text-secondary small mb-1"
+                    className="form-label form-label-custom text-coffee-primary-600"
                   >
                     生日*
                   </label>
                   <div className=" d-flex  flex-wrap align-items-center column-gap-2">
                     <div
-                      className={`form-control datepicker-style ${
+                      className={`form-control form-control-custom rounded-0 datepicker-style ${
                         (formValidated && !userData.userBirth) ||
                         fieldErr.userBirth
                           ? 'is-invalid'
@@ -771,16 +770,16 @@ const EditProfile = () => {
                     </div>
                   </div>
                 </div>
-                <div className="mb-3">
+                <div className="form-input-custom">
                   <label
                     htmlFor="memberTel"
-                    className="form-label text-secondary small mb-1"
+                    className="form-label form-label-custom text-coffee-primary-600"
                   >
                     手機號碼*
                   </label>
                   <input
                     type="tel"
-                    className={`form-control ${
+                    className={`form-control form-control-custom rounded-0 ${
                       (formValidated && userData.userPhone.trim() === '') ||
                       fieldErr.userPhone
                         ? 'is-invalid'
@@ -801,16 +800,16 @@ const EditProfile = () => {
                       : fieldErr.userPhone}
                   </div>
                 </div>
-                <div className="mb-3">
+                <div className="form-input-custom">
                   <label
                     htmlFor="memberAddress"
-                    className="form-label text-secondary small mb-1"
+                    className="form-label form-label-custom text-coffee-primary-600"
                   >
                     通訊地址
                   </label>
                   <input
                     type="tel"
-                    className={`form-control ${
+                    className={`form-control form-control-custom rounded-0 ${
                       fieldErr.userAddress ? 'is-invalid' : ''
                     }`}
                     id="memberAddress"
@@ -820,12 +819,11 @@ const EditProfile = () => {
                   />
                   <div className="invalid-feedback">{fieldErr.userAddress}</div>
                 </div>
-                <p className="d-flex justify-content-end">* 為必填選項</p>
-                <div className="d-flex justify-content-end pb-5">
+                <p className="d-flex justify-content-end btn-cta-text">* 為必填選項</p>
+                <div className="d-flex justify-content-end">
                   <button
                     type="submit"
-                    className="btn btn-coffee"
-                    style={{ width: '200px' }}
+                    className="btn btn-style"
                   >
                     變更資料
                   </button>

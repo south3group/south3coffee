@@ -1,0 +1,124 @@
+$sidebar-width: 196px;
+
+.sidebar-custom {
+  min-width: $sidebar-width;
+  margin-left: -$sidebar-width;
+  transition: margin-left 0.25s;
+  height: 100vh;
+
+  .scale-btn {
+    padding: 8px;
+  }
+
+  &.open {
+    margin-left: 0;
+  }
+
+  .sidebar-detail-custom {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0 16px 24px 16px;
+    gap: 24px;
+
+    .span-custom {
+      padding-left: 8px;
+    }
+
+    .menu-custom {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      gap: 8px;
+
+      &-detail {
+        display: block;
+        padding: 12px 16px;
+        text-decoration: none;
+        color: $coffee-primary-300;
+
+        &:hover {
+          color: $coffee-light;
+          background-color: rgba($coffee-deep, 0.3);
+        }
+
+        &.active {
+          color: white;
+          background-color: rgba($coffee-deep, 0.5);
+        }
+      }
+    }
+  }
+
+  .sidebar-logo {
+    .logo-icon {
+      width: 27.73px;
+      height: auto;
+    }
+
+    .logo-text {
+      font-size: 2.4rem;
+      @extend .semibold-text;
+      padding-left: 8px;
+    }
+  }
+
+  .sidebar-logout {
+    color: $coffee-primary-000;
+    background-color: $coffee-primary-700;
+    padding: 8px 16px;
+    width: 100%;
+
+    &:hover {
+      background-color: $coffee-primary-300;
+    }
+
+    &:active {
+      background-color: $coffee-primary-800;
+      color: $coffee-primary-000;
+    }
+  }
+}
+
+.sidebar-style {
+  .member-main {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: $coffee-bg-light;
+  }
+  .main-content {
+    width: 100%;
+    max-width: 1000px;
+  }
+}
+
+// 控制 body 出現 sidebar-toggle 時
+sidebar-toggle {
+  .sidebar {
+    margin-left: 0;
+  }
+}
+
+// 桌面版開合
+@include media-breakpoint-up(md) {
+  .sidebar-custom {
+    margin-left: 0;
+    width: $sidebar-width;
+  }
+
+  .member-main {
+    width: calc(100vw - #{$sidebar-width});
+  }
+
+  .sidebar-toggle {
+    .sidebar {
+      margin-left: -$sidebar-width;
+    }
+
+    .member-main {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+}

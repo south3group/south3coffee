@@ -16,16 +16,16 @@ const MemberSidebar = ({ children }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(checkAuth());
+  // }, [dispatch]);
 
-  useEffect(() => {
-    if (isAuthChecked && !token) {
-      dispatch(logout());
-      navigate('/login');
-    }
-  }, [isAuthChecked, token, dispatch, navigate]);
+  // useEffect(() => {
+  //   if (isAuthChecked && !token) {
+  //     dispatch(logout());
+  //     navigate('/login');
+  //   }
+  // }, [isAuthChecked, token, dispatch, navigate]);
 
   const sidebarItems = [
     { title: '會員中心', path: '/member' },
@@ -57,7 +57,7 @@ const MemberSidebar = ({ children }) => {
   }, [sidebarOpen]);
 
   return (
-    <>
+    <div className="sidebar-style">
       {/* 手機版 */}
       <nav className="navbar d-md-none bg-coffee-primary-700 sticky-top shadow nav-brand">
         <div className="container-fluid container-width">
@@ -71,7 +71,7 @@ const MemberSidebar = ({ children }) => {
               築豆咖啡
             </span>
           </Link>
-          
+
           {/* 使用者大頭貼 */}
           <div className="user-dropdown-wrapper">
             <button
@@ -132,84 +132,76 @@ const MemberSidebar = ({ children }) => {
       {/* 桌電版 */}
       <div className=" d-flex min-vh-100">
         <aside
-          className={`sidebar ${sidebarOpen ? 'open' : ''}  bg-coffee d-none d-md-flex flex-column`}
+          className={`sidebar ${sidebarOpen ? 'open' : ''} sidebar-custom  bg-coffee-primary-700 d-none d-md-flex flex-column`}
         >
+          {/* scale */}
           <div className="d-flex flex-row-reverse">
-            {/* scale */}
-            <div className="d-flex flex-row-reverse align-items-start">
-              <button
-                type="button"
-                onClick={handleToggle}
-                className={`p-2 bg-coffee border-0 ${sidebarOpen ? 'position-fixed' : ''}`}
-                style={{ top: 0, left: 0 }}
+            <button
+              type="button"
+              onClick={handleToggle}
+              className={`scale-btn bg-coffee-primary-700 border-0 ${sidebarOpen ? 'position-fixed' : ''}`}
+              style={{ top: 0, left: 0 }}
+            >
+              <img src={images.scale} alt="scale button" />
+            </button>
+          </div>
+          {/* LOGO + profile */}
+          <div className="sidebar-detail-custom">
+            <strong>
+              <Link
+                to="/"
+                className="sidebar-logo d-flex flex-column d-md-block align-bottom align-items-center"
               >
-                <img src={images.scale} alt="scale button" />
-              </button>
+                <img
+                  src={images.logoIcon}
+                  alt="coffee logo"
+                  className="logo-icon"
+                />
+                <span className="logo-text text-coffee-secondary-300">
+                  築豆咖啡
+                </span>
+              </Link>
+            </strong>
+            <div className="d-flex flex-column flex-md-row align-items-center ">
+              <img src={images.profile} alt="profile photo" />
+              <span className="m-0 text-coffee-primary-000 span-custom">
+                {username || '使用者名字超常會發生什麼事'}
+              </span>
             </div>
-            <div>
-              {/* 標題 + profile */}
-              <div>
-                <strong>
-                  <div className="d-flex flex-column d-md-block align-bottom align-items-center pt-5 pb-3 pe-5">
-                    <Link
-                      to="/"
-                      className="navbar-brand d-flex align-items-center"
-                    >
-                      <img
-                        src={images.logoIcon}
-                        alt="coffee logo"
-                        className="px-2"
-                        style={{ width: '50px', heigh: 'auto' }}
-                      />
-                      <span className="text-coffee-light fs-3">築豆咖啡</span>
-                    </Link>
-                  </div>
-                </strong>
-                <div className="d-flex flex-column flex-md-row align-items-center py-2 ">
-                  <img
-                    src={images.profile}
-                    alt="profile photo"
-                    className="mx-3"
-                  />
-                  <span className="m-0 text-white">
-                    Hi ! {username || '使用者'} !
-                  </span>
-                </div>
-              </div>
-
-              {/* 選單 */}
-              <div className="overflow-auto">
+            {/* 選單 */}
+            <div className="overflow-auto">
+              <div className="menu-custom">
                 {sidebarItems.map((item, i) => (
                   <Link
                     key={i}
                     to={item.path}
-                    className={`sidebar-link ${location.pathname === item.path ? 'active' : ''} `}
+                    className={`sidebar-link menu-custom-detail ${location.pathname === item.path ? 'active' : ''}`}
                   >
-                    <span className="ms-4">{item.title}</span>
+                    <span>{item.title}</span>
                   </Link>
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* 登出 */}
-          <button
-            type="button"
-            className="sidebar-logout mt-auto mx-auto border border-primary-300 text-center text-decoration-none py-3 mb-4"
-            style={{ width: '210px' }}
-            onClick={handleLogout}
-          >
-            <span className="text-white">登出</span>
-          </button>
+            {/* 登出 */}
+            <div className="mt-auto">
+              <button
+                type="button"
+                className="sidebar-logout border border-primary-300 text-center text-decoration-none"
+                onClick={handleLogout}
+              >
+                <span className="text-coffee-primary-000">登出</span>
+              </button>
+            </div>
+          </div>
         </aside>
 
         {/* 內容 */}
-        <main className="main flex-grow-1 bg-coffee-bg">
-          <div className="border-bottom border-coffee-light w-100"></div>
-          <div className="p-5">{children}</div>
+        <main className="member-main flex-grow-1">
+          <div className="main-content">{children}</div>
         </main>
       </div>
-    </>
+    </div>
   );
 };
 

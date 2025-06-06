@@ -248,7 +248,7 @@ const Navbar = () => {
             <ul
               className={`dropdown-menu dropdown-menu-custom dropdown-menu-custom-about rounded-0 ${aboutDropdownOpen ? 'show' : ''}`}
             >
-              <li z>
+              <li>
                 <Link to="/" className="dropdown-item dropdown-item-custom">
                   關於築豆的咖啡故事
                 </Link>
