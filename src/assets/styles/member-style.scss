@@ -63,30 +63,3 @@
     min-height: 2rem;
   }
 }
-
-// 日期選擇器
-.datepicker-style {
-  font-size: 1.6 rem;
-  .react-datepicker {
-    &-wrapper {
-      width: calc(100% - 63px);
-    }
-
-    &__input-container {
-      input {
-        width: 100%;
-        border: none;
-      }
-    }
-  }
-  .react-datepicker__current-month,
-  .react-datepicker-time__header,
-  .react-datepicker-year-header {
-    font-size: 1.6 rem;
-  }
-
-  .react-datepicker__day,
-  .react-datepicker__day-name {
-    font-size: 1.6 rem;
-  }
-}
