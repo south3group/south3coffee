@@ -13,24 +13,24 @@ const MemberSidebar = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [ _ , setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  // useEffect(() => {
-  //   dispatch(checkAuth());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (isAuthChecked && !token) {
-  //     dispatch(logout());
-  //     navigate('/login');
-  //   }
-  // }, [isAuthChecked, token, dispatch, navigate]);
+  useEffect(() => {
+    if (isAuthChecked && !token) {
+      dispatch(logout());
+      navigate('/login');
+    }
+  }, [isAuthChecked, token, dispatch, navigate]);
 
   const sidebarItems = [
     { title: '會員中心', path: '/member' },
     { title: '個人資訊', path: '/member/profile' },
-    { title: '收件資料', path: '/member/address' },
+    { title: '收件資料', path: '/member/receiver' },
     { title: '訂單資訊', path: '/member/orders' },
     { title: '願望清單', path: '/member/wishlist' },
   ];

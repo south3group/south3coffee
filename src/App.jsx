@@ -8,6 +8,7 @@ import Signup from './pages/Signup/Signup';
 import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
 import NewPassword from './pages/NewPassword/NewPassword';
 import EditProfile from './pages/EditProfile/EditProfile';
+import Receiver from './pages/Receiver/Receiver';
 import Contact from './pages/Contact/Contact';
 import Admin from './pages/Admin/Admin';
 
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/forget" element={<ForgetPassword />} />
         <Route path="/reset-password" element={<NewPassword />} />
         <Route path="/member/profile" element={<EditProfile />} />
+        <Route path="/member/receiver" element={<Receiver />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>

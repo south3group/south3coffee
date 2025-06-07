@@ -77,7 +77,6 @@ const Navbar = () => {
             className="hamburger-btn"
             onClick={() => {
               setMenuOpen(!menuOpen);
-              // setUserDropdownOpen(!userDropdownOpen);
             }}
           >
             <span></span>
