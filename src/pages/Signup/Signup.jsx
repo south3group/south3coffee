@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-
+import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-import Navbar from '../../components/Navbar/Navbar';
+import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import { images } from '../../constants/image';
 
@@ -17,6 +17,14 @@ const Signup = () => {
   const [modalMsg, setModalMsg] = useState('');
 
   const navigate = useNavigate();
+  const { token, isAuthChecked } = useSelector((state) => state.auth);
+
+  // 如果是登入狀態就導向其他頁面
+  useEffect(() => {
+    if (token && isAuthChecked) {
+      navigate('/');
+    }
+  }, [token, isAuthChecked, navigate]);
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/signup`;
@@ -86,7 +94,7 @@ const Signup = () => {
 
   return (
     <>
-      <Navbar />
+      <Header />
       <div className="auth-bg d-flex justify-content-center align-items-center ">
         <div className="shadow auth-custom">
           <div className="d-flex flex-column justify-content-center align-items-center">

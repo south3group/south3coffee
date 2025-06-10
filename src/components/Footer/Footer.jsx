@@ -4,7 +4,7 @@ import { images } from '../../constants/image';
 const Footer = () => {
   return (
     <footer className="bg-coffee-primary-700 text-coffee-primary-000 p-0 m-0">
-      <div className="container container-custom w-100">
+      <div className="container footer-container-custom w-100">
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center text-center">
           <Link to="/" className="navbar-brand footer-logo mb-5 mb-md-0">
             <img

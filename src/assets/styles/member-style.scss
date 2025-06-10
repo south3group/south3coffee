@@ -1,4 +1,9 @@
-.container-custom {
+.sidebar-container-custom {
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px; 
+  
   .content-title {
     font-size: 2.4rem;
     color: $coffee-primary-600;
@@ -57,9 +62,5 @@
   .btn-cta-text {
     font-size: 1.4rem;
     color: $coffee-grey-600;
-  }
-
-  .empty-div-style {
-    min-height: 2rem;
   }
 }

@@ -6,8 +6,6 @@ import axios from 'axios';
 import MemberSidebar from '../../components/MemberSidebar/MemberSidebar';
 import Footer from '../../components/Footer/Footer';
 
-import 'react-datepicker/dist/react-datepicker.css';
-
 const Receiver = () => {
   const [userData, setUserData] = useState({
     userName: '',
@@ -122,7 +120,7 @@ const Receiver = () => {
 
     // 郵遞區號
     const postCodePattern = /^(\d{5}|\d{6})$/;
-    if (userData.userPostCode.trim() !== '') {
+    if ( userData.userPostCode.trim() !== '') {
       if (!postCodePattern.test(userData.userPostCode)) {
         setFieldErr((prev) => ({
           ...prev,
@@ -533,7 +531,7 @@ const Receiver = () => {
     };
 
     if (
-      userData.d.trim() !== '' &&
+      userData.userAddress.trim() !== '' &&
       !isValidTaiwanAddress(userData.userAddress)
     ) {
       setFieldErr((prev) => ({
@@ -628,8 +626,8 @@ const Receiver = () => {
       <div className="d-flex flex-column min-vh-100">
         <div className="flex-grow-1">
           <MemberSidebar>
-            <div className="container container-custom w-100">
-              <h4 className="content-title">收件資訊</h4>
+            <div className="container sidebar-container-custom w-100">
+              <h4 className="content-title m-0">收件資訊</h4>
               <form
                 className="form-custom"
                 noValidate
@@ -721,9 +719,12 @@ const Receiver = () => {
                     通訊地址*
                   </label>
                   <input
-                    type="tel"
+                    type="text"
                     className={`form-control form-control-custom rounded-0 ${
-                      fieldErr.userAddress ? 'is-invalid' : ''
+                      (formValidated && userData.userAddress.trim() === '') ||
+                      fieldErr.userAddress
+                        ? 'is-invalid'
+                        : ''
                     }`}
                     id="memberAddress"
                     name="userAddress"
@@ -732,13 +733,17 @@ const Receiver = () => {
                     onChange={handleInputChange}
                     required
                   />
-                  <div className="invalid-feedback">{fieldErr.userAddress}</div>
+                  <div className="invalid-feedback">
+                    {userData.userAddress.trim() === ''
+                      ? '該欄位為必填欄位'
+                      : fieldErr.userAddress}{' '}
+                  </div>
                 </div>
                 <p className="d-flex justify-content-end btn-cta-text m-0">
                   * 為必填選項
                 </p>
                 <div className="d-flex justify-content-end">
-                  <button type="submit" className="btn btn-style">
+                  <button type="submit" className="btn btn-style rounded-0">
                     變更資料
                   </button>
                 </div>

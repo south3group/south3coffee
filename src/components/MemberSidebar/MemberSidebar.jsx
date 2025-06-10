@@ -59,7 +59,7 @@ const MemberSidebar = ({ children }) => {
   return (
     <div className="sidebar-style">
       {/* 手機版 */}
-      <nav className="navbar d-md-none bg-coffee-primary-700 sticky-top shadow nav-brand">
+      <nav className="navbar d-md-none bg-coffee-primary-700 sticky-top shadow nav-brand member-navbar">
         <div className="container-fluid container-width">
           <Link to="/" className="navbar-brand nav-logo">
             <img
@@ -87,17 +87,18 @@ const MemberSidebar = ({ children }) => {
                 className="d-md-none rounded-circle mobile-profile"
               />
             </button>
-
-            {userDropdownOpen && (
+          </div>
+        </div>
+      </nav>
+      {userDropdownOpen && (
               <>
-                {/* 遮罩，還沒做完 */}
                 <div
-                  className="mobile-menu-overlay"
+                  className="member-mobile-menu-overlay"
                   onClick={() => setUserDropdownOpen(false)}
                 ></div>
 
                 {/* 使用者選單 */}
-                <div className="mobile-menu d-md-none">
+                <div className={`member-mobile-menu d-md-none ${userDropdownOpen ? 'open' : ''}`}>
                   <ul className="px-0">
                     {sidebarItems.map((item, i) => (
                       <li key={i}>
@@ -125,9 +126,6 @@ const MemberSidebar = ({ children }) => {
                 </div>
               </>
             )}
-          </div>
-        </div>
-      </nav>
 
       {/* 桌電版 */}
       <div className=" d-flex min-vh-100">

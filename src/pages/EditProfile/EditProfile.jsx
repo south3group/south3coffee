@@ -669,8 +669,8 @@ const EditProfile = () => {
       <div className="d-flex flex-column min-vh-100">
         <div className="flex-grow-1">
           <MemberSidebar>
-            <div className="container container-custom w-100">
-              <h4 className="content-title">個人資訊</h4>
+            <div className="container sidebar-container-custom w-100">
+              <h4 className="content-title m-0">個人資訊</h4>
               <form className="form-custom" noValidate onSubmit={editHandler}>
                 <div className="form-input-custom">
                   <label
@@ -802,22 +802,23 @@ const EditProfile = () => {
                     通訊地址
                   </label>
                   <input
-                    type="tel"
+                    type="text"
                     className={`form-control form-control-custom rounded-0 ${
                       fieldErr.userAddress ? 'is-invalid' : ''
                     }`}
                     id="memberAddress"
                     name="userAddress"
+                    placeholder="請輸入正確地址"
                     value={userData.userAddress}
                     onChange={handleInputChange}
                   />
                   <div className="invalid-feedback">{fieldErr.userAddress}</div>
                 </div>
-                <p className="d-flex justify-content-end btn-cta-text">
+                <p className="d-flex justify-content-end btn-cta-text m-0">
                   * 為必填選項
                 </p>
                 <div className="d-flex justify-content-end">
-                  <button type="submit" className="btn btn-style">
+                  <button type="submit" className="btn btn-style rounded-0">
                     變更資料
                   </button>
                 </div>

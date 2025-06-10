@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 
-import Navbar from '../../components/Navbar/Navbar';
+import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import { images } from '../../constants/image';
 
@@ -10,7 +11,8 @@ const NewPassword = () => {
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
 
-  const token = new URLSearchParams(location.search).get('token');
+  const tokenURL = new URLSearchParams(location.search).get('token');
+  const { token, isAuthChecked } = useSelector((state) => state.auth);
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
@@ -21,11 +23,18 @@ const NewPassword = () => {
   const route = `${apiUrl}/api/v1/users/reset-password`;
 
   useEffect(() => {
-    if (!token) {
+    if (!tokenURL) {
       setModalMsg('連結無效或已過期');
       setIsOpen(true);
     }
-  }, [token]);
+  }, [tokenURL]);
+
+  // 如果是登入狀態就導向其他頁面
+  useEffect(() => {
+    if (token && isAuthChecked) {
+      navigate('/');
+    }
+  }, [token, isAuthChecked, navigate]);
 
   // 控制 modal
   useEffect(() => {
@@ -41,8 +50,11 @@ const NewPassword = () => {
 
   const handleCloseModal = () => {
     setIsOpen(false);
-  
-    if (modalMsg === '連結無效或已過期' || modalMsg === '密碼更新成功，請重新登入') {
+
+    if (
+      modalMsg === '連結無效或已過期' ||
+      modalMsg === '密碼更新成功，請重新登入'
+    ) {
       navigate('/login');
     }
   };
@@ -84,7 +96,7 @@ const NewPassword = () => {
 
   return (
     <>
-      <Navbar />
+      <Header />
       <div className="auth-bg d-flex justify-content-center align-items-center ">
         <div className="shadow auth-custom">
           <div className="d-flex flex-column justify-content-center align-items-center">
@@ -135,9 +147,8 @@ const NewPassword = () => {
             className="btn btn-coffee-primary-700 btn-style w-100 rounded-0 border-0"
             onClick={resetHandler}
           >
-            送出
+            確定修改
           </button>
-          <div className="empty-div-style"></div>
         </div>
       </div>
 

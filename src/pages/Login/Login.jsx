@@ -1,10 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setCredentials } from '../../store/authSlice';
 import axios from 'axios';
 
-import Navbar from '../../components/Navbar/Navbar';
+import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import { images } from '../../constants/image';
 
@@ -15,6 +15,14 @@ const Login = () => {
   const [modalMsg, setModalMsg] = useState('');
 
   const navigate = useNavigate();
+  const { token, isAuthChecked } = useSelector((state) => state.auth);
+
+  // 如果是登入狀態就導向其他頁面
+  useEffect(() => {
+    if (token && isAuthChecked) {
+      navigate('/');
+    }
+  }, [token, isAuthChecked, navigate]);
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/login`;
@@ -75,8 +83,6 @@ const Login = () => {
         localStorage.setItem('role', role);
         localStorage.setItem('username', name);
 
-        console.log('我要看看看',token)
-
         dispatch(setCredentials({ token, role, username: name }));
 
         clearInputs();
@@ -92,7 +98,7 @@ const Login = () => {
 
   return (
     <>
-      <Navbar />
+      <Header />
       <div className="auth-bg d-flex justify-content-center align-items-center ">
         <div className="shadow auth-custom">
           <div className="d-flex flex-column justify-content-center align-items-center">
