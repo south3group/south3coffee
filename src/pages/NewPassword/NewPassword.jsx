@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams  } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 
@@ -11,7 +11,8 @@ const NewPassword = () => {
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
 
-  const tokenURL = new URLSearchParams(location.search).get('token');
+  const [searchParams] = useSearchParams();
+  const tokenURL = searchParams.get('token');
   const { token, isAuthChecked } = useSelector((state) => state.auth);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,9 @@ const NewPassword = () => {
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/reset-password`;
+
+  console.log('梅莉由ㄟ',route,token)
+  console.log('讓我看看',window.location.href);
 
   useEffect(() => {
     if (!tokenURL) {
@@ -78,9 +82,9 @@ const NewPassword = () => {
       return;
     }
     axios
-      .patch(`${route}?token=${token}`, {
-        password: password,
-        password2: checkPassword,
+      .patch(`${route}?token=${tokenURL}`, {
+        newPassword: password,
+        newPasswordCheck: checkPassword,
       })
       .then(() => {
         setModalMsg('密碼更新成功，請重新登入');
