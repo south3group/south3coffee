@@ -29,7 +29,7 @@ const Header = () => {
     if (
       isAuthChecked &&
       !token &&
-      !['/','/login', '/signup', '/forget', '/reset-password'].includes(
+      !['/login', '/signup', '/forget', '/reset-password'].includes(
         location.pathname,
       )
     ) {
