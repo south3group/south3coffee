@@ -1,16 +1,17 @@
-import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setCredentials } from '../../store/authSlice';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import { images } from '../../constants/image';
 
-const Login = () => {
+const ForgetPassword = () => {
   const [account, setAccount] = useState('');
-  const [password, setPassword] = useState('');
+  const [cooldown, setCooldown] = useState(0);
+
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
 
@@ -25,14 +26,16 @@ const Login = () => {
   }, [token, isAuthChecked, navigate]);
 
   const apiUrl = import.meta.env.VITE_API_URL;
-  const route = `${apiUrl}/api/v1/users/login`;
+  const route = `${apiUrl}/api/v1/users/forget`;
 
-  const dispatch = useDispatch();
-
-  const clearInputs = () => {
-    setAccount('');
-    setPassword('');
-  };
+  // 倒數計時
+  useEffect(() => {
+    if (cooldown === 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
 
   // 控制 modal
   useEffect(() => {
@@ -41,58 +44,39 @@ const Login = () => {
     } else {
       document.body.classList.remove('modal-open');
     }
-  
+
     return () => {
       document.body.classList.remove('modal-open');
     };
   }, [isOpen]);
 
-  const loginHandler = () => {
+  const emailHandler = () => {
     const accountRegex =
       /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
 
-    if (account.trim() === '' || password.trim() === '') {
-      setModalMsg('帳號密碼不可為空');
+    if (account.trim() === '') {
+      setModalMsg('欄位未填寫正確');
       setIsOpen(true);
-      clearInputs();
       return;
     } else if (!accountRegex.test(account) || account.length > 100) {
-      setModalMsg('使用者不存在或密碼輸入錯誤');
+      setModalMsg('信箱格式錯誤');
       setIsOpen(true);
-      clearInputs();
-      return;
-    } else if (!passwordRegex.test(password)) {
-      setModalMsg('使用者不存在或密碼輸入錯誤');
-      setIsOpen(true);
-      clearInputs();
       return;
     }
 
     axios
-      .post(route, {
+      .patch(route, {
         email: account,
-        password: password,
       })
-      .then((res) => {
-        const token = res.data.data.token;
-        const name = res.data.data.user.name;
-        const role = 'USER';
-
-        localStorage.setItem('token', token);
-        localStorage.setItem('role', role);
-        localStorage.setItem('username', name);
-
-        dispatch(setCredentials({ token, role, username: name }));
-
-        clearInputs();
-        navigate('/member/profile');
+      .then(() => {
+        setModalMsg('密碼重設信件已發送至信箱，請至信箱查收');
+        setIsOpen(true);
+        setCooldown(60);
       })
       .catch((err) => {
         const msg = err.response?.data?.message || '發生錯誤';
         setModalMsg(msg);
         setIsOpen(true);
-        clearInputs();
       });
   };
 
@@ -107,85 +91,41 @@ const Login = () => {
               alt="dark logo"
               className="logo-custom"
             />
-            <h4 className="display-6 text-center text-coffee-primary-600">
-              登入
-            </h4>
+            <h4 className="auth-title text-center">忘記密碼</h4>
           </div>
-
           <form className="form-custom">
             <div className="form-input-custom">
               <label
                 htmlFor="memberEmail"
                 className="form-label form-label-custom text-coffee-primary-900"
               >
-                會員帳號
+                會員電子信箱 *
               </label>
               <input
-                value={account}
-                onChange={(e) => setAccount(e.target.value)}
                 type="email"
                 className="form-control form-control-custom rounded-0"
                 id="memberEmail"
                 placeholder="請輸入會員帳號/Email"
+                value={account}
+                onChange={(e) => setAccount(e.target.value)}
                 maxLength={100}
               />
-            </div>
-
-            <div className="form-input-custom">
-              <label
-                htmlFor="memberPassword"
-                className="form-label form-label-custom text-coffee-primary-900"
-              >
-                會員密碼
-              </label>
-              <input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type="password"
-                className="form-control form-control-custom rounded-0"
-                id="memberPassword"
-                placeholder="請輸入會員密碼"
-              />
-            </div>
-
-            <div className="text-end">
-              <Link
-                to="/forget"
-                href="#"
-                className="text-decoration-none link-custom"
-              >
-                忘記密碼？
-              </Link>
             </div>
           </form>
 
           <button
             type="button"
-            className="btn btn-coffee-primary-700 btn-style w-100 rounded-0 border-0"
-            onClick={loginHandler}
+            className={`btn btn-coffee-primary-700 btn-style w-100 rounded-0 border-0 ${cooldown > 0 ? 'disabled-btn' : ''}`}
+            onClick={emailHandler}
+            disabled={cooldown > 0}
           >
-            登入
-          </button>
-
-          <button
-            type="button"
-            className="btn btn-outline-coffee-primary-400 text-coffee-primary-600 btn-style btn-style-light w-100 rounded-0"
-          >
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-              alt="google logo"
-              className="px-3"
-            />
-            透過 Google 登入
+            {cooldown > 0 ? `${cooldown} 秒後可再次發送信件` : '送出信件'}
           </button>
 
           <div className="text-center">
             <span className="text-coffee-grey-600 btn-cta-text">
-              還不是會員？
+              將寄發重新設定密碼連結至電子信箱
             </span>
-            <Link to="/signup" className="text-decoration-none link-custom">
-              馬上註冊
-            </Link>
           </div>
         </div>
       </div>
@@ -200,7 +140,7 @@ const Login = () => {
           <div className="modal-dialog custom-modal-dialog">
             <div className="modal-content custom-modal-content">
               <div className="modal-header custom-modal-header">
-                <h5 className="custom-modal-title">登入失敗</h5>
+                <h5 className="custom-modal-title">系統通知</h5>
                 <button
                   type="button"
                   className="custom-modal-close"
@@ -223,10 +163,9 @@ const Login = () => {
           </div>
         </div>
       )}
-
       <Footer />
     </>
   );
 };
 
-export default Login;
+export default ForgetPassword;

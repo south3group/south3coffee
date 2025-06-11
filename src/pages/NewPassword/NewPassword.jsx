@@ -1,23 +1,34 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams  } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import { images } from '../../constants/image';
 
-const Signup = () => {
-  const [account, setAccount] = useState('');
+const NewPassword = () => {
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
-  const [memberName, setMemberName] = useState('');
+
+  const [searchParams] = useSearchParams();
+  const tokenURL = searchParams.get('token');
+  const { token, isAuthChecked } = useSelector((state) => state.auth);
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
 
   const navigate = useNavigate();
-  const { token, isAuthChecked } = useSelector((state) => state.auth);
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const route = `${apiUrl}/api/v1/users/reset-password`;
+
+  useEffect(() => {
+    if (!tokenURL) {
+      setModalMsg('連結無效或已過期');
+      setIsOpen(true);
+    }
+  }, [tokenURL]);
 
   // 如果是登入狀態就導向其他頁面
   useEffect(() => {
@@ -26,9 +37,6 @@ const Signup = () => {
     }
   }, [token, isAuthChecked, navigate]);
 
-  const apiUrl = import.meta.env.VITE_API_URL;
-  const route = `${apiUrl}/api/v1/users/signup`;
-
   // 控制 modal
   useEffect(() => {
     if (isOpen) {
@@ -36,29 +44,27 @@ const Signup = () => {
     } else {
       document.body.classList.remove('modal-open');
     }
-
     return () => {
       document.body.classList.remove('modal-open');
     };
   }, [isOpen]);
 
-  const signupHandler = () => {
-    const accountRegex =
-      /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
-    const nameRegex = /^[A-Za-z0-9\u4e00-\u9fa5]{2,10}$/;
+  const handleCloseModal = () => {
+    setIsOpen(false);
 
     if (
-      account.trim() === '' ||
-      password.trim() === '' ||
-      checkPassword.trim() === '' ||
-      memberName.trim() === ''
+      modalMsg === '連結無效或已過期' ||
+      modalMsg === '密碼更新成功，請重新登入'
     ) {
+      navigate('/login');
+    }
+  };
+
+  const resetHandler = () => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
+
+    if (password.trim() === '' || checkPassword.trim() === '') {
       setModalMsg('欄位未填寫正確');
-      setIsOpen(true);
-      return;
-    } else if (!accountRegex.test(account) || account.length > 100) {
-      setModalMsg('信箱格式錯誤');
       setIsOpen(true);
       return;
     } else if (!passwordRegex.test(password)) {
@@ -71,24 +77,21 @@ const Signup = () => {
       setModalMsg('密碼與確認密碼內容需一致');
       setIsOpen(true);
       return;
-    } else if (!nameRegex.test(memberName)) {
-      setModalMsg('會員名稱長度需為 2~10 字，且不得包含特殊字元或空白');
-      setIsOpen(true);
-      return;
     }
     axios
-      .post(route, {
-        email: account,
-        password: password,
-        name: memberName,
+      .patch(`${route}?token=${tokenURL}`, {
+        newPassword: password,
+        newPasswordCheck: checkPassword,
       })
       .then(() => {
-        navigate('/member/profile');
+        setModalMsg('密碼更新成功，請重新登入');
+        setIsOpen(true);
       })
       .catch((err) => {
         const msg = err.response?.data?.message || '發生錯誤';
         setModalMsg(msg);
         setIsOpen(true);
+        console.log(err);
       });
   };
 
@@ -103,26 +106,9 @@ const Signup = () => {
               alt="dark logo"
               className="logo-custom"
             />
-            <h4 className="auth-title text-center">註冊會員</h4>
+            <h4 className="auth-title text-center">設定新密碼</h4>
           </div>
           <form className="form-custom">
-            <div className="form-input-custom">
-              <label
-                htmlFor="memberEmail"
-                className="form-label form-label-custom text-coffee-primary-900"
-              >
-                電子信箱(將會成為會員帳號) *
-              </label>
-              <input
-                type="email"
-                className="form-control form-control-custom rounded-0"
-                id="memberEmail"
-                placeholder="請輸入Email"
-                value={account}
-                onChange={(e) => setAccount(e.target.value)}
-                maxLength={100}
-              />
-            </div>
             <div className="form-input-custom">
               <label
                 htmlFor="memberPassword"
@@ -155,52 +141,15 @@ const Signup = () => {
                 onChange={(e) => setCheckPassword(e.target.value)}
               />
             </div>
-            <div className="form-input-custom">
-              <label
-                htmlFor="memberName"
-                className="form-label form-label-custom text-coffee-primary-900"
-              >
-                會員名稱 *
-              </label>
-              <input
-                type="text"
-                className="form-control form-control-custom rounded-0"
-                id="memberName"
-                placeholder="最少2個字元，最長10字元，不得包含特殊字元與空白"
-                value={memberName}
-                onChange={(e) => setMemberName(e.target.value)}
-              />
-            </div>
           </form>
 
           <button
             type="button"
             className="btn btn-coffee-primary-700 btn-style w-100 rounded-0 border-0"
-            onClick={signupHandler}
+            onClick={resetHandler}
           >
-            註冊會員
+            確定修改
           </button>
-
-          <button
-            type="button"
-            className="btn btn-outline-coffee-primary-400 text-coffee-primary-600 btn-style btn-style-light w-100 rounded-0"
-          >
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-              alt="google logo"
-              className="px-3"
-            />
-            透過 Google 註冊
-          </button>
-
-          <div className="text-center">
-            <span className="text-coffee-grey-600 btn-cta-text">
-              已經是會員？
-            </span>
-            <Link to="/login" className="text-decoration-none link-custom">
-              馬上登入
-            </Link>
-          </div>
         </div>
       </div>
 
@@ -214,11 +163,11 @@ const Signup = () => {
           <div className="modal-dialog custom-modal-dialog">
             <div className="modal-content custom-modal-content">
               <div className="modal-header custom-modal-header">
-                <h5 className="custom-modal-title">註冊失敗</h5>
+                <h5 className="custom-modal-title">系統通知</h5>
                 <button
                   type="button"
                   className="custom-modal-close"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleCloseModal}
                 >
                   ✕
                 </button>
@@ -228,7 +177,7 @@ const Signup = () => {
                 <button
                   type="button"
                   className="custom-modal-btn"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleCloseModal}
                 >
                   關閉
                 </button>
@@ -237,10 +186,9 @@ const Signup = () => {
           </div>
         </div>
       )}
-
       <Footer />
     </>
   );
 };
 
-export default Signup;
+export default NewPassword;

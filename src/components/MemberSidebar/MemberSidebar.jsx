@@ -1,108 +1,206 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { checkAuth, logout } from '../../store/authSlice';
+import { images } from '../../constants/image';
 
-const MemberSidebar = ({ children })=>{
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+const MemberSidebar = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const navigate = useNavigate();
-    const location = useLocation();
+  const dispatch = useDispatch();
+  const { token, username, isAuthChecked } = useSelector((state) => state.auth);
 
-    const sidebarItems = [
-      {title: "會員中心", path: "/member"},
-      {title: "個人資訊", path: "/member/profile"},
-      {title: "收件資料", path: "/member/address"},
-      {title: "訂單資訊", path: "/member/orders"},
-      {title: "願望清單", path: "/member/wishlist"},
-    ]
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // 控制登出>刪掉token&轉跳Login
-    const handleLogout = ()=>{
-      localStorage.removeItem('token');
-      navigate('/Login');
+  const [ _ , setMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthChecked && !token) {
+      dispatch(logout());
+      navigate('/login');
     }
-    
+  }, [isAuthChecked, token, dispatch, navigate]);
+
+  const sidebarItems = [
+    { title: '會員中心', path: '/member' },
+    { title: '個人資訊', path: '/member/profile' },
+    { title: '收件資料', path: '/member/receiver' },
+    { title: '訂單資訊', path: '/member/orders' },
+    { title: '願望清單', path: '/member/wishlist' },
+  ];
+
+  // 登出
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
+
   // 控制收合
-    const handleToggle = (e) => {
-      e.preventDefault();
-      setSidebarOpen(!sidebarOpen);
-    };
-  
+  const handleToggle = (e) => {
+    e.preventDefault();
+    setSidebarOpen(!sidebarOpen);
+  };
+
   // 控制 body 加 sidebar-toggle
-    useEffect(() => {
-      if (sidebarOpen) {
-        document.body.classList.add("sidebar-toggle");
-      } else {
-        document.body.classList.remove("sidebar-toggle");
-      }
-    }, [sidebarOpen]);
-  
-    return (
-      <>
-        <div className="d-flex min-vh-100">
-          <aside
-            className={`sidebar ${sidebarOpen ? "open" : ""}  bg-coffee-light d-flex flex-column py-4 px-3`}
-          >
-            {/* 標題+打招呼 */}
-            <div className="px-2">
-              <strong>
-                <div className="d-flex flex-column d-md-block align-bottom align-items-center pb-2">
-                <Link to="/" className="navbar-brand d-flex align-items-center">
-                  <i className="bi bi-cup-hot-fill fs-4 pe-md-2"></i>
-                  <span className="fs-md-5">築豆咖啡</span>
-                </Link>
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.classList.add('sidebar-toggle');
+    } else {
+      document.body.classList.remove('sidebar-toggle');
+    }
+  }, [sidebarOpen]);
+
+  return (
+    <div className="sidebar-style">
+      {/* 手機版 */}
+      <nav className="navbar d-md-none bg-coffee-primary-700 sticky-top shadow nav-brand member-navbar">
+        <div className="container-fluid container-width">
+          <Link to="/" className="navbar-brand nav-logo">
+            <img
+              src={images.logoIcon}
+              alt="coffee logo"
+              className="logo-icon"
+            />
+            <span className="logo-text text-coffee-secondary-300">
+              築豆咖啡
+            </span>
+          </Link>
+
+          {/* 使用者大頭貼 */}
+          <div className="user-dropdown-wrapper">
+            <button
+              className="border-0 bg-transparent profile-btn"
+              onClick={() => {
+                setUserDropdownOpen(!userDropdownOpen);
+                setMenuOpen(false);
+              }}
+            >
+              <img
+                src={images.profile}
+                alt="user"
+                className="d-md-none rounded-circle mobile-profile"
+              />
+            </button>
+          </div>
+        </div>
+      </nav>
+      {userDropdownOpen && (
+              <>
+                <div
+                  className="member-mobile-menu-overlay"
+                  onClick={() => setUserDropdownOpen(false)}
+                ></div>
+
+                {/* 使用者選單 */}
+                <div className={`member-mobile-menu d-md-none ${userDropdownOpen ? 'open' : ''}`}>
+                  <ul className="px-0">
+                    {sidebarItems.map((item, i) => (
+                      <li key={i}>
+                        <Link
+                          to={item.path}
+                          className="dropdown-item"
+                          onClick={() => setUserDropdownOpen(false)}
+                        >
+                          {item.title}
+                        </Link>
+                      </li>
+                    ))}
+                    <li>
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setUserDropdownOpen(false);
+                        }}
+                        className="dropdown-item"
+                      >
+                        登出
+                      </button>
+                    </li>
+                  </ul>
                 </div>
-              </strong>
-              <div className="d-flex flex-column flex-md-row align-items-center py-3">
-                <i className="bi bi-person-circle fs-4 me-md-2"></i>
-                <p className="m-0 ">Hi! 南三!</p>
-              </div>
+              </>
+            )}
+
+      {/* 桌電版 */}
+      <div className=" d-flex min-vh-100">
+        <aside
+          className={`sidebar ${sidebarOpen ? 'open' : ''} sidebar-custom  bg-coffee-primary-700 d-none d-md-flex flex-column`}
+        >
+          {/* scale */}
+          <div className="d-flex flex-row-reverse">
+            <button
+              type="button"
+              onClick={handleToggle}
+              className={`scale-btn bg-coffee-primary-700 border-0 ${sidebarOpen ? 'position-fixed' : ''}`}
+              style={{ top: 0, left: 0 }}
+            >
+              <img src={images.scale} alt="scale button" />
+            </button>
+          </div>
+          {/* LOGO + profile */}
+          <div className="sidebar-detail-custom">
+            <strong>
+              <Link
+                to="/"
+                className="sidebar-logo d-flex flex-column d-md-block align-bottom align-items-center"
+              >
+                <img
+                  src={images.logoIcon}
+                  alt="coffee logo"
+                  className="logo-icon"
+                />
+                <span className="logo-text text-coffee-secondary-300">
+                  築豆咖啡
+                </span>
+              </Link>
+            </strong>
+            <div className="d-flex flex-column flex-md-row align-items-center ">
+              <img src={images.profile} alt="profile photo" />
+              <span className="m-0 text-coffee-primary-000 span-custom">
+                {username || '使用者名字超常會發生什麼事'}
+              </span>
             </div>
-  
             {/* 選單 */}
             <div className="overflow-auto">
-              { sidebarItems.map((item, i) => (
-                <div key={i}>
-                  <a
-                    href="#"
-                    onClick={()=> navigate(item.path)}
-                    className={`sidebar-link ${location.pathname === item.path  ? "active" : ""}`}
+              <div className="menu-custom">
+                {sidebarItems.map((item, i) => (
+                  <Link
+                    key={i}
+                    to={item.path}
+                    className={`sidebar-link menu-custom-detail ${location.pathname === item.path ? 'active' : ''}`}
                   >
-                    <div className="px-2 px-md-4">{item.title}</div>
-                  </a>
-                </div>
-              ))}
-            </div>
-  
-            {/* 登出 */}
-            <div className="mt-auto">
-              <a href="#" className="sidebar-logout-link text-decoration-none mb-5" onClick={handleLogout}>
-                <div className="d-flex justify-content-center align-items-center">
-                  登出
-                </div>
-              </a>
-            </div>
-          </aside>
-              
-          {/* 內容 */}
-          <main className="main flex-grow-1">
-            <div className="bg-white border-bottom border-coffee-light w-100">
-              <div>
-                <a
-                  href="#"
-                  onClick={ handleToggle }
-                  className="d-inline-block border-end py-3 px-4"
-                >
-                  <i className="bi bi-arrows-angle-expand text-coffee"></i>
-                </a>
+                    <span>{item.title}</span>
+                  </Link>
+                ))}
               </div>
             </div>
-            <div className="p-5">
-              { children }
+
+            {/* 登出 */}
+            <div className="mt-auto">
+              <button
+                type="button"
+                className="sidebar-logout border border-primary-300 text-center text-decoration-none"
+                onClick={handleLogout}
+              >
+                <span className="text-coffee-primary-000">登出</span>
+              </button>
             </div>
-          </main>
-        </div>
-      </>
-    );
-}
+          </div>
+        </aside>
+
+        {/* 內容 */}
+        <main className="member-main flex-grow-1">
+          <div className="main-content">{children}</div>
+        </main>
+      </div>
+    </div>
+  );
+};
 
 export default MemberSidebar;

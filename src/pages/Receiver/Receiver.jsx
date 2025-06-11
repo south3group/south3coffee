@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
@@ -6,12 +6,11 @@ import axios from 'axios';
 import MemberSidebar from '../../components/MemberSidebar/MemberSidebar';
 import Footer from '../../components/Footer/Footer';
 
-const EditProfile = () => {
+const Receiver = () => {
   const [userData, setUserData] = useState({
     userName: '',
-    userGender: '',
-    userBirth: null,
     userPhone: '',
+    userPostCode: '',
     userAddress: '',
   });
 
@@ -23,12 +22,7 @@ const EditProfile = () => {
   const [modalMsg, setModalMsg] = useState('');
   const [modalType, setModalType] = useState('');
 
-  const inputRef = useRef(null);
   const navigate = useNavigate();
-
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const formattedYesterday = yesterday.toISOString().split('T')[0];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -53,15 +47,6 @@ const EditProfile = () => {
   const route = `${apiUrl}/api/v1/users/membership/profile`;
 
   useEffect(() => {
-    if (userData.userBirth && typeof userData.userBirth === 'string') {
-      setUserData((prev) => ({
-        ...prev,
-        userBirth: new Date(prev.userBirth),
-      }));
-    }
-  }, []);
-
-  useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
@@ -80,9 +65,8 @@ const EditProfile = () => {
         const data = res.data?.data?.user;
         setUserData({
           userName: data.name || '',
-          userGender: data.gender || '',
-          userBirth: data.birth_date ? new Date(data.birth_date) : null,
           userPhone: data.phone || '',
+          userPostCode: data.post_code || '',
           userAddress: data.address || '',
         });
       })
@@ -94,10 +78,9 @@ const EditProfile = () => {
       });
   }, [navigate]);
 
-  const editHandler = (e) => {
+  const addressHandler = (e) => {
     e.preventDefault();
     let isError = false;
-    const token = localStorage.getItem('token');
 
     // 姓名
     const namePattern = /^[\p{L}\p{N}]{2,10}$/u;
@@ -112,37 +95,6 @@ const EditProfile = () => {
       setFieldErr((prev) => ({
         ...prev,
         userName: '姓名格式錯誤，請輸入 2 至 10 字元的姓名',
-      }));
-      setFormValidated(true);
-      isError = true;
-    }
-
-    // 性別
-    if (!userData.userGender) {
-      setFieldErr((prev) => ({
-        ...prev,
-        userGender: '請選擇性別',
-      }));
-      setFormValidated(true);
-      isError = true;
-    }
-
-    // 生日
-    const isValidDateObject = (date) => {
-      return date instanceof Date && !isNaN(date.getTime());
-    };
-
-    if (!userData.userBirth) {
-      setFieldErr((prev) => ({
-        ...prev,
-        userBirth: '該欄位為必填欄位',
-      }));
-      setFormValidated(true);
-      isError = true;
-    } else if (!isValidDateObject(userData.userBirth)) {
-      setFieldErr((prev) => ({
-        ...prev,
-        userBirth: '生日格式錯誤，請重新選擇日期',
       }));
       setFormValidated(true);
       isError = true;
@@ -164,6 +116,19 @@ const EditProfile = () => {
       }));
       setFormValidated(true);
       isError = true;
+    }
+
+    // 郵遞區號
+    const postCodePattern = /^(\d{5}|\d{6})$/;
+    if ( userData.userPostCode.trim() !== '') {
+      if (!postCodePattern.test(userData.userPostCode)) {
+        setFieldErr((prev) => ({
+          ...prev,
+          userPostCode: '郵遞區號格式錯誤，請輸入 5 或 6 碼的數字',
+        }));
+        setFormValidated(true);
+        isError = true;
+      }
     }
 
     // 地址
@@ -581,87 +546,79 @@ const EditProfile = () => {
       return;
     }
 
-    axios
-      .put(
-        route,
-        {
-          name: userData.userName,
-          gender: userData.userGender,
-          birth_date: userData.userBirth.toISOString().split('T')[0],
-          phone: userData.userPhone,
-          address: userData.userAddress,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-      .then(() => {
-        setModalTitle('更新通知');
-        setModalMsg('會員資料更新成功！');
-        setIsOpen(true);
-      })
-      .catch((err) => {
-        const errMsg = err.response?.data?.message || '更新失敗';
-        const errStatus = err.status;
-        if (errStatus === 400) {
-          switch (errMsg) {
-            case '姓名格式錯誤':
-              setFieldErr((prev) => ({
-                ...prev,
-                userName: errMsg,
-              }));
-              break;
+    axios;
+    // .put(  
+    //   route,
+    //   {
+    //     name: userData.userName,
+    //     phone: userData.userPhone,
+    //     post_code: userData.userPostCode || '',
+    //     address: userData.userAddress,
+    //   },
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //   },
+    // )
+    // .then(() => {
+    //   setModalTitle('更新通知');
+    //   setModalMsg('收件資料更新成功！');
+    //   setIsOpen(true);
+    // })
+    // .catch((err) => {
+    //   const errMsg = err.response?.data?.message || '更新失敗';
+    //   const errStatus = err.status;
+    //   if (errStatus === 400) {
+    //     switch (errMsg) {
+    //       case '姓名格式錯誤':
+    //         setFieldErr((prev) => ({
+    //           ...prev,
+    //           userName: errMsg,
+    //         }));
+    //         break;
 
-            case '性別格式錯誤':
-              setFieldErr((prev) => ({
-                ...prev,
-                userGender: errMsg,
-              }));
-              break;
+    //       case '手機號碼不符合規則，需為台灣手機號碼':
+    //         setFieldErr((prev) => ({
+    //           ...prev,
+    //           userPhone: errMsg,
+    //         }));
+    //         break;
 
-            case '生日格式錯誤':
-              setFieldErr((prev) => ({
-                ...prev,
-                userBirth: errMsg,
-              }));
-              break;
+    //       case '郵遞區號不符合規則，需 5 或 6 碼數字':
+    //         setFieldErr((prev) => ({
+    //           ...prev,
+    //           userPostCode: errMsg,
+    //         }));
+    //         break;
 
-            case '手機號碼不符合規則，需為台灣手機號碼':
-              setFieldErr((prev) => ({
-                ...prev,
-                userPhone: errMsg,
-              }));
-              break;
+    //       case '地址格式錯誤，需為台灣地址':
+    //         setFieldErr((prev) => ({
+    //           ...prev,
+    //           userAddress: errMsg,
+    //         }));
+    //         break;
 
-            case '地址格式錯誤，需為台灣地址':
-              setFieldErr((prev) => ({
-                ...prev,
-                userAddress: errMsg,
-              }));
-              break;
-
-            case '使用者資料未變更':
-              setModalTitle('更新通知');
-              setModalMsg(errMsg || '更新失敗');
-              setModalType('noChange');
-              setIsOpen(true);
-              break;
-          }
-        } else if (errStatus === 401) {
-          setModalTitle('載入失敗');
-          setModalMsg('請先重新登入！');
-          setModalType('toLogin');
-          setIsOpen(true);
-          return;
-        } else {
-          setModalTitle('更新通知');
-          setModalMsg(errMsg || '更新失敗');
-          setModalType('noChange');
-          setIsOpen(true);
-        }
-      });
+    //       case '資料未變更':
+    //         setModalTitle('更新通知');
+    //         setModalMsg(errMsg || '更新失敗');
+    //         setModalType('noChange');
+    //         setIsOpen(true);
+    //         break;
+    //     }
+    //   } else if (errStatus === 401) {
+    //     setModalTitle('載入失敗');
+    //     setModalMsg('請先重新登入！');
+    //     setModalType('toLogin');
+    //     setIsOpen(true);
+    //     return;
+    //   } else {
+    //     setModalTitle('更新通知');
+    //     setModalMsg(errMsg || '更新失敗');
+    //     setModalType('noChange');
+    //     setIsOpen(true);
+    //   }
+    // });
   };
 
   return (
@@ -670,14 +627,18 @@ const EditProfile = () => {
         <div className="flex-grow-1">
           <MemberSidebar>
             <div className="container sidebar-container-custom w-100">
-              <h4 className="content-title m-0">個人資訊</h4>
-              <form className="form-custom" noValidate onSubmit={editHandler}>
+              <h4 className="content-title m-0">收件資訊</h4>
+              <form
+                className="form-custom"
+                noValidate
+                onSubmit={addressHandler}
+              >
                 <div className="form-input-custom">
                   <label
                     htmlFor="memberName"
                     className="form-label form-label-custom text-coffee-primary-600"
                   >
-                    姓名*
+                    收件人*
                   </label>
                   <input
                     type="text"
@@ -702,74 +663,10 @@ const EditProfile = () => {
                 </div>
                 <div className="form-input-custom">
                   <label
-                    htmlFor="gender"
-                    className="form-label form-label-custom text-coffee-primary-600"
-                  >
-                    性別
-                  </label>
-                  <select
-                    id="gender"
-                    name="userGender"
-                    className="form-select form-control-custom w-100 rounded-0"
-                    value={userData.userGender}
-                    onChange={handleInputChange}
-                  >
-                    <option value="" disabled>
-                      請選擇性別
-                    </option>
-                    <option value="不願透露">不願透露</option>
-                    <option value="男">男</option>
-                    <option value="女">女</option>
-                  </select>
-                  <div className="invalid-feedback">{fieldErr.userGender}</div>
-                </div>
-                <div className="form-input-custom">
-                  <label
-                    htmlFor="birth"
-                    className="form-label form-label-custom text-coffee-primary-600"
-                  >
-                    生日*
-                  </label>
-                  <input
-                    type="date"
-                    id="birthDate"
-                    name="userBirth"
-                    ref={inputRef}
-                    className={`form-control form-control-custom rounded-0 ${formValidated && fieldErr.userBirth ? 'is-invalid' : ''}`}
-                    value={
-                      userData.userBirth
-                        ? userData.userBirth.toISOString().split('T')[0]
-                        : ''
-                    }
-                    onClick={() =>
-                      inputRef.current?.showPicker?.() ||
-                      inputRef.current?.focus()
-                    }
-                    onChange={(e) => {
-                      const dateValue = e.target.value;
-                      setUserData((prev) => ({
-                        ...prev,
-                        userBirth: dateValue ? new Date(dateValue) : null,
-                      }));
-                      setFieldErr((prev) => ({
-                        ...prev,
-                        userBirth: '',
-                      }));
-                    }}
-                    max={formattedYesterday}
-                    required
-                  />
-                  <div className="invalid-feedback">
-                    {fieldErr.userBirth ||
-                      (formValidated && !userData.userBirth && '請選擇生日')}
-                  </div>
-                </div>
-                <div className="form-input-custom">
-                  <label
                     htmlFor="memberTel"
                     className="form-label form-label-custom text-coffee-primary-600"
                   >
-                    手機號碼*
+                    連絡電話*
                   </label>
                   <input
                     type="tel"
@@ -796,23 +693,51 @@ const EditProfile = () => {
                 </div>
                 <div className="form-input-custom">
                   <label
+                    htmlFor="memberPostCode"
+                    className="form-label form-label-custom text-coffee-primary-600"
+                  >
+                    郵遞區號
+                  </label>
+                  <input
+                    type="tel"
+                    className={`form-control form-control-custom rounded-0 ${
+                      fieldErr.userPostCode ? 'is-invalid' : ''
+                    }`}
+                    id="memberPostCode"
+                    name="userPostCode"
+                    placeholder="請輸入郵遞區號"
+                    value={userData.userPostCode}
+                    onChange={handleInputChange}
+                  />
+                  <div className="invalid-feedback">{fieldErr.userPostCode}</div>
+                </div>
+                <div className="form-input-custom">
+                  <label
                     htmlFor="memberAddress"
                     className="form-label form-label-custom text-coffee-primary-600"
                   >
-                    通訊地址
+                    通訊地址*
                   </label>
                   <input
                     type="text"
                     className={`form-control form-control-custom rounded-0 ${
-                      fieldErr.userAddress ? 'is-invalid' : ''
+                      (formValidated && userData.userAddress.trim() === '') ||
+                      fieldErr.userAddress
+                        ? 'is-invalid'
+                        : ''
                     }`}
                     id="memberAddress"
                     name="userAddress"
-                    placeholder="請輸入正確地址"
+                    placeholder="請輸入正確收件地址"
                     value={userData.userAddress}
                     onChange={handleInputChange}
+                    required
                   />
-                  <div className="invalid-feedback">{fieldErr.userAddress}</div>
+                  <div className="invalid-feedback">
+                    {userData.userAddress.trim() === ''
+                      ? '該欄位為必填欄位'
+                      : fieldErr.userAddress}{' '}
+                  </div>
                 </div>
                 <p className="d-flex justify-content-end btn-cta-text m-0">
                   * 為必填選項
@@ -827,39 +752,39 @@ const EditProfile = () => {
           </MemberSidebar>
         </div>
 
-        {/* Modal */}
-        {isOpen && (
-          <div
-            className="modal show fade d-block custom-modal"
-            tabIndex="-1"
-            role="dialog"
-          >
-            <div className="modal-dialog custom-modal-dialog">
-              <div className="modal-content custom-modal-content">
-                <div className="modal-header custom-modal-header">
-                  <h5 className="custom-modal-title">{modalTitle}</h5>
-                  <button
-                    type="button"
-                    className="custom-modal-close"
-                    onClick={handleCloseModal}
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div className="modal-body custom-modal-body">{modalMsg}</div>
-                <div className="modal-footer custom-modal-footer">
-                  <button
-                    type="button"
-                    className="custom-modal-btn"
-                    onClick={handleCloseModal}
-                  >
-                    關閉
-                  </button>
-                </div>
+      {/* Modal */}
+      {isOpen && (
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">{modalTitle}</h5>
+                <button
+                  type="button"
+                  className="custom-modal-close"
+                  onClick={handleCloseModal}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="custom-modal-btn"
+                  onClick={handleCloseModal}
+                >
+                  關閉
+                </button>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
         <Footer />
       </div>
@@ -867,4 +792,4 @@ const EditProfile = () => {
   );
 };
 
-export default EditProfile;
+export default Receiver;
