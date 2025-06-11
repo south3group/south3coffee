@@ -163,7 +163,7 @@ const MemberSidebar = ({ children }) => {
             <div className="d-flex flex-column flex-md-row align-items-center ">
               <img src={images.profile} alt="profile photo" />
               <span className="m-0 text-coffee-primary-000 span-custom">
-                {username || '使用者名字超常會發生什麼事'}
+                {username || '使用者'}
               </span>
             </div>
             {/* 選單 */}

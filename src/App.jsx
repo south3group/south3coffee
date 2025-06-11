@@ -11,6 +11,8 @@ import EditProfile from './pages/EditProfile/EditProfile';
 import Receiver from './pages/Receiver/Receiver';
 import Contact from './pages/Contact/Contact';
 import Admin from './pages/Admin/Admin';
+import Products from './pages/Products/Products';
+import ProductDetail from './pages/ProductDetail/ProductDetail';
 
 const App = () => {
   return (
@@ -26,6 +28,8 @@ const App = () => {
         <Route path="/member/receiver" element={<Receiver />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/products/:productId" element={<ProductDetail />} />
       </Routes>
     </>
   );
