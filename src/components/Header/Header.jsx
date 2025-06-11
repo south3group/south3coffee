@@ -23,18 +23,18 @@ const Header = () => {
     dispatch(checkAuth());
   }, [dispatch]);
 
+  // 已登入不能進登入相關頁
   useEffect(() => {
     if (
       isAuthChecked &&
-      !token &&
-      !['/', '/login', '/signup', '/forget', '/reset-password'].includes(
+      token &&
+      ['/login', '/signup', '/forget', '/reset-password'].includes(
         location.pathname,
       )
     ) {
-      dispatch(logout());
-      navigate('/login');
+      navigate('');
     }
-  }, [isAuthChecked, token, dispatch, navigate, location.pathname]);
+  }, [isAuthChecked, token, navigate, location.pathname]);
 
   // 控制選單
   useEffect(() => {
@@ -98,7 +98,7 @@ const Header = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/" onClick={() => setMenuOpen(false)}>
+                  <Link to="/products" onClick={() => setMenuOpen(false)}>
                     商品資訊
                   </Link>
                 </li>
@@ -118,7 +118,7 @@ const Header = () => {
                   </button>
                   {subMenuOpen && (
                     <div className="submenu">
-                      <Link to="/" onClick={() => setMenuOpen(false)}>
+                      <Link to="/contact" onClick={() => setMenuOpen(false)}>
                         關於築豆的咖啡故事
                       </Link>
                       <Link to="/" onClick={() => setMenuOpen(false)}>
@@ -227,7 +227,7 @@ const Header = () => {
             </Link>
           </li>
           <li className="nav-item nav-li">
-            <Link to="/" className="nav-link nav-link-custom">
+            <Link to="/products" className="nav-link nav-link-custom">
               商品資訊
             </Link>
           </li>
@@ -245,7 +245,10 @@ const Header = () => {
               className={`dropdown-menu dropdown-menu-custom dropdown-menu-custom-about rounded-0 ${aboutDropdownOpen ? 'show' : ''}`}
             >
               <li>
-                <Link to="/" className="dropdown-item dropdown-item-custom">
+                <Link
+                  to="/contact"
+                  className="dropdown-item dropdown-item-custom"
+                >
                   關於築豆的咖啡故事
                 </Link>
               </li>
