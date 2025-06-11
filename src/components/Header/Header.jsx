@@ -14,9 +14,7 @@ const Header = () => {
   const [desktopUserDropdownOpen, setDesktopUserDropdownOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { token, username, isAuthChecked } = useSelector(
-    (state) => state.auth,
-  );
+  const { token, username, isAuthChecked } = useSelector((state) => state.auth);
   const location = useLocation();
 
   const navigate = useNavigate();
@@ -25,18 +23,18 @@ const Header = () => {
     dispatch(checkAuth());
   }, [dispatch]);
 
+  // 已登入者不能進登入相關頁
   useEffect(() => {
     if (
       isAuthChecked &&
-      !token &&
-      !['/login', '/signup', '/forget', '/reset-password'].includes(
+      token &&
+      ['/login', '/signup', '/forget', '/reset-password'].includes(
         location.pathname,
       )
     ) {
-      dispatch(logout());
-      navigate('/login');
+      navigate('');
     }
-  }, [isAuthChecked, token, dispatch, navigate, location.pathname]);
+  }, [isAuthChecked, token, navigate, location.pathname]);
 
   // 控制選單
   useEffect(() => {
@@ -48,14 +46,13 @@ const Header = () => {
         setAboutDropdownOpen(false);
       }
     };
-  
+
     document.addEventListener('click', handleClickOutside);
-  
+
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
-  
 
   const handleLogout = () => {
     dispatch(logout());
