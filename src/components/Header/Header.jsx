@@ -14,9 +14,7 @@ const Header = () => {
   const [desktopUserDropdownOpen, setDesktopUserDropdownOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { token, username, isAuthChecked } = useSelector(
-    (state) => state.auth,
-  );
+  const { token, username, isAuthChecked } = useSelector((state) => state.auth);
   const location = useLocation();
 
   const navigate = useNavigate();
@@ -29,7 +27,7 @@ const Header = () => {
     if (
       isAuthChecked &&
       !token &&
-      !['/login', '/signup', '/forget', '/reset-password'].includes(
+      !['/', '/login', '/signup', '/forget', '/reset-password'].includes(
         location.pathname,
       )
     ) {
@@ -48,14 +46,13 @@ const Header = () => {
         setAboutDropdownOpen(false);
       }
     };
-  
+
     document.addEventListener('click', handleClickOutside);
-  
+
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
-  
 
   const handleLogout = () => {
     dispatch(logout());

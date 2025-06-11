@@ -41,7 +41,7 @@ const Login = () => {
     } else {
       document.body.classList.remove('modal-open');
     }
-  
+
     return () => {
       document.body.classList.remove('modal-open');
     };
