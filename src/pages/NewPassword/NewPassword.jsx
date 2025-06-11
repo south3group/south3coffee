@@ -23,9 +23,6 @@ const NewPassword = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/reset-password`;
 
-  console.log('梅莉由ㄟ',route,token)
-  console.log('讓我看看',window.location.href);
-
   useEffect(() => {
     if (!tokenURL) {
       setModalMsg('連結無效或已過期');
