@@ -2,8 +2,8 @@
   padding: 40px 24px;
   display: flex;
   flex-direction: column;
-  gap: 32px; 
-  
+  gap: 32px;
+
   .content-title {
     font-size: 2.4rem;
     color: $coffee-primary-600;
@@ -62,5 +62,395 @@
   .btn-cta-text {
     font-size: 1.4rem;
     color: $coffee-grey-600;
+  }
+
+  // 訂單資訊
+  .orders-custom {
+    border: 1px solid $coffee-primary-100;
+
+    &-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1.6rem;
+    }
+
+    &-style {
+      &-th {
+        padding: 24px 16px;
+        color: $coffee-primary-1000;
+        font-weight: 700;
+        text-align: left;
+        border-bottom: 1px solid $coffee-primary-100;
+        background-color: #f7f7f7;
+        vertical-align: middle;
+      }
+    }
+
+    &-tbody {
+      background-color: $coffee-grey-000;
+
+      &-th,
+      &-td {
+        padding: 24px 16px;
+        color: $coffee-primary-700;
+        border-bottom: 1px solid $coffee-primary-100;
+        font-weight: inherit;
+        vertical-align: middle;
+        height: 100%;
+        &-unpaid,
+        &-unshipped {
+          padding: 16px;
+          color: $coffee-notification;
+          border-bottom: 1px solid $coffee-primary-100;
+          font-weight: inherit;
+          vertical-align: middle;
+          height: 100%;
+        }
+
+        .check-order {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          max-width: 330px;
+          min-width: 0;
+          height: 100%;
+          line-height: 1.5;
+          overflow: hidden;
+
+          &-text {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 1;
+            min-width: 0;
+          }
+
+          &-btn {
+            &-view {
+              font-size: 1.4rem;
+              color: $coffee-primary-000;
+              background-color: $coffee-primary-700;
+              padding: 4px 8px;
+              line-height: 1.2;
+              white-space: nowrap;
+
+              &:hover {
+                background-color: $coffee-primary-300;
+                color: $coffee-primary-700;
+              }
+
+              &:active {
+                background-color: $coffee-primary-800;
+                color: $coffee-primary-000;
+              }
+            }
+
+            &-reorder {
+              font-size: 1.4rem;
+              color: $coffee-primary-500;
+              background-color: $coffee-primary-100;
+              padding: 4px 8px;
+
+              &:hover {
+                background-color: $coffee-primary-000;
+                color: $coffee-primary-600;
+              }
+
+              &:active {
+                color: $coffee-primary-000;
+              }
+            }
+
+            &-checkout {
+              font-size: 1.4rem;
+              color: $coffee-primary-100;
+              background-color: $coffee-primary-500;
+              padding: 4px 8px;
+
+              &:hover {
+                background-color: $coffee-primary-100;
+                color: $coffee-primary-700;
+              }
+
+              &:active {
+                background-color: $coffee-primary-800;
+                color: $coffee-primary-000;
+              }
+            }
+          }
+        }
+      }
+
+      tr:last-child th,
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .price-box {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+      }
+    }
+  }
+
+  // 單一訂單資訊
+  .order-summary-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+
+    h5 {
+      font-size: 1.8rem;
+      color: $coffee-primary-500;
+      font-weight: 600;
+    }
+
+    &-info {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+      align-items: center;
+
+
+      &-status {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+
+        .status-success{
+          padding: 4px 8px;
+          font-size: 1.4rem;
+          color: $coffee-primary-100;
+          background-color: $coffee-primary-400;
+        }
+
+        .status-failed {
+          padding: 4px 8px;
+          font-size: 1.4rem;
+          color: $coffee-primary-000;
+          background-color: $coffee-primary-700;
+        }
+      }
+    }
+
+    &-title {
+      color: $coffee-primary-600;
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+
+    &-number {
+      color: $coffee-primary-600;
+      font-size: 1.6rem;
+    }
+  }
+
+  .orders-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+
+    &-title {
+      font-size: 2rem;
+      color: $coffee-primary-500;
+      font-weight: 700;
+    }
+
+    &-receiver {
+      flex: 1;
+      height: auto;
+      line-height: 1.5;
+      white-space: normal;
+      box-sizing: border-box;
+      gap: 8px;
+      padding: 32px 48px;
+      background-color: $coffee-grey-000;
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      justify-content: center;
+      border: 1px solid $coffee-primary-200;
+
+      &-content {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+
+        .receiver-title {
+          width: 80px;
+          font-weight: 700;
+          color: $coffee-primary-800;
+          font-size: 1.6rem;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .receiver-text {
+          color: $coffee-primary-800;
+          font-size: 1.6rem;
+          word-break: break-word;
+          flex: 1;
+          min-width: 0;
+        }
+      }
+    }
+
+    &-total {
+      width: 400px;
+      max-width: 100%;
+      height: auto;
+      line-height: 1.5;
+      white-space: normal;
+      box-sizing: border-box;
+      gap: 8px;
+      padding: 32px 48px;
+      background-color: $coffee-grey-000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid $coffee-primary-200;
+
+      &-content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+
+        .total-title {
+          font-weight: 700;
+          color: $coffee-primary-700;
+          font-size: 1.6rem;
+          white-space: nowrap;
+          flex-shrink: 0;
+          text-align: left;
+          flex: 1;
+        }
+
+        .total-text {
+          color: $coffee-secondary-700;
+          font-size: 1.6rem;
+          word-break: break-word;
+          min-width: 0;
+          justify-content: flex-end;
+          align-items: center;
+          text-align: right;
+          flex: 1;
+        }
+      }
+
+      .price-box {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        color: $coffee-primary-800;
+      }
+
+      .price-box-discount {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        color: $coffee-secondary-700;
+      }
+
+      &-amount {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+
+        .amount-title {
+          width: 80px;
+          font-weight: 900;
+          color: $coffee-primary-800;
+          font-size: 1.6rem;
+          white-space: nowrap;
+          flex-shrink: 0;
+          flex: 1;
+          max-width: 100px;
+        }
+
+        .amount-text {
+          color: $coffee-secondary-800;
+          font-size: 2rem;
+          word-break: break-word;
+          flex: 1;
+          min-width: 0;
+        }
+
+        .price-box {
+          display: flex;
+          flex-direction: row;
+          gap: 4px;
+          color: $coffee-primary-800;
+          justify-content: flex-end;
+          align-items: center;
+          flex: 1;
+          text-align: right;
+          max-width: 200px;
+
+          .amount-currency {
+            font-size: 1.6rem;
+            font-weight: 700;
+          }
+
+          .amount-price {
+            font-size: 3rem;
+            font-weight: 900;
+          }
+        }
+      }
+    }
+
+    .pagination-custom {
+      justify-content: center;
+      &-link {
+        font-size: 1.6rem;
+        color: $coffee-primary-600;
+        background-color: $coffee-bg-light;
+        border: 0;
+        border-radius: 0;
+        &:hover {
+          background-color: $coffee-primary-300;
+          color: $coffee-primary-700;
+        }
+        &:active {
+          background-color: $coffee-primary-800;
+          color: $coffee-primary-000;
+        }
+      }
+    }
+  }
+
+  .back-btn {
+    display: flex;
+    justify-content: end;
+
+    &-custom {
+      font-size: 1.6rem;
+      color: $coffee-primary-000;
+      background-color: $coffee-primary-700;
+      padding: 8px 16px;
+      border: 0;
+      border-radius: 4px;
+
+      &:hover {
+        background-color: $coffee-primary-300;
+        color: $coffee-primary-700;
+      }
+
+      &:active {
+        background-color: $coffee-primary-800;
+        color: $coffee-primary-000;
+      }
+    }
   }
 }
