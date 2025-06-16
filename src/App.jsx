@@ -15,6 +15,7 @@ import Products from './pages/Products/Products';
 import ProductDetail from './pages/ProductDetail/ProductDetail';
 import OrderList from './pages/OrderList/OrderList';
 import OrderDetail from './pages/OrderDetail/OrderDetail';
+import CartList from './pages/CartList/CartList';
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
         <Route path="/admin" element={<Admin />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/detail" element={<ProductDetail />} />
+        <Route path="/cart" element={<CartList />} />
       </Routes>
     </>
   );

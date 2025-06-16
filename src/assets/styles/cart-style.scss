@@ -1,0 +1,586 @@
+.cart-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+
+  .cart-banner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+  }
+
+  .cart-container {
+    max-width: 1296px;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+
+    // 網頁標題
+    .cart-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+
+      &-chinese {
+        font-size: 4.8rem;
+        color: $coffee-primary-800;
+        font-weight: 900;
+        line-height: 120%;
+      }
+
+      &-line {
+        width: 520px;
+        height: 1px;
+        background-color: $coffee-primary-500;
+      }
+
+      &-english {
+        font-size: 2.4rem;
+        color: $coffee-primary-800;
+        font-weight: 900;
+        line-height: 120%;
+      }
+    }
+
+    // 訂單資訊
+    .cart-custom {
+      border: 1px solid $coffee-primary-100;
+
+      &-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1.6rem;
+        table-layout: auto;
+        width: 100%;
+        border-spacing: 0;
+      }
+
+      &-style {
+        &-th {
+          padding: 24px 16px;
+          color: $coffee-primary-1000;
+          font-weight: 700;
+          text-align: left;
+          border-bottom: 1px solid $coffee-primary-100;
+          background-color: #f7f7f7;
+          vertical-align: middle;
+
+          &:first-child {
+            text-align: center;
+            vertical-align: middle;
+          }
+        }
+      }
+
+      &-tbody {
+        background-color: $coffee-grey-000;
+
+        .checkbox-custom {
+          width: 18px;
+          height: 18px;
+          border: $coffee-primary-600 1px solid;
+          border-radius: 0;
+        }
+
+        .cart-product {
+          max-width: 152px;
+          &-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+          }
+        }
+
+        &-th {
+          &:first-child {
+            text-align: center;
+            vertical-align: middle;
+          }
+        }
+
+        &-th,
+        &-td {
+          padding: 24px 16px;
+          color: $coffee-primary-700;
+          border-bottom: 1px solid $coffee-primary-100;
+          font-weight: inherit;
+          vertical-align: middle;
+          height: 100%;
+          &-unpaid,
+          &-unshipped {
+            padding: 16px;
+            color: $coffee-notification;
+            border-bottom: 1px solid $coffee-primary-100;
+            font-weight: inherit;
+            vertical-align: middle;
+            height: 100%;
+          }
+
+          .del-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .check-order {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 330px;
+            min-width: 0;
+            height: 100%;
+            line-height: 1.5;
+            overflow: hidden;
+
+            &-text {
+              display: block;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              flex-shrink: 1;
+              min-width: 0;
+            }
+
+            &-btn {
+              &-view {
+                font-size: 1.4rem;
+                color: $coffee-primary-000;
+                background-color: $coffee-primary-700;
+                padding: 4px 8px;
+                line-height: 1.2;
+                white-space: nowrap;
+
+                &:hover {
+                  background-color: $coffee-primary-300;
+                  color: $coffee-primary-700;
+                }
+
+                &:active {
+                  background-color: $coffee-primary-800;
+                  color: $coffee-primary-000;
+                }
+              }
+
+              &-reorder {
+                font-size: 1.4rem;
+                color: $coffee-primary-500;
+                background-color: $coffee-primary-100;
+                padding: 4px 8px;
+
+                &:hover {
+                  background-color: $coffee-primary-000;
+                  color: $coffee-primary-600;
+                }
+
+                &:active {
+                  color: $coffee-primary-000;
+                }
+              }
+
+              &-checkout {
+                font-size: 1.4rem;
+                color: $coffee-primary-100;
+                background-color: $coffee-primary-500;
+                padding: 4px 8px;
+
+                &:hover {
+                  background-color: $coffee-primary-100;
+                  color: $coffee-primary-700;
+                }
+
+                &:active {
+                  background-color: $coffee-primary-800;
+                  color: $coffee-primary-000;
+                }
+              }
+            }
+          }
+        }
+
+        tr:last-child th,
+        tr:last-child td {
+          border-bottom: none;
+        }
+
+        // 數量按鈕
+        .order-options {
+          display: flex;
+          flex-direction: row;
+          gap: 24px;
+
+          &-quantity {
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+
+            .quantity-decrease,
+            .quantity-increase {
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              align-items: center;
+              gap: 12px;
+              padding: 8px;
+              border: 1px solid $coffee-primary-400;
+              background-color: $coffee-grey-000;
+
+              .decrease-icon,
+              .increase-icon {
+                width: 24px;
+                height: 24px;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+
+                .decrease-detail {
+                  width: 18px;
+                  height: 2px;
+                }
+
+                .increase-detail {
+                  width: 14px;
+                  height: 14px;
+                }
+              }
+
+              &:hover {
+                background-color: $coffee-primary-300;
+                color: $coffee-primary-700;
+              }
+              &:active {
+                background-color: $coffee-primary-800;
+                color: $coffee-primary-000;
+              }
+            }
+
+            .quantity-value {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              gap: 12px;
+              padding: 8px;
+              border: 1px solid $coffee-primary-400;
+
+              .value-input {
+                // width: auto;
+                min-width: 1ch;
+                max-width: 2ch;
+                height: 27px;
+                text-align: center;
+                font-size: 1.8rem;
+                padding: 8px 0;
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: $coffee-primary-600;
+
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button {
+                  -webkit-appearance: none;
+                  margin: 0;
+                }
+              }
+            }
+
+            .quantity-increase {
+              display: flex;
+              flex-direction: row;
+              gap: 12px;
+              padding: 8px;
+              border: 1px solid $coffee-primary-400;
+            }
+          }
+        }
+      }
+    }
+
+    .cart-custom-style-th:nth-child(3),
+    .cart-custom-style-td:nth-child(3) {
+      width: 281px;
+    }
+
+    .cart-custom-style-th:nth-child(4),
+    .cart-custom-style-td:nth-child(4) {
+      min-width: 114px;
+    }
+
+    .content-style {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 24px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .cart-total {
+      border: 1px solid $coffee-primary-100;
+      background-color: $coffee-grey-000;
+      padding: 24px;
+    }
+
+    .cart-total-custom {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .coupon-section {
+        .coupon-title {
+          font-size: 1.6rem;
+          color: $coffee-primary-900;
+        }
+        .coupon-input {
+          display: flex;
+          flex-direction: row;
+          gap: 4px;
+          width: 100%;
+
+          input {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 1.6rem;
+            max-width: 182px;
+            border: 1px solid $coffee-primary-400;
+          }
+
+          .coupon-btn {
+            color: $coffee-grey-000;
+            background-color: $coffee-grey-200;
+            padding: 8px 16px;
+          }
+        }
+      }
+      .price-detail {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+
+        .product-title,
+        .account-title {
+          color: $coffee-primary-700;
+        }
+
+        .total-title,
+        .total-price {
+          font-size: 2rem;
+          font-weight: 700;
+          color: $coffee-primary-700;
+        }
+
+        .price-box {
+          display: flex;
+          flex-direction: row;
+          gap: 4px;
+          color: $coffee-primary-800;
+        }
+      }
+
+      .coupon-btn {
+        display: flex;
+        justify-content: space-between;
+
+        &-continue {
+          border: 1px solid $coffee-primary-400;
+          background-color: $coffee-grey-000;
+          color: $coffee-primary-600;
+          padding: 8px 16px;
+
+          &:hover {
+            background-color: $coffee-primary-300;
+            color: $coffee-primary-700;
+          }
+          &:active {
+            background-color: $coffee-primary-800;
+            color: $coffee-primary-000;
+          }
+        }
+
+        &-proceed {
+          background-color: $coffee-primary-700;
+          color: $coffee-grey-000;
+          padding: 8px 16px;
+
+          &:hover {
+            background-color: $coffee-primary-300;
+            color: $coffee-primary-700;
+          }
+          &:active {
+            background-color: $coffee-primary-800;
+            color: $coffee-primary-000;
+          }
+        }
+      }
+
+      .total-line {
+        display: block;
+        width: 100%;
+        height: 1px;
+        background-color: $coffee-primary-500;
+      }
+    }
+  }
+
+  // 本期推薦
+  .recommend-custom {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+
+    // 箭頭
+    &-btn {
+      font-size: 1.8rem;
+      color: $coffee-grey-000;
+      background-color: $coffee-primary-700;
+      padding: 16px 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .arrow-icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .icon-detail {
+          width: 10.58px;
+          height: 18.95px;
+        }
+      }
+    }
+
+    .card-group {
+      display: flex;
+      gap: 40px;
+    }
+
+    .recommend-card {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+
+      .recommend-title {
+        font-size: 3rem;
+        color: $coffee-primary-800;
+        font-weight: 900;
+      }
+      // 卡片本體
+      &-style {
+        max-width: 238px;
+        word-break: break-word;
+        display: flex;
+        flex-direction: column;
+
+        .card-img {
+          max-height: 131px;
+          max-width: 238px;
+          object-fit: cover;
+        }
+
+        .recommend-card-content {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+          border: 1px solid $coffee-primary-100;
+        }
+
+        .recommend-card-body {
+          display: flex;
+          flex-direction: row;
+          flex-grow: 1;
+          justify-content: space-between;
+
+          &-title {
+            font-size: 2.8rem;
+            color: $coffee-primary-700;
+            font-weight: 900;
+
+            &-icon {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            }
+          }
+
+          &-text {
+            font-size: 1.6rem;
+            color: $coffee-grey-600;
+            display: flex;
+            height: auto;
+            gap: 8px;
+
+            .text-icon-group {
+              display: flex;
+              gap: 8px;
+              white-space: nowrap;
+              flex-shrink: 0;
+
+              .text-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 20px;
+                height: 20px;
+                padding: 2px;
+              }
+            }
+
+            .text-title {
+              font-weight: 700;
+            }
+
+            .text-content {
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              word-break: break-word;
+              line-height: 1.5;
+              max-height: calc(1.5em * 3);
+            }
+          }
+        }
+
+        .recommend-card-bottom {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .recommend-price-box {
+            display: flex;
+            flex-direction: row;
+            gap: 4px;
+
+            .recommend-price {
+              font-weight: 900;
+              font-size: 2.4rem;
+              color: $coffee-secondary-700;
+            }
+          }
+        }
+        .recommend-card-btn {
+          background-color: $coffee-primary-700;
+          color: $coffee-grey-000;
+          padding: 8px 16px;
+          font-size: 1.6rem;
+        }
+      }
+    }
+  }
+}

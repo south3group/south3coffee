@@ -13,6 +13,8 @@ import productIncrease from '../assets/images/product_increase.png';
 import reviewArrowL from '../assets/images/review_arrow_l.png';
 import reviewArrowR from '../assets/images/review_arrow_r.png';
 import starIcon from '../assets/images/star_icon.png';
+import delIcon from '../assets/images/del_icon.png';
+import checkboxIcon from '../assets/images/checkbox_icon.png';
 
 export const images = {
   logo: logoImg,
@@ -30,4 +32,6 @@ export const images = {
   reviewArrowL: reviewArrowL,
   reviewArrowR: reviewArrowR,
   starIcon: starIcon,
+  delIcon: delIcon,
+  checkboxIcon: checkboxIcon,
 };
