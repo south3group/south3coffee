@@ -10,7 +10,191 @@ const OrderList = () => {
             <div className="container sidebar-container-custom w-100">
               <h4 className="content-title m-0">訂單總覽</h4>
               <div className="orders-custom">
-                <table className="table orders-custom-table m-0 ">
+                {/* 手機版 */}
+                {/* 手機版卡片樣式 */}
+                <div className="d-block d-md-none orders-custom-mobile">
+                  {/* 單筆資訊 */}
+                  <div className="order-card">
+                    <div className="date-num">
+                      <p className="m-0 date-num-style">20250229</p>
+                      <p className="m-0 date-num-style">2384896540045</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>購買品項</p>
+                      <p className='m-0 text-group-text'>嘉義阿里山咖啡豆(500g)</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>總金額</p>
+                      <p className='m-0 text-group-text'>NTD$ <span className='text-group-text'>500</span></p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>付款狀態</p>
+                      <p className='m-0 text-group-text'>已付款</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>出貨狀態</p>
+                      <p className='m-0 text-group-text'>已出貨</p>
+                    </div>
+                  </div>
+                  
+                  <div className="order-card">
+                    <div className="date-num">
+                      <p className="m-0 date-num-style">20250229</p>
+                      <p className="m-0 date-num-style">2384896540045</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>購買品項</p>
+                      <p className='m-0 text-group-text'>嘉義阿里山咖啡豆(500g)</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>總金額</p>
+                      <p className='m-0 text-group-text'>NTD$ <span className='text-group-text'>500</span></p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>付款狀態</p>
+                      <p className='m-0 text-group-text'>已付款</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>出貨狀態</p>
+                      <p className='m-0 text-group-text'>已出貨</p>
+                    </div>
+                  </div>
+                  <div className="order-card">
+                    <div className="date-num">
+                      <p className="m-0 date-num-style">20250229</p>
+                      <p className="m-0 date-num-style">2384896540045</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>購買品項</p>
+                      <p className='m-0 text-group-text'>嘉義阿里山咖啡豆(500g)</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>總金額</p>
+                      <p className='m-0 text-group-text'>NTD$ <span className='text-group-text'>500</span></p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>付款狀態</p>
+                      <p className='m-0 text-group-text'>已付款</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>出貨狀態</p>
+                      <p className='m-0 text-group-text'>已出貨</p>
+                    </div>
+                  </div>
+                  <div className="order-card">
+                    <div className="date-num">
+                      <p className="m-0 date-num-style">20250229</p>
+                      <p className="m-0 date-num-style">2384896540045</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>購買品項</p>
+                      <p className='m-0 text-group-text'>嘉義阿里山咖啡豆(500g)</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>總金額</p>
+                      <p className='m-0 text-group-text'>NTD$ <span className='text-group-text'>500</span></p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>付款狀態</p>
+                      <p className='m-0 text-group-text'>已付款</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>出貨狀態</p>
+                      <p className='m-0 text-group-text'>已出貨</p>
+                    </div>
+                  </div>
+                  <div className="order-card">
+                    <div className="date-num">
+                      <p className="m-0 date-num-style">20250229</p>
+                      <p className="m-0 date-num-style">2384896540045</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>購買品項</p>
+                      <p className='m-0 text-group-text'>嘉義阿里山咖啡豆(500g)</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>總金額</p>
+                      <p className='m-0 text-group-text'>NTD$ <span className='text-group-text'>500</span></p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>付款狀態</p>
+                      <p className='m-0 text-group-text'>已付款</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>出貨狀態</p>
+                      <p className='m-0 text-group-text'>已出貨</p>
+                    </div>
+                  </div>
+                  <div className="order-card">
+                    <div className="date-num">
+                      <p className="m-0 date-num-style">20250229</p>
+                      <p className="m-0 date-num-style">2384896540045</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>購買品項</p>
+                      <p className='m-0 text-group-text'>嘉義阿里山咖啡豆(500g)</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>總金額</p>
+                      <p className='m-0 text-group-text'>NTD$ <span className='text-group-text'>500</span></p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>付款狀態</p>
+                      <p className='m-0 text-group-text'>已付款</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>出貨狀態</p>
+                      <p className='m-0 text-group-text'>已出貨</p>
+                    </div>
+                  </div>
+                  <div className="order-card">
+                    <div className="date-num">
+                      <p className="m-0 date-num-style">20250229</p>
+                      <p className="m-0 date-num-style">2384896540045</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>購買品項</p>
+                      <p className='m-0 text-group-text'>嘉義阿里山咖啡豆(500g)</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>總金額</p>
+                      <p className='m-0 text-group-text'>NTD$ <span className='text-group-text'>500</span></p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>付款狀態</p>
+                      <p className='m-0 text-group-text'>已付款</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>出貨狀態</p>
+                      <p className='m-0 text-group-text'>已出貨</p>
+                    </div>
+                  </div>
+                  <div className="order-card">
+                    <div className="date-num">
+                      <p className="m-0 date-num-style">20250229</p>
+                      <p className="m-0 date-num-style">2384896540045</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>購買品項</p>
+                      <p className='m-0 text-group-text'>嘉義阿里山咖啡豆(500g)</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>總金額</p>
+                      <p className='m-0 text-group-text'>NTD$ <span className='text-group-text'>500</span></p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>付款狀態</p>
+                      <p className='m-0 text-group-text'>已付款</p>
+                    </div>
+                    <div className='text-group'>
+                      <p className='m-0 text-group-title'>出貨狀態</p>
+                      <p className='m-0 text-group-text'>已出貨</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 桌電版 */}
+                <table className="d-none d-md-table table orders-custom-table m-0 ">
                   <thead className="orders-custom-style">
                     <tr>
                       <th scope="col" className="orders-custom-style-th">
@@ -51,15 +235,16 @@ const OrderList = () => {
                           >
                             查看完整訂單
                           </button>
-                          <p className='check-order-text m-0'>嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)</p>
-                          
+                          <p className="check-order-text m-0">
+                            嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)
+                          </p>
                         </div>
                       </td>
                       <td className="orders-custom-tbody-td">NTD$ 1,000</td>
                       <td className="orders-custom-tbody-td">已付款</td>
                       <td className="orders-custom-tbody-td">已出貨</td>
                       <td className="orders-custom-tbody-td">
-                        <div className='check-order-btn'>
+                        <div className="check-order-btn">
                           <button
                             type="button"
                             className="check-order-btn-reorder border-0"
@@ -89,9 +274,11 @@ const OrderList = () => {
                       </td>
                       <td className="orders-custom-tbody-td">NTD$ 1,000</td>
                       <td className="orders-custom-tbody-td-unpaid">未付款</td>
-                      <td className="orders-custom-tbody-td-unshipped">未出貨</td>
+                      <td className="orders-custom-tbody-td-unshipped">
+                        未出貨
+                      </td>
                       <td className="orders-custom-tbody-td">
-                        <div className='check-order-btn'>
+                        <div className="check-order-btn">
                           <button
                             type="button"
                             className="check-order-btn-checkout border-0"
@@ -116,15 +303,18 @@ const OrderList = () => {
                           >
                             查看完整訂單
                           </button>
-                          <p className='check-order-text m-0'>嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)</p>
-                          
+                          <p className="check-order-text m-0">
+                            嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)
+                          </p>
                         </div>
                       </td>
                       <td className="orders-custom-tbody-td">NTD$ 1,000</td>
                       <td className="orders-custom-tbody-td">已付款</td>
-                      <td className="orders-custom-tbody-td-unshipped">未出貨</td>
+                      <td className="orders-custom-tbody-td-unshipped">
+                        未出貨
+                      </td>
                       <td className="orders-custom-tbody-td">
-                        <div className='check-order-btn'>
+                        <div className="check-order-btn">
                           <button
                             type="button"
                             className="check-order-btn-reorder border-0"
@@ -148,15 +338,16 @@ const OrderList = () => {
                           >
                             查看完整訂單
                           </button>
-                          <p className='check-order-text m-0'>嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)</p>
-                          
+                          <p className="check-order-text m-0">
+                            嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)
+                          </p>
                         </div>
                       </td>
                       <td className="orders-custom-tbody-td">NTD$ 1,000</td>
                       <td className="orders-custom-tbody-td">已付款</td>
                       <td className="orders-custom-tbody-td">已出貨</td>
                       <td className="orders-custom-tbody-td">
-                        <div className='check-order-btn'>
+                        <div className="check-order-btn">
                           <button
                             type="button"
                             className="check-order-btn-reorder border-0"
@@ -180,15 +371,16 @@ const OrderList = () => {
                           >
                             查看完整訂單
                           </button>
-                          <p className='check-order-text m-0'>嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)</p>
-                          
+                          <p className="check-order-text m-0">
+                            嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)
+                          </p>
                         </div>
                       </td>
                       <td className="orders-custom-tbody-td">NTD$ 1,000</td>
                       <td className="orders-custom-tbody-td">已付款</td>
                       <td className="orders-custom-tbody-td">已出貨</td>
                       <td className="orders-custom-tbody-td">
-                        <div className='check-order-btn'>
+                        <div className="check-order-btn">
                           <button
                             type="button"
                             className="check-order-btn-reorder border-0"
@@ -212,15 +404,16 @@ const OrderList = () => {
                           >
                             查看完整訂單
                           </button>
-                          <p className='check-order-text m-0'>嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)</p>
-                          
+                          <p className="check-order-text m-0">
+                            嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)
+                          </p>
                         </div>
                       </td>
                       <td className="orders-custom-tbody-td">NTD$ 1,000</td>
                       <td className="orders-custom-tbody-td">已付款</td>
                       <td className="orders-custom-tbody-td">已出貨</td>
                       <td className="orders-custom-tbody-td">
-                        <div className='check-order-btn'>
+                        <div className="check-order-btn">
                           <button
                             type="button"
                             className="check-order-btn-reorder border-0"
@@ -244,15 +437,16 @@ const OrderList = () => {
                           >
                             查看完整訂單
                           </button>
-                          <p className='check-order-text m-0'>嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)</p>
-                          
+                          <p className="check-order-text m-0">
+                            嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)
+                          </p>
                         </div>
                       </td>
                       <td className="orders-custom-tbody-td">NTD$ 1,000</td>
                       <td className="orders-custom-tbody-td">已付款</td>
                       <td className="orders-custom-tbody-td">已出貨</td>
                       <td className="orders-custom-tbody-td">
-                        <div className='check-order-btn'>
+                        <div className="check-order-btn">
                           <button
                             type="button"
                             className="check-order-btn-reorder border-0"
@@ -276,15 +470,16 @@ const OrderList = () => {
                           >
                             查看完整訂單
                           </button>
-                          <p className='check-order-text m-0'>嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)</p>
-                          
+                          <p className="check-order-text m-0">
+                            嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)
+                          </p>
                         </div>
                       </td>
                       <td className="orders-custom-tbody-td">NTD$ 1,000</td>
                       <td className="orders-custom-tbody-td">已付款</td>
                       <td className="orders-custom-tbody-td">已出貨</td>
                       <td className="orders-custom-tbody-td">
-                        <div className='check-order-btn'>
+                        <div className="check-order-btn">
                           <button
                             type="button"
                             className="check-order-btn-reorder border-0"
@@ -308,15 +503,16 @@ const OrderList = () => {
                           >
                             查看完整訂單
                           </button>
-                          <p className='check-order-text m-0'>嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)</p>
-                          
+                          <p className="check-order-text m-0">
+                            嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)
+                          </p>
                         </div>
                       </td>
                       <td className="orders-custom-tbody-td">NTD$ 1,000</td>
                       <td className="orders-custom-tbody-td">已付款</td>
                       <td className="orders-custom-tbody-td">已出貨</td>
                       <td className="orders-custom-tbody-td">
-                        <div className='check-order-btn'>
+                        <div className="check-order-btn">
                           <button
                             type="button"
                             className="check-order-btn-reorder border-0"
@@ -340,15 +536,16 @@ const OrderList = () => {
                           >
                             查看完整訂單
                           </button>
-                          <p className='check-order-text m-0'>嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)</p>
-                          
+                          <p className="check-order-text m-0">
+                            嘉義阿里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆里山咖啡豆(500g)
+                          </p>
                         </div>
                       </td>
                       <td className="orders-custom-tbody-td">NTD$ 1,000</td>
                       <td className="orders-custom-tbody-td">已付款</td>
                       <td className="orders-custom-tbody-td">已出貨</td>
                       <td className="orders-custom-tbody-td">
-                        <div className='check-order-btn'>
+                        <div className="check-order-btn">
                           <button
                             type="button"
                             className="check-order-btn-reorder border-0"
@@ -358,11 +555,8 @@ const OrderList = () => {
                         </div>
                       </td>
                     </tr>
-
                   </tbody>
                 </table>
-
-
               </div>
               {/* 頁碼 */}
               <nav aria-label="Page navigation example">
@@ -402,7 +596,6 @@ const OrderList = () => {
                   </li>
                 </ul>
               </nav>
-
             </div>
           </MemberSidebar>
         </div>

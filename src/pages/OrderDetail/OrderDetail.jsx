@@ -11,11 +11,11 @@ const OrderDetail = () => {
               <h4 className="content-title m-0">訂單詳細資訊</h4>
 
               <div className="order-summary-header">
+                <div className="order-summary-header-info-status">
+                  <div className="status-success">已付款</div>
+                  <div className="status-failed">未出貨</div>
+                </div>
                 <div className="order-summary-header-info">
-                  <div className="order-summary-header-info-status">
-                    <div className="status-success">已付款</div>
-                    <div className="status-failed">未出貨</div>
-                  </div>
                   <p className="m-0 order-summary-header-title">訂單編號</p>
                   <p className="m-0 order-summary-header-number">
                     2384896540045
@@ -25,7 +25,152 @@ const OrderDetail = () => {
               </div>
               <div className="orders-custom">
                 {/* 訂單詳情 */}
-                <table className="table orders-custom-table m-0 ">
+                {/* 手機版 */}
+                <div className="d-block d-md-none orders-custom-mobile">
+                  <div className="order-card">
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">購買品項</p>
+                      <p className="m-0 text-group-text">
+                        哥倫比亞咖啡豆(300g)
+                      </p>
+                    </div>
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">單價</p>
+                      <p className="m-0 text-group-text">
+                        NTD$ <span className="text-group-text">600</span>
+                      </p>
+                    </div>
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">數量</p>
+                      <p className="m-0 text-group-text">3</p>
+                    </div>
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">總金額</p>
+                      <p className="m-0 text-group-text">
+                        NTD$ <span className="text-group-text">1,800</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 桌電版 */}
+                  <table className="d-none d-md-table table orders-custom-table m-0 ">
+                    <thead className="orders-custom-style">
+                      <tr>
+                        <th scope="col" className="orders-custom-style-th">
+                          商品名稱
+                        </th>
+                        <th scope="col" className="orders-custom-style-th">
+                          單價
+                        </th>
+                        <th scope="col" className="orders-custom-style-th">
+                          數量
+                        </th>
+                        <th scope="col" className="orders-custom-style-th">
+                          小計
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="orders-custom-tbody">
+                      <tr>
+                        <th scope="row" className="orders-custom-tbody-th">
+                          嘉義阿里山咖啡豆(500g)
+                        </th>
+                        <td className="orders-custom-tbody-td price-box">
+                          <p className="box-currency m-0">NTD$</p>
+                          <p className="box-price m-0">500</p>
+                        </td>
+                        <td className="orders-custom-tbody-td">2</td>
+                        <td className="orders-custom-tbody-td price-box">
+                          <p className="box-currency m-0">NTD$</p>
+                          <p className="box-price m-0">1,000</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th scope="row" className="orders-custom-tbody-th">
+                          哥倫比亞咖啡豆(300g)
+                        </th>
+                        <td className="orders-custom-tbody-td price-box">
+                          <p className="box-currency m-0">NTD$</p>
+                          <p className="box-price m-0">600</p>
+                        </td>
+                        <td className="orders-custom-tbody-td">3</td>
+                        <td className="orders-custom-tbody-td price-box">
+                          <p className="box-currency m-0">NTD$</p>
+                          <p className="box-price m-0">1,800</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th scope="row" className="orders-custom-tbody-th">
+                          雛型咖啡濾紙100張
+                        </th>
+                        <td className="orders-custom-tbody-td price-box">
+                          <p className="box-currency m-0">NTD$</p>
+                          <p className="box-price m-0">150</p>
+                        </td>
+                        <td className="orders-custom-tbody-td">5</td>
+                        <td className="orders-custom-tbody-td price-box">
+                          <p className="box-currency m-0">NTD$</p>
+                          <p className="box-price m-0">750</p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="d-block d-md-none orders-custom-mobile">
+                  <div className="order-card">
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">購買品項</p>
+                      <p className="m-0 text-group-text">
+                        嘉義阿里山咖啡豆(500g)
+                      </p>
+                    </div>
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">單價</p>
+                      <p className="m-0 text-group-text">
+                        NTD$ <span className="text-group-text">500</span>
+                      </p>
+                    </div>
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">數量</p>
+                      <p className="m-0 text-group-text">2</p>
+                    </div>
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">總金額</p>
+                      <p className="m-0 text-group-text">
+                        NTD$ <span className="text-group-text">1,000</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="d-block d-md-none orders-custom-mobile">
+                  <div className="order-card">
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">購買品項</p>
+                      <p className="m-0 text-group-text">
+                        錐形咖啡濾紙100張
+                      </p>
+                    </div>
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">單價</p>
+                      <p className="m-0 text-group-text">
+                        NTD$ <span className="text-group-text">150</span>
+                      </p>
+                    </div>
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">數量</p>
+                      <p className="m-0 text-group-text">5</p>
+                    </div>
+                    <div className="text-group">
+                      <p className="m-0 text-group-title">總金額</p>
+                      <p className="m-0 text-group-text">
+                        NTD$ <span className="text-group-text">750</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 桌電版 */}
+                <table className="d-none d-md-table table orders-custom-table m-0 ">
                   <thead className="orders-custom-style">
                     <tr>
                       <th scope="col" className="orders-custom-style-th">
@@ -161,12 +306,11 @@ const OrderDetail = () => {
               </div>
 
               {/* 返回 */}
-                <div className='back-btn'>
-                  <button className='border-0 rounded-0 back-btn-custom'>
-                    返回訂單總覽
-                  </button>
-                </div>
-
+              <div className="back-btn">
+                <button className="border-0 rounded-0 back-btn-custom">
+                  返回訂單總覽
+                </button>
+              </div>
             </div>
           </MemberSidebar>
         </div>

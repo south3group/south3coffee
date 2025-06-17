@@ -70,7 +70,7 @@ const Products = () => {
                 </li>
               </ul>
             </div>
-            <div className="col-md-10 p-0 m-0 ps-5 products-card-container">
+            <div className="col-md-10 p-0 m-0 ps-md-5 products-card-container">
               {/* 分類名稱 */}
               <div className="products-title">
                 <p className="products-title-chinese m-0">台灣咖啡豆系列</p>
@@ -399,7 +399,6 @@ const Products = () => {
             </div>
           </div>
         </div>
-        <div></div>
       </div>
       <Footer />
     </>
