@@ -5,6 +5,7 @@ import Header from '../../components/Header/Header';
 import '../../pages/Home/Home.scss';
 import Footer from '../../components/Footer/Footer';
 import Banner from '../../components/Banner/Banner';
+import About from '../../components/About/About';
 
 const Home = () => {
   // const navigate = useNavigate();
@@ -39,7 +40,7 @@ const Home = () => {
           <p>「為夢想而品味，為品質而築造。」</p>
         </div>
       </div>
-
+      <About />
       <Footer />
     </>
   );
