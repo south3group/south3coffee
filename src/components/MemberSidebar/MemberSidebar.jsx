@@ -16,16 +16,16 @@ const MemberSidebar = ({ children }) => {
   const [ _ , setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(checkAuth());
+  // }, [dispatch]);
 
-  useEffect(() => {
-    if (isAuthChecked && !token) {
-      dispatch(logout());
-      navigate('/login');
-    }
-  }, [isAuthChecked, token, dispatch, navigate]);
+  // useEffect(() => {
+  //   if (isAuthChecked && !token) {
+  //     dispatch(logout());
+  //     navigate('/login');
+  //   }
+  // }, [isAuthChecked, token, dispatch, navigate]);
 
   const sidebarItems = [
     { title: '會員中心', path: '/member' },
