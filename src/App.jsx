@@ -13,6 +13,9 @@ import Contact from './pages/Contact/Contact';
 import Admin from './pages/Admin/Admin';
 import Products from './pages/Products/Products';
 import ProductDetail from './pages/ProductDetail/ProductDetail';
+import OrderList from './pages/OrderList/OrderList';
+import OrderDetail from './pages/OrderDetail/OrderDetail';
+import CartList from './pages/CartList/CartList';
 
 const App = () => {
   return (
@@ -26,10 +29,13 @@ const App = () => {
         <Route path="/reset-password" element={<NewPassword />} />
         <Route path="/member/profile" element={<EditProfile />} />
         <Route path="/member/receiver" element={<Receiver />} />
+        <Route path="/member/orders" element={<OrderList />} />
+        <Route path="/member/orders/detail" element={<OrderDetail />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/products" element={<Products />} />
-        <Route path="/products/:productId" element={<ProductDetail />} />
+        <Route path="/products/detail" element={<ProductDetail />} />
+        <Route path="/cart" element={<CartList />} />
       </Routes>
     </>
   );
