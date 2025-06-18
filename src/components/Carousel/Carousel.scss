@@ -1,0 +1,45 @@
+.carousel-section {
+    position: relative;
+    background: #333;
+    overflow: hidden;
+  
+    .carousel-inner {
+      height: 100%;
+    }
+  
+    .carousel-item {
+      transition: opacity 0.5s ease;
+    }
+  
+    .slide-content {
+      max-width: 600px;
+      padding: 0 20px;
+  
+      h3 {
+        font-size: 2.5rem;
+        font-weight: 300;
+      }
+  
+      p {
+        font-size: 1.2rem;
+      }
+    }
+  
+    .carousel-indicators {
+      bottom: 30px;
+  
+      button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.5);
+        border: none;
+        margin: 0 5px;
+  
+        &.active {
+          background: white;
+        }
+      }
+    }
+  }
+  
