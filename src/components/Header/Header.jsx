@@ -128,7 +128,7 @@ const Header = () => {
                   )}
                 </li>
                 <li>
-                  <Link to="/" onClick={() => setMenuOpen(false)}>
+                  <Link to="/cart" onClick={() => setMenuOpen(false)}>
                     購物車
                   </Link>
                 </li>
@@ -260,7 +260,7 @@ const Header = () => {
             </ul>
           </li>
           <li className="nav-item">
-            <Link to="/" className="nav-link nav-link-custom ">
+            <Link to="/cart" className="nav-link nav-link-custom ">
               <i className="bi bi-cart2"></i>
             </Link>
           </li>

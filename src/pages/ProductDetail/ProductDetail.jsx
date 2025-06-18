@@ -53,14 +53,21 @@ const ProductDetail = () => {
             </li>
             <li className="products-breadcrumb-arrow">&gt;</li>
             <li className="products-breadcrumb-item">
-              <Link to="/" className="products-breadcrumb-link">
+              <Link to="/products" className="products-breadcrumb-link">
                 商品資訊
               </Link>
             </li>
             <li className="products-breadcrumb-arrow">&gt;</li>
             <li className="products-breadcrumb-item">
-              <Link to="/" className="products-breadcrumb-link">
+              <Link to="/products" className="products-breadcrumb-link">
                 台灣咖啡豆系列
+              </Link>
+            </li>
+
+            <li className="products-breadcrumb-arrow">&gt;</li>
+            <li className="products-breadcrumb-item">
+              <Link to="/products/detail" className="products-breadcrumb-link">
+                商品詳情
               </Link>
             </li>
           </ul>
