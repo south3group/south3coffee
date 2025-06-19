@@ -22,7 +22,7 @@ const Home = () => {
         <div className="banner-container">
           <Banner />
         </div>
-        <div className="banner-text">
+        <div className="banner-text homeTitle">
           <h1>築一個屬於你的咖啡故事 </h1>
           <p>「為夢想而品味，為品質而築造。」</p>
         </div>
@@ -32,7 +32,7 @@ const Home = () => {
       <section className="py-5" style={{ backgroundColor: '#f8f6f3' }}>
         <div className="container">
           <div className="row justify-content-center align-items-center g-4">
-            <div className="text-center">
+            <div className="text-center homeTitle">
               <h1>榮獲國內外賽事及評鑒的得獎咖啡豆</h1>
             </div>
 
