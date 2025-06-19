@@ -26,13 +26,13 @@ const Products = () => {
             </li>
             <li className="products-breadcrumb-arrow">&gt;</li>
             <li className="products-breadcrumb-item">
-              <Link to="/" className="products-breadcrumb-link">
+              <Link to="/products" className="products-breadcrumb-link">
                 商品資訊
               </Link>
             </li>
             <li className="products-breadcrumb-arrow">&gt;</li>
             <li className="products-breadcrumb-item">
-              <Link to="/" className="products-breadcrumb-link">
+              <Link to="/products" className="products-breadcrumb-link">
                 台灣咖啡豆系列
               </Link>
             </li>
@@ -44,27 +44,27 @@ const Products = () => {
               <ul className="products-sidebar m-0 p-0">
                 <li className="products-sidebar-title">商品總覽</li>
                 <li>
-                  <Link to="/" className="products-sidebar-link">
+                  <Link to="/products" className="products-sidebar-link">
                     台灣咖啡豆系列
                   </Link>
                 </li>
                 <li>
-                  <Link to="/" className="products-sidebar-link">
+                  <Link to="/products" className="products-sidebar-link">
                     東南亞咖啡豆系列
                   </Link>
                 </li>
                 <li>
-                  <Link to="/" className="products-sidebar-link">
+                  <Link to="/products" className="products-sidebar-link">
                     中南美咖啡豆系列
                   </Link>
                 </li>
                 <li>
-                  <Link to="/" className="products-sidebar-link">
+                  <Link to="/products" className="products-sidebar-link">
                     非洲咖啡豆系列
                   </Link>
                 </li>
                 <li>
-                  <Link to="/" className="products-sidebar-link">
+                  <Link to="/products" className="products-sidebar-link">
                     相關用品及其他
                   </Link>
                 </li>
@@ -116,10 +116,17 @@ const Products = () => {
                       </p>
                     </div>
                     <div className="products-card-bottom">
-                      <p className="card-price m-0">NTD$&nbsp;500</p>
-                      <button className="btn card-btn rounded-0">
-                        查看詳情
-                      </button>
+                      <div>
+                        <p className="card-price m-0">NTD$&nbsp;500</p>
+                      </div>
+                      <div>
+                        <Link
+                          to="/products/detail"
+                          className="nav-link btn px-3 py-2 card-btn rounded-0 w-100"
+                        >
+                          查看詳情
+                        </Link>
+                      </div>
                     </div>
                     <button className="d-none btn products-card-btn rounded-0">
                       加入購物車

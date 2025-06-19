@@ -128,7 +128,7 @@ const Header = () => {
                   )}
                 </li>
                 <li>
-                  <Link to="/" onClick={() => setMenuOpen(false)}>
+                  <Link to="/cart" onClick={() => setMenuOpen(false)}>
                     購物車
                   </Link>
                 </li>
@@ -245,7 +245,10 @@ const Header = () => {
               className={`dropdown-menu dropdown-menu-custom dropdown-menu-custom-about rounded-0 ${aboutDropdownOpen ? 'show' : ''}`}
             >
               <li>
-                <Link to="/contact" className="dropdown-item dropdown-item-custom">
+                <Link
+                  to="/contact"
+                  className="dropdown-item dropdown-item-custom"
+                >
                   關於築豆的咖啡故事
                 </Link>
               </li>
@@ -257,7 +260,7 @@ const Header = () => {
             </ul>
           </li>
           <li className="nav-item">
-            <Link to="/" className="nav-link nav-link-custom ">
+            <Link to="/cart" className="nav-link nav-link-custom ">
               <i className="bi bi-cart2"></i>
             </Link>
           </li>

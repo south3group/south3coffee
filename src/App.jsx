@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 import ScrollToTop from './components/ScrollToTop/ScrollToTop';
-import HomePage from './pages/Home/Home';
+import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
@@ -22,7 +22,7 @@ const App = () => {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forget" element={<ForgetPassword />} />
