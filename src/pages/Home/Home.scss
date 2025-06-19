@@ -11,13 +11,14 @@
   text-align: center;
 }
 
-h1 {
+.homeTitle h1{
   font-size: 3vw; // 根據螢幕寬度調整字體大小
   font-weight: bold;
   margin: 0;
 }
 
-p {
+.homeTitle p {
   font-size: 1.5vw;
   margin-top: 0.5rem;
 }
+
