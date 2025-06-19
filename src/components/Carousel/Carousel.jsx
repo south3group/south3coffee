@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import './Carousel.css';
+import Carousel1 from './Carousel1';
+import Carousel2 from './Carousel2';
+import Carousel3 from './Carousel3';
+import './Carousel.scss';
 
-const Carousel = ({ slides, autoPlay = true, interval = 5000 }) => {
+const Carousel = ({ autoPlay = true, interval = 5000 }) => {
   const [current, setCurrent] = useState(0); //起始狀態：第一張輪播圖
+  const slides = [<Carousel1 />, <Carousel2 />, <Carousel3 />];
   const length = slides.length;
 
   useEffect(() => {
