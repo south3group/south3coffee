@@ -32,9 +32,9 @@ const CartList = () => {
       <div className="bg-coffee-bg-light cart-custom">
         <div className="cart-banner-container">
           <img
-            src={images.productsBanner}
+            src={images.hotCoffeeBanner}
             alt="cart banner"
-            style={{ width: '100%', height: 'auto' }}
+            className='narrow-banner'
           />
         </div>
         <div className="container cart-container p-0 ">

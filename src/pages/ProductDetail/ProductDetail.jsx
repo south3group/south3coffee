@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
@@ -11,14 +12,75 @@ const thumbnailUrls = [
   'https://images.unsplash.com/photo-1524350876685-274059332603?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   'https://images.unsplash.com/photo-1553292218-4892c2e7e1ae?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   'https://images.unsplash.com/photo-1604838699342-2343976f84ab?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1604838699342-2343976f84ab?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1604838699342-2343976f84ab?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 ];
 
 const ProductDetail = () => {
+  const { product_id } = useParams();
   const minValue = 1;
   const [quantity, setQuantity] = useState(minValue);
-  const [mainImage, setMainImage] = useState(thumbnailUrls[0]);
+  const [mainImage, setMainImage] = useState('');
+  const [product, setProduct] = useState(null);
+
+  const navigate = useNavigate();
+
+  const [showTopBtn, setShowTopBtn] = useState(false);
+
+  const classificationNameMap = {
+    Taiwan: '台灣咖啡豆系列',
+    SouthAsia: '東南亞咖啡豆',
+    LatinAmerica: '中南美洲咖啡豆',
+    AficaSeries: '非洲咖啡豆',
+    Others: '相關用品及其他',
+  };
+  const classificationName = product
+    ? classificationNameMap[product.classification_name] ||
+      product.classification_name
+    : '';
+
+  const handleGoBack = () => {
+    navigate('/products');
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowTopBtn(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const route = `${apiUrl}/api/v1/products/${product_id}`;
+
+    const fetchProduct = async () => {
+      try {
+        const res = await axios.get(route);
+        const data = res.data.data;
+
+        console.log('API Response:', data);
+
+        if (data) {
+          setProduct(data);
+          setMainImage(data.image_url || thumbnailUrls[0]);
+        } else {
+          console.error('未找到商品資料');
+        }
+      } catch (err) {
+        console.error('取得商品失敗', err);
+      }
+    };
+
+    fetchProduct();
+  }, [product_id]);
 
   // 數量加減事件
   const handleDecrease = () => {
@@ -38,13 +100,17 @@ const ProductDetail = () => {
     }
   };
 
+  if (!product) {
+    return <div>載入中...</div>;
+  }
+
   return (
     <>
       <Header />
       <div className="bg-coffee-bg-light products-custom-style">
-        <div></div>
         <div className="container products-container p-0 ">
           {/* 分類項目 */}
+          <div></div>
           <ul className="products-breadcrumb m-0 p-0">
             <li className="products-breadcrumb-item">
               <Link to="/" className="products-breadcrumb-link">
@@ -60,20 +126,13 @@ const ProductDetail = () => {
             <li className="products-breadcrumb-arrow">&gt;</li>
             <li className="products-breadcrumb-item">
               <Link to="/products" className="products-breadcrumb-link">
-                台灣咖啡豆系列
-              </Link>
-            </li>
-
-            <li className="products-breadcrumb-arrow">&gt;</li>
-            <li className="products-breadcrumb-item">
-              <Link to="/products/detail" className="products-breadcrumb-link">
-                商品詳情
+                {classificationName}
               </Link>
             </li>
           </ul>
 
           {/* 主要商品內容 */}
-          <div className="detail-container">
+          <div key={product_id} className="detail-container">
             <div className="img-custom-layout">
               {/* 商品 */}
               <div className="product-main">
@@ -84,22 +143,24 @@ const ProductDetail = () => {
                 />
                 {/* 商品縮圖 */}
                 <div className="product-thumbnails">
-                  {thumbnailUrls.map((url, idx) => (
-                    <img
-                      key={idx}
-                      src={url}
-                      alt={`thumbnails ${idx + 1}`}
-                      className="img-style"
-                      onClick={() => setMainImage(url)}
-                    />
-                  ))}
+                  {[product.image_url, ...thumbnailUrls]
+                    .slice(0, 4)
+                    .map((url, idx) => (
+                      <img
+                        key={idx}
+                        src={url}
+                        alt={`thumbnail-${idx}`}
+                        className="img-style"
+                        onClick={() => setMainImage(url)}
+                      />
+                    ))}
                 </div>
 
                 {/* 商品內容 */}
                 <div className="product-main-content">
                   <div className="product-main-content-info">
                     <div className="product-main-content-info-title">
-                      <h4 className="product-name m-0">晨光之秋</h4>
+                      <h4 className="product-name m-0">{product.name}</h4>
                       <div className="product-like-icon">
                         <img
                           src={images.unlikeIcon}
@@ -112,14 +173,14 @@ const ProductDetail = () => {
                       <div className="text-icon-group">
                         <div className="text-icon">
                           <img
-                            src={images.flavorIcon}
+                            src={images.originIcon}
                             alt="icon"
                             className="text-icon-detail"
                           />
                         </div>
-                        <p className="text-title m-0">特徵</p>
+                        <p className="text-title m-0">產地</p>
                       </div>
-                      <p className="text-content">衣索比亞</p>
+                      <p className="text-content">{product.origin || ' '}</p>
                     </div>
                     <div className="product-main-content-flavor m-0">
                       <div className="text-icon-group">
@@ -132,30 +193,28 @@ const ProductDetail = () => {
                         </div>
                         <p className="text-title m-0">風味</p>
                       </div>
-                      <p className="text-content">佛手柑、茉莉、蜂蜜</p>
+                      <p className="text-content">
+                        {product.flavor || ' '}
+                      </p>{' '}
                     </div>
                     <div className="product-main-content-detail m-0">
                       <div className="text-icon-group">
                         <div className="text-icon">
                           <img
-                            src={images.flavorIcon}
+                            src={images.infoIcon}
                             alt="icon"
                             className="text-icon-detail"
                           />
                         </div>
                         <p className="text-title m-0">詳細資訊</p>
                       </div>
-                      <p className="text-content">品種：藝妓豆</p>
-                      <p className="text-content">處理方式：日曬處理</p>
+                      <p className="text-content">品種：{product.variety || ' '}</p>
                       <p className="text-content">
-                        酸度：中高酸度，帶柑橘、蘋果、莓果風味
+                        處理方式：{product.process_method || ' '}
                       </p>
-                      <p className="text-content">
-                        甜感：明顯，帶蜂蜜、焦糖香氣
-                      </p>
-                      <p className="text-content">
-                        尾顏：乾淨悠長，常帶有堅果或奶油口感
-                      </p>
+                      <p className="text-content">酸度：{product.acidity || ' '}</p>
+                      <p className="text-content">甜感：{product.flavor || ' '}</p>
+                      <p className="text-content">尾顏：{product.aftertaste || ' '}</p>
                     </div>
 
                     {/* 購買相關 */}
@@ -182,6 +241,7 @@ const ProductDetail = () => {
                               value={quantity}
                               onChange={handleChange}
                               min={minValue}
+                              inputMode="numeric"
                             />
                           </div>
                           <button
@@ -216,7 +276,7 @@ const ProductDetail = () => {
                     <h6 className="description-title m-0">商品說明</h6>
                     <span className="description-line"></span>
                     <p className="description-content m-0">
-                      來自衣索比亞南部高地的經典之作，花香四溢，柑橘酸質清亮，彷彿晨光灑落山丘，喚醒味蕾的第一道光。這款耶加雪菲咖啡豆栽種於海拔1,800公尺以上的肥沃紅土中，得天獨厚的日夜溫差與微氣候，孕育出層次細緻的花果香氣。入口後先是淡雅的茉莉與佛手柑香氣輕輕浮現，接著轉為甜潤的蜂蜜韻味，尾韻清新乾淨，令人回味再三。無論是清晨第一杯手沖，或午後靜心時刻，它都像一束陽光般，柔和卻有力量地照亮每一天。
+                      {product.description}
                     </p>
                   </div>
                 </div>
@@ -426,9 +486,18 @@ const ProductDetail = () => {
               </div>
             </button>
           </div>
+          <button onClick={handleGoBack} className="go-back-btn rounded-0">
+            返回上頁
+          </button>
         </div>
         <div></div>
       </div>
+
+      {showTopBtn && (
+        <button className="back-to-top" onClick={scrollToTop}>
+          <img src={images.topBtn} alt="back to top btn" />
+        </button>
+      )}
       <Footer />
     </>
   );
