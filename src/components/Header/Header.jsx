@@ -14,7 +14,9 @@ const Header = () => {
   const [desktopUserDropdownOpen, setDesktopUserDropdownOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { token, username, isAuthChecked } = useSelector((state) => state.auth);
+  const { token, username, isAuthChecked, role } = useSelector(
+    (state) => state.auth,
+  );
   const location = useLocation();
 
   const navigate = useNavigate();
@@ -41,6 +43,7 @@ const Header = () => {
     const handleClickOutside = (e) => {
       if (!e.target.closest('.user')) {
         setUserDropdownOpen(false);
+        setDesktopUserDropdownOpen(false);
       }
       if (!e.target.closest('.about')) {
         setAboutDropdownOpen(false);
@@ -56,7 +59,7 @@ const Header = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/login');
+    navigate('/');
   };
 
   return (
@@ -127,11 +130,13 @@ const Header = () => {
                     </div>
                   )}
                 </li>
-                <li>
-                  <Link to="/" onClick={() => setMenuOpen(false)}>
-                    購物車
-                  </Link>
-                </li>
+                {token && (
+                  <li>
+                    <Link to="/cart" onClick={() => setMenuOpen(false)}>
+                      購物車
+                    </Link>
+                  </li>
+                )}
 
                 {/* 未登入時顯示登入註冊 */}
                 {!token && (
@@ -165,7 +170,7 @@ const Header = () => {
 
             {userDropdownOpen && (
               <>
-                {/* 遮罩，還沒做完 */}
+                {/* 遮罩 */}
                 <div
                   className="mobile-menu-overlay"
                   onClick={() => setUserDropdownOpen(false)}
@@ -174,44 +179,73 @@ const Header = () => {
                 {/* 使用者選單 */}
                 <div className="mobile-menu d-md-none">
                   <ul className="px-0">
-                    <li>
-                      <Link
-                        to="/member/profile"
-                        className="dropdown-item"
-                        onClick={() => setUserDropdownOpen(false)}
-                      >
-                        個人資訊
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/"
-                        className="dropdown-item"
-                        onClick={() => setUserDropdownOpen(false)}
-                      >
-                        訂單資訊
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/"
-                        className="dropdown-item"
-                        onClick={() => setUserDropdownOpen(false)}
-                      >
-                        願望清單
-                      </Link>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {
-                          handleLogout();
-                          setUserDropdownOpen(false);
-                        }}
-                        className="dropdown-item"
-                      >
-                        登出
-                      </button>
-                    </li>
+                    {role === 'ADMIN' ? (
+                      <>
+                        <li>
+                          <a
+                            href="https://tt3x3.github.io/south3coffee-dashboard/"
+                            className="dropdown-item"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setUserDropdownOpen(false)}
+                          >
+                            管理者後台中心
+                          </a>
+                        </li>
+                        <li>
+                          <button
+                            onClick={() => {
+                              handleLogout();
+                              setUserDropdownOpen(false);
+                            }}
+                            className="dropdown-item"
+                          >
+                            登出
+                          </button>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li>
+                          <Link
+                            to="/member/profile"
+                            className="dropdown-item"
+                            onClick={() => setUserDropdownOpen(false)}
+                          >
+                            個人資訊
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            to="/"
+                            className="dropdown-item"
+                            onClick={() => setUserDropdownOpen(false)}
+                          >
+                            訂單資訊
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            to="/"
+                            className="dropdown-item"
+                            onClick={() => setUserDropdownOpen(false)}
+                          >
+                            願望清單
+                          </Link>
+                        </li>
+                        <li>
+                          <button
+                            onClick={() => {
+                              handleLogout();
+                              setUserDropdownOpen(false);
+                            }}
+                            className="dropdown-item"
+                          >
+                            登出
+                          </button>
+                        </li>
+                      </>
+                    )}
                   </ul>
                 </div>
               </>
@@ -245,7 +279,10 @@ const Header = () => {
               className={`dropdown-menu dropdown-menu-custom dropdown-menu-custom-about rounded-0 ${aboutDropdownOpen ? 'show' : ''}`}
             >
               <li>
-                <Link to="/contact" className="dropdown-item dropdown-item-custom">
+                <Link
+                  to="/contact"
+                  className="dropdown-item dropdown-item-custom"
+                >
                   關於築豆的咖啡故事
                 </Link>
               </li>
@@ -256,17 +293,18 @@ const Header = () => {
               </li>
             </ul>
           </li>
-          <li className="nav-item">
-            <Link to="/" className="nav-link nav-link-custom ">
-              <i className="bi bi-cart2"></i>
-            </Link>
-          </li>
+          {token && (
+            <li className="nav-item">
+              <Link to="/cart" className="nav-link nav-link-custom ">
+                <i className="bi bi-cart2"></i>
+              </Link>
+            </li>
+          )}
 
-          {/* 已登入 還沒綁登入狀態*/}
-          {token ? (
+          {/* 已登入 */}
+          {isAuthChecked && token ? (
             <li className="nav-item dropdown hover-dropdown user">
               <button
-                to="/member/profile"
                 type="button"
                 className="nav-link nav-link-custom dropdown-toggle nav-user-toggle"
                 onClick={() =>
@@ -283,32 +321,64 @@ const Header = () => {
               <ul
                 className={`dropdown-menu dropdown-menu-custom rounded-0 ${desktopUserDropdownOpen ? 'show' : ''}`}
               >
-                <li>
-                  <Link
-                    to="/member/profile"
-                    className="dropdown-item dropdown-item-custom"
-                  >
-                    個人資訊
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/" className="dropdown-item dropdown-item-custom">
-                    訂單訊息
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/" className="dropdown-item dropdown-item-custom">
-                    願望清單
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="dropdown-item dropdown-item-custom"
-                  >
-                    登出
-                  </button>
-                </li>
+                {role === 'ADMIN' ? (
+                  <>
+                    <li>
+                      <a
+                        href="https://tt3x3.github.io/south3coffee-dashboard/"
+                        className="dropdown-item dropdown-item-a"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setUserDropdownOpen(false)}
+                      >
+                        管理者後台中心
+                      </a>
+                    </li>
+                    <li>
+                      <button
+                        onClick={handleLogout}
+                        className="dropdown-item dropdown-item-custom"
+                      >
+                        登出
+                      </button>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      <Link
+                        to="/member/profile"
+                        className="dropdown-item dropdown-item-custom"
+                      >
+                        個人資訊
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/"
+                        className="dropdown-item dropdown-item-custom"
+                      >
+                        訂單訊息
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/"
+                        className="dropdown-item dropdown-item-custom"
+                      >
+                        願望清單
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        onClick={handleLogout}
+                        className="dropdown-item dropdown-item-custom"
+                      >
+                        登出
+                      </button>
+                    </li>
+                  </>
+                )}
               </ul>
             </li>
           ) : (

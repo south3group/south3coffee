@@ -8,24 +8,24 @@ const MemberSidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { token, username, isAuthChecked } = useSelector((state) => state.auth);
+  const { token, username, isAuthChecked, role } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [ _ , setMenuOpen] = useState(false);
+  const [_, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  // useEffect(() => {
-  //   dispatch(checkAuth());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (isAuthChecked && !token) {
-  //     dispatch(logout());
-  //     navigate('/login');
-  //   }
-  // }, [isAuthChecked, token, dispatch, navigate]);
+  useEffect(() => {
+    if (isAuthChecked && !token || role !== 'USER') {
+      dispatch(logout());
+      navigate('/login');
+    }
+  }, [isAuthChecked, token, role, dispatch, navigate]);
 
   const sidebarItems = [
     { title: '會員中心', path: '/member' },
@@ -91,41 +91,43 @@ const MemberSidebar = ({ children }) => {
         </div>
       </nav>
       {userDropdownOpen && (
-              <>
-                <div
-                  className="member-mobile-menu-overlay"
-                  onClick={() => setUserDropdownOpen(false)}
-                ></div>
+        <>
+          <div
+            className="member-mobile-menu-overlay"
+            onClick={() => setUserDropdownOpen(false)}
+          ></div>
 
-                {/* 使用者選單 */}
-                <div className={`member-mobile-menu d-md-none ${userDropdownOpen ? 'open' : ''}`}>
-                  <ul className="px-0">
-                    {sidebarItems.map((item, i) => (
-                      <li key={i}>
-                        <Link
-                          to={item.path}
-                          className="dropdown-item"
-                          onClick={() => setUserDropdownOpen(false)}
-                        >
-                          {item.title}
-                        </Link>
-                      </li>
-                    ))}
-                    <li>
-                      <button
-                        onClick={() => {
-                          handleLogout();
-                          setUserDropdownOpen(false);
-                        }}
-                        className="dropdown-item"
-                      >
-                        登出
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </>
-            )}
+          {/* 使用者選單 */}
+          <div
+            className={`member-mobile-menu d-md-none ${userDropdownOpen ? 'open' : ''}`}
+          >
+            <ul className="px-0">
+              {sidebarItems.map((item, i) => (
+                <li key={i}>
+                  <Link
+                    to={item.path}
+                    className="dropdown-item"
+                    onClick={() => setUserDropdownOpen(false)}
+                  >
+                    {item.title}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setUserDropdownOpen(false);
+                  }}
+                  className="dropdown-item"
+                >
+                  登出
+                </button>
+              </li>
+            </ul>
+          </div>
+        </>
+      )}
 
       {/* 桌電版 */}
       <div className=" d-flex min-vh-100">

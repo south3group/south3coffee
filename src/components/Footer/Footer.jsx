@@ -17,10 +17,10 @@ const Footer = () => {
             </span>
           </Link>
           <div className="d-flex flex-column flex-md-row justify-content-evenly align-items-center footer-top">
-            <Link to="/" className="footer-top-link">
+            <Link to="/products" className="footer-top-link">
               商品資訊
             </Link>
-            <Link to="/" className="footer-top-link">
+            <Link to="/cart" className="footer-top-link">
               聯絡我們
             </Link>
           </div>

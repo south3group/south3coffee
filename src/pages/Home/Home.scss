@@ -1,0 +1,24 @@
+.banner-container {
+  position: relative; 
+}
+
+.banner-text {
+  position: absolute;
+  top: 33%;
+  left: 7%;
+  color: white;
+  // text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.homeTitle h1{
+  font-size: 3vw; // 根據螢幕寬度調整字體大小
+  font-weight: bold;
+  margin: 0;
+}
+
+.homeTitle p {
+  font-size: 1.5vw;
+  margin-top: 0.5rem;
+}
+

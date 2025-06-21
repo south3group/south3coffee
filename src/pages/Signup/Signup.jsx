@@ -89,6 +89,7 @@ const Signup = () => {
         const msg = err.response?.data?.message || '發生錯誤';
         setModalMsg(msg);
         setIsOpen(true);
+        console.log(err);
       });
   };
 
