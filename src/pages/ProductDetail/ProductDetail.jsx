@@ -21,9 +21,17 @@ const ProductDetail = () => {
   const [mainImage, setMainImage] = useState('');
   const [product, setProduct] = useState(null);
 
+  const [addingId, setAddingId] = useState(null);
+
   const navigate = useNavigate();
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalMsg, setModalMsg] = useState('');
+
   const [showTopBtn, setShowTopBtn] = useState(false);
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const route = `${apiUrl}/api/v1/products/${product_id}`;
 
   const classificationNameMap = {
     Taiwan: '台灣咖啡豆系列',
@@ -49,6 +57,13 @@ const ProductDetail = () => {
   };
 
   useEffect(() => {
+    if (product === null) return;
+    if (!product?.id) {
+      navigate('/products');
+    }
+  }, [product, navigate]);
+
+  useEffect(() => {
     const handleScroll = () => {
       setShowTopBtn(window.scrollY > 300);
     };
@@ -57,30 +72,62 @@ const ProductDetail = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // 取單商品詳情
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-    const route = `${apiUrl}/api/v1/products/${product_id}`;
-
-    const fetchProduct = async () => {
-      try {
-        const res = await axios.get(route);
+    axios
+      .get(route)
+      .then((res) => {
         const data = res.data.data;
-
-        console.log('API Response:', data);
 
         if (data) {
           setProduct(data);
           setMainImage(data.image_url || thumbnailUrls[0]);
         } else {
-          console.error('未找到商品資料');
+          navigate('/products');
         }
-      } catch (err) {
-        console.error('取得商品失敗', err);
-      }
-    };
-
-    fetchProduct();
+      })
+      .catch(() => {
+        setProduct({});
+        navigate('/products');
+      });
   }, [product_id]);
+
+  // 加入購物車
+  const handleAddToCart = async () => {
+    if (!product) return;
+
+    try {
+      setAddingId(true);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setModalMsg('尚未登入，請先登入會員');
+        setIsOpen(true);
+        return;
+      }
+
+      await axios.post(
+        `${apiUrl}/api/v1/users/membership/cart`,
+        {
+          product_id: product.id,
+          quantity: quantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      setModalMsg('已加入購物車');
+    } catch (error) {
+      const msg = error.response?.data?.message || '加入失敗，請稍後再試';
+      setModalMsg(msg);
+    } finally {
+      setAddingId(false);
+      setIsOpen(true);
+    }
+  };
 
   // 數量加減事件
   const handleDecrease = () => {
@@ -101,7 +148,7 @@ const ProductDetail = () => {
   };
 
   if (!product) {
-    return <div>載入中...</div>;
+    return <div></div>;
   }
 
   return (
@@ -208,13 +255,21 @@ const ProductDetail = () => {
                         </div>
                         <p className="text-title m-0">詳細資訊</p>
                       </div>
-                      <p className="text-content">品種：{product.variety || ' '}</p>
+                      <p className="text-content">
+                        品種：{product.variety || ' '}
+                      </p>
                       <p className="text-content">
                         處理方式：{product.process_method || ' '}
                       </p>
-                      <p className="text-content">酸度：{product.acidity || ' '}</p>
-                      <p className="text-content">甜感：{product.flavor || ' '}</p>
-                      <p className="text-content">尾顏：{product.aftertaste || ' '}</p>
+                      <p className="text-content">
+                        酸度：{product.acidity || ' '}
+                      </p>
+                      <p className="text-content">
+                        甜感：{product.flavor || ' '}
+                      </p>
+                      <p className="text-content">
+                        尾顏：{product.aftertaste || ' '}
+                      </p>
                     </div>
 
                     {/* 購買相關 */}
@@ -260,15 +315,19 @@ const ProductDetail = () => {
                         </div>
 
                         <div className="product-order-options-stock">
-                          庫存：999
+                          庫存：{product.stock || 999}
                         </div>
                       </div>
 
-                      <div className="product-price">NTD$800</div>
+                      <div className="product-price">NTD${product.price || 999}</div>
                     </div>
 
-                    <button className="product-main-cart border-0">
-                      加入購物車
+                    <button
+                      className="product-main-cart border-0"
+                      onClick={handleAddToCart}
+                      disabled={addingId}
+                    >
+                      {addingId ? '加入中...' : '加入購物車'}
                     </button>
                   </div>
 
@@ -492,6 +551,40 @@ const ProductDetail = () => {
         </div>
         <div></div>
       </div>
+
+      {/* Modal */}
+      {isOpen && (
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">註冊失敗</h5>
+                <button
+                  type="button"
+                  className="custom-modal-close"
+                  onClick={() => setIsOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="custom-modal-btn"
+                  onClick={() => setIsOpen(false)}
+                >
+                  關閉
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showTopBtn && (
         <button className="back-to-top" onClick={scrollToTop}>

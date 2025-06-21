@@ -9,22 +9,21 @@ import { images } from '../../constants/image';
 const Products = () => {
   const [classifications, setClassifications] = useState([]);
   const classificationNameMap = {
-    Taiwan: '台灣咖啡豆系列',
-    SouthAsia: '東南亞咖啡豆',
-    LatinAmerica: '中南美洲咖啡豆',
-    AficaSeries: '非洲咖啡豆',
-    Others: '相關用品及其他',
+    台灣咖啡豆系列: 'Taiwan',
+    東南亞咖啡豆系列: 'South Asia',
+    中南美洲咖啡豆系列: 'Latin America',
+    非洲咖啡豆系列: 'Africa Series',
+    相關用品及其他: 'Others',
   };
 
   const [products, setProducts] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
-
   const [searchParams] = useSearchParams();
   const classification = searchParams.get('classification') || '';
-
   const page = parseInt(searchParams.get('page')) || 1;
-
   const [showTopBtn, setShowTopBtn] = useState(false);
+
+  const [addingId, setAddingId] = useState(null);
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
@@ -51,16 +50,16 @@ const Products = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // 取得商品
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(route, {
-          params: {
-            classification,
-            page,
-          },
-        });
-
+    axios
+      .get(route, {
+        params: {
+          classification,
+          page,
+        },
+      })
+      .then((res) => {
         const data = res.data.data;
 
         setProducts(data.products);
@@ -69,20 +68,51 @@ const Products = () => {
         const total = data.total;
         const perPage = 6;
         setTotalPages(Math.ceil(total / perPage));
-        console.log('API Response:', data); 
-
-      } catch (err) {
+      })
+      .catch((err) => {
         const msg = err.response?.data?.message || '發生錯誤';
         setModalMsg(msg);
         setIsOpen(true);
         setProducts([]);
         setTotalPages(1);
-        navigate('/product');
-      }
-    };
-
-    fetchData();
+        navigate('/products');
+      });
   }, [classification, page]);
+
+  // 加入購物車
+  const handleAddToCart = async (productId) => {
+    try {
+      setAddingId(productId);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setModalMsg('尚未登入，請先登入會員');
+        setIsOpen(true);
+        return;
+      }
+
+      await axios.post(
+        `${apiUrl}/api/v1/users/membership/cart`,
+        {
+          product_id: productId,
+          quantity: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      setModalMsg('已加入購物車');
+    } catch (error) {
+      const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
+      setModalMsg(msg);
+    } finally {
+      setAddingId(null);
+      setIsOpen(true);
+    }
+  };
 
   return (
     <>
@@ -117,9 +147,7 @@ const Products = () => {
                     to={`/products?classification=${classification}`}
                     className="products-breadcrumb-link"
                   >
-                    {classification
-                      ? classificationNameMap[classification] || classification
-                      : '所有商品'}
+                    {classification ? classification : '所有商品'}
                   </Link>
                 </li>
               </>
@@ -137,7 +165,7 @@ const Products = () => {
                       to={`/products?classification=${encodeURIComponent(item.name)}&page=1`}
                       className={`products-sidebar-link ${item.name === classification ? 'active' : ''}`}
                     >
-                      {classificationNameMap[item.name] || item.name}
+                      {item.name}
                     </Link>
                   </li>
                 ))}
@@ -148,13 +176,13 @@ const Products = () => {
               {/* 分類名稱 */}
               <div className="products-title">
                 <p className="products-title-chinese m-0">
-                  {classification
-                    ? classificationNameMap[classification] || classification
-                    : '所有商品'}
+                  {classification ? classification : '所有商品'}
                 </p>
                 <span className="products-title-line"></span>
                 <p className="products-title-english m-0">
-                  {classification || 'All Products'}
+                  {classification
+                    ? classificationNameMap[classification] || classification
+                    : 'All Products'}
                 </p>
               </div>
 
@@ -211,8 +239,12 @@ const Products = () => {
                           </Link>
                         </div>
                       </div>
-                      <button className="btn products-card-btn rounded-0">
-                        加入購物車
+                      <button
+                        className="btn products-card-btn rounded-0"
+                        onClick={() => handleAddToCart(product.id)}
+                        disabled={addingId === product.id}
+                      >
+                        {addingId === product.id ? '加入中...' : '加入購物車'}
                       </button>
                     </div>
                   </div>
@@ -279,11 +311,14 @@ const Products = () => {
           <div className="modal-dialog custom-modal-dialog">
             <div className="modal-content custom-modal-content">
               <div className="modal-header custom-modal-header">
-                <h5 className="custom-modal-title">註冊失敗</h5>
+                <h5 className="custom-modal-title">載入失敗</h5>
                 <button
                   type="button"
                   className="custom-modal-close"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/products');
+                  }}
                 >
                   ✕
                 </button>
@@ -293,7 +328,10 @@ const Products = () => {
                 <button
                   type="button"
                   className="custom-modal-btn"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/products');
+                  }}
                 >
                   關閉
                 </button>

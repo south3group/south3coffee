@@ -77,11 +77,13 @@ const Login = () => {
       .then((res) => {
         const token = res.data.data.token;
         const name = res.data.data.user.name;
-        const role = 'USER';
+        const role = res.data.data.user.role;
 
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('username', name);
+
+        console.log(res)
 
         dispatch(setCredentials({ token, role, username: name }));
 
