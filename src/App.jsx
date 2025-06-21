@@ -16,6 +16,9 @@ import ProductDetail from './pages/ProductDetail/ProductDetail';
 import OrderList from './pages/OrderList/OrderList';
 import OrderDetail from './pages/OrderDetail/OrderDetail';
 import CartList from './pages/CartList/CartList';
+import PaySuccess from './pages/Payment/PaySuccess';
+import PayError from './pages/Payment/PayError';
+import Checkout from './pages/Checkout/Checkout';
 
 const App = () => {
   return (
@@ -34,8 +37,11 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/products" element={<Products />} />
-        <Route path="/products/detail" element={<ProductDetail />} />
+        <Route path="/products/:product_id" element={<ProductDetail />} />
         <Route path="/cart" element={<CartList />} />
+        <Route path="/payment/success" element={<PaySuccess />} />
+        <Route path="/payment/error" element={<PayError />} />
+        <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </>
   );
