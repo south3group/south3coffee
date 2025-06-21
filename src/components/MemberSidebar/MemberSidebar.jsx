@@ -8,7 +8,7 @@ const MemberSidebar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { token, username, isAuthChecked } = useSelector((state) => state.auth);
+  const { token, username, isAuthChecked, role } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,16 +16,16 @@ const MemberSidebar = ({ children }) => {
   const [_, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  // useEffect(() => {
-  //   dispatch(checkAuth());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (isAuthChecked && !token) {
-  //     dispatch(logout());
-  //     navigate('/login');
-  //   }
-  // }, [isAuthChecked, token, dispatch, navigate]);
+  useEffect(() => {
+    if (isAuthChecked && !token || role !== 'USER') {
+      dispatch(logout());
+      navigate('/login');
+    }
+  }, [isAuthChecked, token, role, dispatch, navigate]);
 
   const sidebarItems = [
     { title: '會員中心', path: '/member' },

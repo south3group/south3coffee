@@ -11,9 +11,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px 12px 40px 12px;
+  padding: 0 12px 40px 12px;
   @media (min-width: 768px) {
     gap: 40px;
+    padding: 0;
     padding-bottom: 40px;
   }
 
@@ -43,9 +44,12 @@
     }
 
     &-line {
-      width: 520px;
+      width: 100%;
       height: 1px;
       background-color: $coffee-primary-500;
+      @media (min-width: 768px) {
+        width: 520px;
+      }
     }
 
     &-english {
@@ -60,9 +64,9 @@
   .products-container {
     display: flex;
     flex-direction: column;
-    gap: 32px;
-    max-width: 1280px;
+    gap: 16px;
     @media (min-width: 768px) {
+      max-width: 1280px;
       gap: 40px;
     }
 
@@ -129,15 +133,22 @@
         display: flex;
         flex-direction: column;
         gap: 40px;
+
         .products-card {
+          flex: 1;
           display: flex;
           flex-direction: row;
           justify-content: center;
           flex-wrap: wrap;
           gap: 28px 16px;
 
+          @media (min-width: 768px) {
+            justify-content: start;
+          }
+
           &-custom {
-            max-width: 320px;
+            width: 320px;
+            max-width: 350px;
             word-break: break-word;
             overflow-wrap: break-word;
             display: flex;
@@ -159,9 +170,14 @@
           }
 
           &-title {
+            flex: 1;
+            width: 100%;
             font-size: 2.8rem;
             color: $coffee-primary-700;
             font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
 
             &-detail {
               display: flex;
@@ -212,14 +228,19 @@
             }
 
             .text-content {
+              font-size: 1.6rem;
               display: -webkit-box;
-              -webkit-line-clamp: 2;
-              -webkit-box-orient: vertical;
+              white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
-              word-break: break-word;
-              line-height: 1.5;
-              max-height: calc(1.5em * 3);
+
+              @media (min-width: 768px) {
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                word-break: break-word;
+                line-height: 1.5;
+                max-height: calc(1.5em * 2);
+              }
             }
           }
 
@@ -227,6 +248,7 @@
             display: flex;
             flex-direction: row;
             justify-content: space-between;
+            align-items: center;
             margin-top: auto;
 
             .card-price {
@@ -343,7 +365,6 @@
         overflow-x: auto;
         padding: 0;
 
-      
         @media (min-width: 768px) {
           display: flex;
           flex-direction: column;
@@ -589,9 +610,11 @@
         .title-detail {
           font-size: 1.8rem;
           font-weight: 900;
+          padding-top: 16px;
           color: $coffee-primary-900;
           @media (min-width: 768px) {
             font-size: 2.4rem;
+            padding: 0;
           }
         }
 
@@ -624,7 +647,8 @@
         }
 
         &-top {
-          flex-direction: column;
+          display: flex;
+          flex-direction: row;
           gap: 16px;
           @media (min-width: 768px) {
             flex-direction: row;
@@ -639,6 +663,8 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            width: 100%;
+            flex-wrap: nowrap;
 
             &-text {
               display: flex;
@@ -710,49 +736,49 @@
     .detail-container {
       flex-direction: row;
       gap: 24px;
-  
+
       .img-custom-layout {
         display: flex;
         flex-direction: row;
         align-items: flex-start;
         gap: 16px;
       }
-  
+
       .product-thumbnails {
         flex-direction: column;
         width: 100px;
         gap: 12px;
         overflow: visible;
       }
-  
+
       .product-main {
         flex-direction: row;
         gap: 32px;
-  
+
         &-img {
           width: 578px;
           height: auto;
           flex-shrink: 0;
         }
-  
+
         &-content {
           flex: 1;
           padding: 32px;
           gap: 40px;
         }
-  
+
         &-summary {
           flex-direction: row;
           justify-content: space-between;
-  
+
           .product-order-options {
             flex-direction: row;
             gap: 24px;
-  
+
             &-quantity {
               flex-direction: row;
               justify-content: space-between;
-  
+
               .quantity-decrease,
               .quantity-increase {
                 flex-direction: row;
@@ -760,26 +786,68 @@
               }
             }
           }
-  
+
           &-cart {
             width: auto;
           }
         }
       }
-  
+
       .reviews-custom {
         flex-direction: row;
         justify-content: space-between;
-  
+
         .reviews-select {
           flex-direction: row;
         }
-  
+
         .reviews-box {
           width: 250px;
         }
       }
     }
   }
-  
+}
+
+// 回到上一頁
+.go-back-btn {
+  background-color: $coffee-primary-700;
+  color: $coffee-primary-000;
+  border: none;
+  padding: 8px 16px;
+  font-size: 1.6rem;
+
+  @media (min-width: 768px) {
+    margin-left: auto;
+    max-width: 150px;
+  }
+
+  &:hover {
+    background-color: $coffee-primary-300;
+  }
+
+  &:active {
+    background-color: $coffee-primary-800;
+    color: $coffee-primary-000;
+  }
+}
+
+// 回到頂部
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 24px;
+  z-index: 1000;
+  background-color: $coffee-primary-800;
+  color: $coffee-primary-000;
+  border: none;
+  padding: 8px 16px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  opacity: 0.4;
+
+  &:hover {
+    opacity: 1;
+  }
 }

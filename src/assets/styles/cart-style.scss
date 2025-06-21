@@ -416,7 +416,7 @@
           color: $coffee-grey-000;
           background-color: $coffee-grey-200;
           padding: 8px 16px;
-          letter-spacing:0;
+          letter-spacing: 0;
         }
       }
     }
@@ -601,7 +601,7 @@
     justify-content: center;
     gap: 16px;
     max-width: 100%;
-  overflow-x: hidden;
+    overflow-x: hidden;
 
     // 箭頭
     &-btn {
@@ -635,7 +635,7 @@
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
       gap: 16px;
-      
+
       &::-webkit-scrollbar {
         display: none;
       }
@@ -655,7 +655,7 @@
       align-items: center;
       justify-content: center;
       gap: 40px;
-    
+
       @media (min-width: 768px) {
         padding: 0;
       }
@@ -781,5 +781,15 @@
         }
       }
     }
+  }
+}
+
+.narrow-banner {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  object-position: bottom;
+  @media (min-width: 768px) {
+    max-height: 480px;
   }
 }
