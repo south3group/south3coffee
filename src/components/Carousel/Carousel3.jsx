@@ -32,7 +32,7 @@ const Carousel3 = () => {
         <div className="container-fluid">
           <div className="row justify-content-center mb-4">
             <div className="col-12 col-lg-8">
-              <div className="rounded-3 overflow-hidden shadow-lg">
+              <div className="overflow-hidden shadow-lg">
                 <img
                   src={Carousel3Img}
                   alt="Coffee beans closeup"

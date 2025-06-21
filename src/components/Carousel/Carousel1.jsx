@@ -44,7 +44,7 @@ const Carousel1 = () => {
       <div className="flex-grow-1 d-flex flex-column align-items-center px-2 px-md-4">
         {/* 圖片 */}
         <div className="mb-4 w-100" style={{ maxWidth: '100%' }}>
-          <div className="rounded-3 overflow-hidden shadow-lg">
+          <div className="overflow-hidden shadow-lg">
             <img
               src={Carousel1Img}
               alt="Coffee beans on plant"
