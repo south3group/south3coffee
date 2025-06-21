@@ -4,8 +4,9 @@ import axios from 'axios';
 import Header from '../../components/Header/Header';
 import '../../pages/Home/Home.scss';
 import Footer from '../../components/Footer/Footer';
-import Banner from '../../components/Banner/Banner';
+import HomeBanner from '../../components/Banner/HomeBanner';
 import About from '../../components/Abouts/About';
+import Carousel from '../../components/Carousel/Carousel';
 
 import logo1 from '../../assets/Images/competition-logo1.png';
 import logo2 from '../../assets/Images/competition-logo2.png';
@@ -18,14 +19,13 @@ const Home = () => {
   return (
     <>
       <Header />
+
+      <div className="banner-container">
+        <HomeBanner />
+      </div>
+
       <div>
-        <div className="banner-container">
-          <Banner />
-        </div>
-        <div className="banner-text homeTitle">
-          <h1>築一個屬於你的咖啡故事 </h1>
-          <p>「為夢想而品味，為品質而築造。」</p>
-        </div>
+        <Carousel autoPlay={true} interval={15000} />
       </div>
 
       {/* 賽事認證 */}
