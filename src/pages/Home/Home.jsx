@@ -6,6 +6,7 @@ import '../../pages/Home/Home.scss';
 import Footer from '../../components/Footer/Footer';
 import Banner from '../../components/Banner/Banner';
 import About from '../../components/Abouts/About';
+import Carousel from '../../components/Carousel/Carousel';
 
 import logo1 from '../../assets/Images/competition-logo1.png';
 import logo2 from '../../assets/Images/competition-logo2.png';
@@ -26,6 +27,10 @@ const Home = () => {
           <h1>築一個屬於你的咖啡故事 </h1>
           <p>「為夢想而品味，為品質而築造。」</p>
         </div>
+      </div>
+
+      <div>
+        <Carousel autoPlay={true} interval={15000} />
       </div>
 
       {/* 賽事認證 */}
