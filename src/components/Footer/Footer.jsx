@@ -20,7 +20,7 @@ const Footer = () => {
             <Link to="/products" className="footer-top-link">
               商品資訊
             </Link>
-            <Link to="/cart" className="footer-top-link">
+            <Link to="/contact" className="footer-top-link">
               聯絡我們
             </Link>
           </div>
