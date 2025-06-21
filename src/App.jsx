@@ -17,6 +17,7 @@ import OrderList from './pages/OrderList/OrderList';
 import OrderDetail from './pages/OrderDetail/OrderDetail';
 import CartList from './pages/CartList/CartList';
 import Checkout from './pages/Checkout/Checkout';
+import CreateOrder from './pages/CreateOrder/CreateOrder';
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
         <Route path="/products" element={<Products />} />
         <Route path="/products/:product_id" element={<ProductDetail />} />
         <Route path="/cart" element={<CartList />} />
+        <Route path="/create-order" element={<CreateOrder />} />
         <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </>
