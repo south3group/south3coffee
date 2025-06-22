@@ -31,20 +31,52 @@ const CartList = () => {
         },
       });
 
-      const cartData = res.data?.data?.cart;
+      const cartData = res.data?.data?.items;
+      const cartInfo = res.data?.data;
 
       if (!Array.isArray(cartData)) {
         throw new Error('從伺服器收到的購物車資料格式不正確');
       }
 
       setCartItems(
-        cartData.map((item) => ({ ...item, quantity: item.quantity || 1 })),
+        cartData.map((item) => ({
+          product: {
+            id: item.product_id,
+            name: item.name,
+            image_url: item.image_url,
+            price: item.price,
+          },
+          quantity: item.quantity || 1,
+          price: item.price,
+        })),
       );
+
+      if (cartInfo && typeof cartInfo.final_price !== 'undefined') {
+        setTotal(cartInfo.final_price);
+      } else {
+        const newTotal = cartData.reduce(
+          (acc, item) => acc + item.price * (item.quantity || 1),
+          0,
+        );
+        setTotal(newTotal);
+      }
+
+      // 當從 API 載入購物車時，預設全選
+      const allItemIds = new Set(cartData.map((item) => item.product_id));
+      setSelectedItems(allItemIds);
     } catch (error) {
-      const msg =
-        error.response?.data?.message || error.message || '取得購物車失敗';
-      setModalMsg(msg);
-      setIsOpen(true);
+      if (
+        error.response?.status === 404 ||
+        error.response?.data?.message === '購物車是空的'
+      ) {
+        setCartItems([]);
+        setTotal(0);
+      } else {
+        const msg =
+          error.response?.data?.message || error.message || '取得購物車失敗';
+        setModalMsg(msg);
+        setIsOpen(true);
+      }
     }
   };
 
@@ -53,16 +85,10 @@ const CartList = () => {
   }, []);
 
   useEffect(() => {
-    if (cartItems.length > 0) {
-      const allItemIds = new Set(cartItems.map((item) => item.product.id));
-      setSelectedItems(allItemIds);
-    }
-  }, [cartItems]);
-
-  useEffect(() => {
+    // 當購物車項目或選中項目改變時，重新計算總金額
     const newTotal = cartItems
       .filter((item) => selectedItems.has(item.product.id))
-      .reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+      .reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotal(newTotal);
   }, [cartItems, selectedItems]);
 
@@ -235,131 +261,163 @@ const CartList = () => {
                     </div>
 
                     {/* 桌電版 */}
-                    <table className="d-none d-md-table table cart-custom-table m-0 ">
-                      <thead className="cart-custom-style">
-                        <tr>
-                          <th scope="col" className="cart-custom-style-th">
-                            <input
-                              type="checkbox"
-                              className="checkbox-custom"
-                              onChange={handleSelectAll}
-                              checked={
-                                cartItems.length > 0 &&
-                                selectedItems.size === cartItems.length
-                              }
-                            />
-                          </th>
-                          <th scope="col" className="cart-custom-style-th">
-                            商品圖片
-                          </th>
-                          <th scope="col" className="cart-custom-style-th">
-                            商品名稱
-                          </th>
-                          <th scope="col" className="cart-custom-style-th">
-                            單價
-                          </th>
-                          <th scope="col" className="cart-custom-style-th">
-                            數量
-                          </th>
-                          <th scope="col" className="cart-custom-style-th">
-                            小計
-                          </th>
-                          <th scope="col" className="cart-custom-style-th"></th>
-                        </tr>
-                      </thead>
-                      <tbody className="cart-custom-tbody">
-                        {cartItems.map((item) => (
-                          <tr key={item.product.id}>
-                            <th scope="row" className="cart-custom-tbody-th">
+                    <div className="d-none d-md-block">
+                      <table className="table cart-custom-table m-0">
+                        <colgroup>
+                          <col style={{ width: '5%' }} />
+                          <col style={{ width: '15%' }} />
+                          <col style={{ width: '30%' }} />
+                          <col style={{ width: '15%' }} />
+                          <col style={{ width: '15%' }} />
+                          <col style={{ width: '15%' }} />
+                          <col style={{ width: '5%' }} />
+                        </colgroup>
+                        <thead className="cart-custom-style">
+                          <tr>
+                            <th scope="col" className="cart-custom-style-th">
                               <input
                                 type="checkbox"
                                 className="checkbox-custom"
-                                checked={selectedItems.has(item.product.id)}
-                                onChange={() =>
-                                  handleSelectItem(item.product.id)
+                                onChange={handleSelectAll}
+                                checked={
+                                  cartItems.length > 0 &&
+                                  selectedItems.size === cartItems.length
                                 }
                               />
                             </th>
-                            <td className="cart-custom-tbody-td cart-product">
-                              <img
-                                src={item.product.image_url}
-                                alt={item.product.name}
-                                className="cart-product-img"
-                              />
-                            </td>
-                            <td className="cart-custom-tbody-td">
-                              {item.product.name}
-                            </td>
-                            <td className="cart-custom-tbody-td">
-                              <p className="box-currency m-0">
-                                NTD$ <span>{item.product.price}</span>
-                              </p>
-                            </td>
-                            <td className="cart-custom-tbody-td">
-                              {/* 增減數量 */}
-                              <div className="order-options">
-                                <div className="order-options-quantity">
-                                  <button
-                                    type="button"
-                                    className="quantity-decrease"
-                                    onClick={() => handleDecrease(item)}
-                                  >
-                                    <div className="decrease-icon">
-                                      <img
-                                        src={images.productDecrease}
-                                        alt="product-decrease"
-                                        className="decrease-detail"
-                                      />
+                            <th scope="col" className="cart-custom-style-th">
+                              商品圖片
+                            </th>
+                            <th scope="col" className="cart-custom-style-th">
+                              商品名稱
+                            </th>
+                            <th scope="col" className="cart-custom-style-th">
+                              單價
+                            </th>
+                            <th scope="col" className="cart-custom-style-th">
+                              數量
+                            </th>
+                            <th scope="col" className="cart-custom-style-th">
+                              小計
+                            </th>
+                            <th
+                              scope="col"
+                              className="cart-custom-style-th"
+                            ></th>
+                          </tr>
+                        </thead>
+                      </table>
+                      <div className="table-body-scroll-container">
+                        <table className="table cart-custom-table m-0">
+                          <colgroup>
+                            <col style={{ width: '5%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '30%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '5%' }} />
+                          </colgroup>
+                          <tbody className="cart-custom-tbody">
+                            {cartItems.map((item) => (
+                              <tr key={item.product.id}>
+                                <th
+                                  scope="row"
+                                  className="cart-custom-tbody-th"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    className="checkbox-custom"
+                                    checked={selectedItems.has(item.product.id)}
+                                    onChange={() =>
+                                      handleSelectItem(item.product.id)
+                                    }
+                                  />
+                                </th>
+                                <td className="cart-custom-tbody-td cart-product">
+                                  <img
+                                    src={item.product.image_url}
+                                    alt={item.product.name}
+                                    className="cart-product-img"
+                                  />
+                                </td>
+                                <td className="cart-custom-tbody-td">
+                                  {item.product.name}
+                                </td>
+                                <td className="cart-custom-tbody-td">
+                                  <p className="box-currency m-0">
+                                    NTD$ <span>{item.product.price}</span>
+                                  </p>
+                                </td>
+                                <td className="cart-custom-tbody-td">
+                                  {/* 增減數量 */}
+                                  <div className="order-options">
+                                    <div className="order-options-quantity">
+                                      <button
+                                        type="button"
+                                        className="quantity-decrease"
+                                        onClick={() => handleDecrease(item)}
+                                      >
+                                        <div className="decrease-icon">
+                                          <img
+                                            src={images.productDecrease}
+                                            alt="product-decrease"
+                                            className="decrease-detail"
+                                          />
+                                        </div>
+                                      </button>
+                                      <div className="quantity-value">
+                                        <input
+                                          type="number"
+                                          className="value-input border-0"
+                                          value={item.quantity}
+                                          onChange={(e) =>
+                                            handleChange(e, item)
+                                          }
+                                          min={minValue}
+                                        />
+                                      </div>
+                                      <button
+                                        type="button"
+                                        className="quantity-increase"
+                                        onClick={() => handleIncrease(item)}
+                                      >
+                                        <div className="increase-icon">
+                                          <img
+                                            src={images.productIncrease}
+                                            alt="product-increase"
+                                            className="increase-detail"
+                                          />
+                                        </div>
+                                      </button>
                                     </div>
-                                  </button>
-                                  <div className="quantity-value">
-                                    <input
-                                      type="number"
-                                      className="value-input border-0"
-                                      value={item.quantity}
-                                      onChange={(e) => handleChange(e, item)}
-                                      min={minValue}
+                                  </div>
+                                </td>
+                                <td className="cart-custom-tbody-td">
+                                  <p className="box-currency m-0">
+                                    NTD${' '}
+                                    <span>
+                                      {item.product.price * item.quantity}
+                                    </span>
+                                  </p>
+                                </td>
+                                <td className="cart-custom-tbody-td">
+                                  <div
+                                    className="del-icon"
+                                    onClick={() => removeItem(item.product.id)}
+                                  >
+                                    <img
+                                      src={images.delIcon}
+                                      alt="delete icon-detail"
                                     />
                                   </div>
-                                  <button
-                                    type="button"
-                                    className="quantity-increase"
-                                    onClick={() => handleIncrease(item)}
-                                  >
-                                    <div className="increase-icon">
-                                      <img
-                                        src={images.productIncrease}
-                                        alt="product-increase"
-                                        className="increase-detail"
-                                      />
-                                    </div>
-                                  </button>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="cart-custom-tbody-td">
-                              <p className="box-currency m-0">
-                                NTD${' '}
-                                <span>
-                                  {item.product.price * item.quantity}
-                                </span>
-                              </p>
-                            </td>
-                            <td className="cart-custom-tbody-td">
-                              <div
-                                className="del-icon"
-                                onClick={() => removeItem(item.product.id)}
-                              >
-                                <img
-                                  src={images.delIcon}
-                                  alt="delete icon-detail"
-                                />
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </>
                 ) : (
                   <table className="table cart-custom-table m-0 ">
@@ -448,7 +506,7 @@ const CartList = () => {
                   <button
                     type="button"
                     className="coupon-check-proceed border-0"
-                    onClick={() => navigate('/checkout')}
+                    onClick={() => navigate('/create-order')}
                   >
                     前往結帳
                   </button>
