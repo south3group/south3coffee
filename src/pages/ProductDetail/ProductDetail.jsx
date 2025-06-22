@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  useParams,
+  useNavigate,
+} from 'react-router-dom';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -31,19 +35,8 @@ const ProductDetail = () => {
   const [showTopBtn, setShowTopBtn] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
-  const route = `${apiUrl}/api/v1/products/${product_id}`;
-
-  const classificationNameMap = {
-    Taiwan: '台灣咖啡豆系列',
-    SouthAsia: '東南亞咖啡豆',
-    LatinAmerica: '中南美洲咖啡豆',
-    AficaSeries: '非洲咖啡豆',
-    Others: '相關用品及其他',
-  };
-  const classificationName = product
-    ? classificationNameMap[product.classification_name] ||
-      product.classification_name
-    : '';
+  const productRoute = `${apiUrl}/api/v1/products/${product_id}`;
+  const cartRoute = `${apiUrl}/api/v1/cart`;
 
   const handleGoBack = () => {
     navigate('/products');
@@ -75,7 +68,7 @@ const ProductDetail = () => {
   // 取單商品詳情
   useEffect(() => {
     axios
-      .get(route)
+      .get(productRoute)
       .then((res) => {
         const data = res.data.data;
 
@@ -93,20 +86,21 @@ const ProductDetail = () => {
   }, [product_id]);
 
   // 加入購物車
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!product) return;
 
-    try {
-      setAddingId(true);
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setModalMsg('尚未登入，請先登入會員');
-        setIsOpen(true);
-        return;
-      }
+    setAddingId(true);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setModalMsg('尚未登入，請先登入會員');
+      setIsOpen(true);
+      setAddingId(false);
+      return;
+    }
 
-      await axios.post(
-        `${apiUrl}/api/v1/users/membership/cart`,
+    axios
+      .post(
+        cartRoute,
         {
           product_id: product.id,
           quantity: quantity,
@@ -117,16 +111,18 @@ const ProductDetail = () => {
             'Content-Type': 'application/json',
           },
         },
-      );
-
-      setModalMsg('已加入購物車');
-    } catch (error) {
-      const msg = error.response?.data?.message || '加入失敗，請稍後再試';
-      setModalMsg(msg);
-    } finally {
-      setAddingId(false);
-      setIsOpen(true);
-    }
+      )
+      .then(() => {
+        setModalMsg('已加入購物車');
+      })
+      .catch((error) => {
+        const msg = error.response?.data?.message || '加入失敗，請稍後再試';
+        setModalMsg(msg);
+      })
+      .finally(() => {
+        setAddingId(false);
+        setIsOpen(true);
+      });
   };
 
   // 數量加減事件
@@ -173,7 +169,7 @@ const ProductDetail = () => {
             <li className="products-breadcrumb-arrow">&gt;</li>
             <li className="products-breadcrumb-item">
               <Link to="/products" className="products-breadcrumb-link">
-                {classificationName}
+                所有商品
               </Link>
             </li>
           </ul>
@@ -319,7 +315,9 @@ const ProductDetail = () => {
                         </div>
                       </div>
 
-                      <div className="product-price">NTD${product.price || 999}</div>
+                      <div className="product-price">
+                        NTD${product.price || 999}
+                      </div>
                     </div>
 
                     <button
