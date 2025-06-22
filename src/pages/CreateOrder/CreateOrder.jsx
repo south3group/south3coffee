@@ -10,39 +10,94 @@ import { images } from '../../constants/image';
 const CreateOrder = () => {
   const [orderData, setOrderData] = useState(null);
 
+  const [showTopBtn, setShowTopBtn] = useState(false);
+
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
 
   const navigate = useNavigate();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const getRoute = `${apiUrl}/api/v1/users/orderReview`;
+  const postRoute = `${apiUrl}/api/v1/users/membership/order`;
+
+  // top 按鈕
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowTopBtn(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // 取得訂單
   useEffect(() => {
-    const fetchOrderReview = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get(
-          'http://localhost:8080/api/v1/users/orderReview',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
+    const token = localStorage.getItem('token');
+
+    axios
+      .get(getRoute, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
         setOrderData(res.data.data);
-      } catch (err) {
+      })
+      .catch((err) => {
         if (err.response?.status === 401) {
           localStorage.removeItem('token');
           navigate('/');
-        } else {
-            const msg = err.response?.data?.message || '發生錯誤';
-            setModalMsg(msg);
-            setIsOpen(true);
+          return;
         }
-      }
-    };
-
-    fetchOrderReview();
+        const msg = err.response?.data?.message || '發生錯誤';
+        setModalMsg(msg);
+        setIsOpen(true);
+      });
   }, [navigate]);
+
+  //建立訂單
+  const handleCreateOrder = () => {
+    const token = localStorage.getItem('token');
+
+    axios
+      .post(
+        postRoute,
+        {
+          // BODY
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      .then((res) => {
+        navigate('/checkout');
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          const msg = err.response?.data?.message || '';
+          if (msg.includes('JWT') || msg.includes('token')) {
+            localStorage.removeItem('token');
+            navigate('/login');
+          }
+          navigate('/');
+          return;
+        }
+
+        const msg = err.response?.data?.message || '發生錯誤';
+        setModalMsg(msg);
+        setIsOpen(true);
+      });
+  };
 
   if (!orderData) return <div>Loading...</div>;
 
@@ -295,6 +350,7 @@ const CreateOrder = () => {
                         <button
                           type="button"
                           className="total-check-proceed border-0"
+                          onClick={handleCreateOrder}
                         >
                           前往付款
                         </button>
@@ -308,6 +364,13 @@ const CreateOrder = () => {
         </div>
         <div></div>
       </div>
+
+      {/* top */}
+      {showTopBtn && (
+        <button className="back-to-top" onClick={scrollToTop}>
+          <img src={images.topBtn} alt="back to top btn" />
+        </button>
+      )}
 
       {/* Modal */}
       {isOpen && (
