@@ -21,7 +21,7 @@ const MemberSidebar = ({ children }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isAuthChecked && !token || role !== 'USER') {
+    if (isAuthChecked && !token ) {
       dispatch(logout());
       navigate('/login');
     }

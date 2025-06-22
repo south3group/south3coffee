@@ -311,7 +311,7 @@ const Products = () => {
           <div className="modal-dialog custom-modal-dialog">
             <div className="modal-content custom-modal-content">
               <div className="modal-header custom-modal-header">
-                <h5 className="custom-modal-title">載入失敗</h5>
+                <h5 className="custom-modal-title">系統訊息</h5>
                 <button
                   type="button"
                   className="custom-modal-close"

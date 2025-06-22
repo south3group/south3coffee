@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Link,
-  useParams,
-  useNavigate,
-} from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -21,7 +17,7 @@ const thumbnailUrls = [
 const ProductDetail = () => {
   const { product_id } = useParams();
   const minValue = 1;
-  const [quantity, setQuantity] = useState(minValue);
+  const [selectedQuantity, setSelectedQuantity] = useState(minValue);
   const [mainImage, setMainImage] = useState('');
   const [product, setProduct] = useState(null);
 
@@ -87,10 +83,21 @@ const ProductDetail = () => {
 
   // 加入購物車
   const handleAddToCart = () => {
-    if (!product) return;
+    if (!product || !product.id) {
+      setModalMsg('商品資訊有誤，請稍後再試');
+      setIsOpen(true);
+      return;
+    }
+
+    if (selectedQuantity <= 0) {
+      setModalMsg('數量無效，請重新輸入');
+      setIsOpen(true);
+      return;
+    }
 
     setAddingId(true);
     const token = localStorage.getItem('token');
+
     if (!token) {
       setModalMsg('尚未登入，請先登入會員');
       setIsOpen(true);
@@ -102,8 +109,8 @@ const ProductDetail = () => {
       .post(
         cartRoute,
         {
-          product_id: product.id,
-          quantity: quantity,
+          product_id: product?.id,
+          quantity: selectedQuantity,
         },
         {
           headers: {
@@ -127,19 +134,19 @@ const ProductDetail = () => {
 
   // 數量加減事件
   const handleDecrease = () => {
-    if (quantity > minValue) {
-      setQuantity(quantity - 1);
-    }
+    setSelectedQuantity((prevQuantity) => Math.max(prevQuantity - 1, minValue));
   };
 
   const handleIncrease = () => {
-    setQuantity(quantity + 1);
+    setSelectedQuantity((prevQuantity) => prevQuantity + 1);
   };
 
   const handleChange = (e) => {
     const val = Number(e.target.value);
     if (!isNaN(val) && val >= minValue) {
-      setQuantity(val);
+      setSelectedQuantity(val);
+    } else {
+      setSelectedQuantity(minValue);
     }
   };
 
@@ -289,7 +296,7 @@ const ProductDetail = () => {
                             <input
                               type="number"
                               className="value-input border-0"
-                              value={quantity}
+                              value={selectedQuantity}
                               onChange={handleChange}
                               min={minValue}
                               inputMode="numeric"
@@ -560,7 +567,7 @@ const ProductDetail = () => {
           <div className="modal-dialog custom-modal-dialog">
             <div className="modal-content custom-modal-content">
               <div className="modal-header custom-modal-header">
-                <h5 className="custom-modal-title">註冊失敗</h5>
+                <h5 className="custom-modal-title">系統訊息</h5>
                 <button
                   type="button"
                   className="custom-modal-close"

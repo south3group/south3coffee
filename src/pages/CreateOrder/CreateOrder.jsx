@@ -9,6 +9,7 @@ import { images } from '../../constants/image';
 
 const CreateOrder = () => {
   const [orderData, setOrderData] = useState(null);
+  const [loading, setLoading] = useState(true); // 先設定 loading 狀態
 
   const [showTopBtn, setShowTopBtn] = useState(false);
 
@@ -41,37 +42,54 @@ const CreateOrder = () => {
   // 取得訂單
   useEffect(() => {
     const token = localStorage.getItem('token');
-
+  
     axios
       .get(getRoute, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        setOrderData(res.data.data);
+        const data = res.data.data;
+  
+        if (!data.orderItems || data.orderItems.length === 0) {
+          setModalMsg('購物車內沒有商品，請先加入商品');
+          navigate('/products')
+          setIsOpen(true);
+        } else if (!data.receiver || !data.receiver.name || !data.receiver.phone || !data.receiver.address) {
+          setModalMsg('收件資料不完整，請先填寫收件資料');
+          setIsOpen(true);
+          navigate('/member/receiver')
+        } else {
+          setOrderData(data);
+        }
       })
       .catch((err) => {
         if (err.response?.status === 401) {
           localStorage.removeItem('token');
           navigate('/');
-          return;
+        } else {
+          const msg = err.response?.data?.message || '發生錯誤';
+          setModalMsg(msg);
+          setIsOpen(true);
         }
-        const msg = err.response?.data?.message || '發生錯誤';
-        setModalMsg(msg);
-        setIsOpen(true);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [navigate]);
-
+  
   //建立訂單
   const handleCreateOrder = () => {
     const token = localStorage.getItem('token');
+    console.log('看看',orderData.receiver)
 
     axios
       .post(
         postRoute,
         {
-          // BODY
+          name: orderData.receiver.name,
+          phone: orderData.receiver.phone,
+          post_code: orderData.receiver.post_code || '000000' ,
+          address: orderData.receiver.address,
         },
         {
           headers: {
@@ -80,7 +98,8 @@ const CreateOrder = () => {
         },
       )
       .then((res) => {
-        navigate('/checkout');
+        const orderId = res.data.data.display_id
+        navigate(`/checkout/${orderId}`)
       })
       .catch((err) => {
         if (err.response?.status === 401) {
@@ -99,8 +118,49 @@ const CreateOrder = () => {
       });
   };
 
-  if (!orderData) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
 
+  if (!orderData) {
+    return (
+      <>
+        {isOpen && (
+          <div
+            className="modal show fade d-block custom-modal"
+            tabIndex="-1"
+            role="dialog"
+          >
+            <div className="modal-dialog custom-modal-dialog">
+              <div className="modal-content custom-modal-content">
+                <div className="modal-header custom-modal-header">
+                  <h5 className="custom-modal-title">系統訊息</h5>
+                  <button
+                    type="button"
+                    className="custom-modal-close"
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate('/products');
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="modal-body custom-modal-body">{modalMsg}</div>
+                <div className="modal-footer custom-modal-footer">
+                  <button
+                    type="button"
+                    className="custom-modal-btn"
+                    onClick={() => navigate('/products')}
+                  >
+                    關閉
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
   return (
     <>
       <Header />
@@ -280,7 +340,9 @@ const CreateOrder = () => {
                       </div>
                       <div className="check-receiver-content">
                         <p className="check-receiver-content-title">郵遞區號</p>
-                        <p className="check-receiver-content-text">123456</p>
+                        <p className="check-receiver-content-text">
+                          {orderData.receiver.post_code}
+                        </p>
                       </div>
                       <div className="check-receiver-content">
                         <p className="check-receiver-content-title">詳細地址</p>
@@ -382,7 +444,7 @@ const CreateOrder = () => {
           <div className="modal-dialog custom-modal-dialog">
             <div className="modal-content custom-modal-content">
               <div className="modal-header custom-modal-header">
-                <h5 className="custom-modal-title">登入失敗</h5>
+                <h5 className="custom-modal-title">系統訊息</h5>
                 <button
                   type="button"
                   className="custom-modal-close"
