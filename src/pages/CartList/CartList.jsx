@@ -27,6 +27,7 @@ const CartList = () => {
       const res = await axios.get(`${apiUrl}/api/v1/users/membership/cart`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache',
         },
       });
 
