@@ -62,7 +62,7 @@ const HomeCard = ({ product, isLarge = false, clickable = false }) => {
                 {tags.map((tag, index) => (
                   <span key={index} className="d-block mb-1">
                     <i className="bi bi-geo-alt me-1 text-muted"></i>
-                    <small className="text-muted">產地：{tag}</small>
+                    <small className="text-muted fs-3">產地：{tag}</small>
                   </span>
                 ))}
               </div>
@@ -71,7 +71,7 @@ const HomeCard = ({ product, isLarge = false, clickable = false }) => {
             {flavor && (
               <div className="mb-2">
                 <i className="bi bi-cup me-1 text-muted"></i>
-                <small className="text-muted">風味：{flavor}</small>
+                <small className="text-muted fs-3">風味：{flavor}</small>
               </div>
             )}
 
