@@ -104,7 +104,7 @@ const Products = () => {
         },
       );
 
-      navigate('/cart');
+      // navigate('/cart');
     } catch (error) {
       const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
       setModalMsg(msg);
