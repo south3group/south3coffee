@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  useParams,
+  useNavigate,
+} from 'react-router-dom';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -17,7 +21,7 @@ const thumbnailUrls = [
 const ProductDetail = () => {
   const { product_id } = useParams();
   const minValue = 1;
-  const [selectedQuantity, setSelectedQuantity] = useState(minValue);
+  const [selectedQuantity, setSelectedQuantity] = useState(minValue); 
   const [mainImage, setMainImage] = useState('');
   const [product, setProduct] = useState(null);
 
@@ -32,7 +36,7 @@ const ProductDetail = () => {
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const productRoute = `${apiUrl}/api/v1/products/${product_id}`;
-  const cartRoute = `${apiUrl}/api/v1/cart`;
+  const cartRoute = `${apiUrl}/api/v1/users/membership/cart`;
 
   const handleGoBack = () => {
     navigate('/products');
@@ -81,6 +85,7 @@ const ProductDetail = () => {
       });
   }, [product_id]);
 
+
   // 加入購物車
   const handleAddToCart = () => {
     if (!product || !product.id) {
@@ -88,13 +93,13 @@ const ProductDetail = () => {
       setIsOpen(true);
       return;
     }
-
+  
     if (selectedQuantity <= 0) {
       setModalMsg('數量無效，請重新輸入');
       setIsOpen(true);
       return;
     }
-
+  
     setAddingId(true);
     const token = localStorage.getItem('token');
 
@@ -104,7 +109,7 @@ const ProductDetail = () => {
       setAddingId(false);
       return;
     }
-
+  
     axios
       .post(
         cartRoute,
@@ -136,7 +141,7 @@ const ProductDetail = () => {
   const handleDecrease = () => {
     setSelectedQuantity((prevQuantity) => Math.max(prevQuantity - 1, minValue));
   };
-
+  
   const handleIncrease = () => {
     setSelectedQuantity((prevQuantity) => prevQuantity + 1);
   };
@@ -149,6 +154,7 @@ const ProductDetail = () => {
       setSelectedQuantity(minValue);
     }
   };
+
 
   if (!product) {
     return <div></div>;
