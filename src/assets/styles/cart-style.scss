@@ -71,6 +71,41 @@
     }
   }
 
+  // 將 checkbox 樣式提升到此處，確保手機版與桌機版共用
+  .checkbox-custom {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    border: 1.5px solid #7c5c37; /* 深咖啡色外框 */
+    border-radius: 4px;
+    background-color: #fff;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .checkbox-custom:checked {
+    background-color: #7c5c37; /* 深咖啡色背景 */
+    border-color: #7c5c37;
+  }
+
+  .checkbox-custom:checked::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 1.5px;
+    width: 6px;
+    height: 12px;
+    border: solid #fff; /* 純白勾勾 */
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+    display: block;
+  }
+
   .content-style {
     display: flex;
     flex-direction: column;
@@ -129,42 +164,6 @@
             gap: 8px;
             justify-content: center;
             align-items: center;
-
-            .checkbox-custom {
-              width: 20px;
-              height: 20px;
-              min-width: 20px;
-              min-height: 20px;
-              accent-color: #7c5c37;
-              border: 1.5px solid #7c5c37;
-              border-radius: 4px;
-              background-color: #fff;
-              box-sizing: border-box;
-              appearance: none;
-              -webkit-appearance: none;
-              outline: none;
-              cursor: pointer;
-              display: inline-block;
-              position: relative;
-            }
-
-            .checkbox-custom:checked {
-              background-color: #7c5c37;
-              border-color: #7c5c37;
-            }
-
-            .checkbox-custom:checked::after {
-              content: '';
-              position: absolute;
-              left: 5px;
-              top: 1.5px;
-              width: 6px;
-              height: 12px;
-              border: solid #fff;
-              border-width: 0 2.5px 2.5px 0;
-              transform: rotate(45deg);
-              display: block;
-            }
 
             .cart-product-img {
               width: 108px;
@@ -370,10 +369,17 @@
         }
 
         .coupon-btn {
-          color: $coffee-grey-000;
-          background-color: $coffee-grey-200;
           padding: 8px 16px;
-          letter-spacing: 0;
+          background-color: $coffee-primary-100;
+          color: $coffee-primary-400;
+          font-weight: 700;
+          transition: all 0.3s;
+
+          &.active {
+            background-color: $coffee-primary-700;
+            color: $coffee-grey-000;
+            cursor: pointer;
+          }
         }
       }
     }
