@@ -105,7 +105,7 @@ const CreateOrder = () => {
         },
       )
       .then((res) => {
-        const orderId = res.data.data.display_id;
+        // const orderId = res.data.data.display_id;
         // navigate(`/checkout/${orderId}`);
         navigate(`/checkout`);
       })
