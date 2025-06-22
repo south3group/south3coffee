@@ -1,0 +1,91 @@
+.home-card {
+  border: none;
+  border-radius: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+}
+
+// 一般卡片高度
+.home-card .homecardImage {
+  height: 300px;
+}
+
+// 大卡片（isLarge）樣式
+.home-card.home-card--large .card-img-top .homecardImage {
+  height: 500px !important;
+
+
+}
+
+.homecardImage {
+  width: 100%;
+  object-fit: cover;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+.homecard-favorite-btn {
+  // background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-weight: 600;
+    font-size: 2rem;
+    color: #dc3545;
+  }
+
+  &:hover {
+    i {
+      font-size: 3rem;
+    }
+  }
+
+
+}
+
+.homecardTitle {
+  font-size: 3rem;
+  font-weight: 600;
+}
+
+.homecardText {
+  font-size: 2rem;
+  line-height: 1.5;
+  color: #6c757d;
+}
+
+.homecardPrice {
+  color: #b8860b;
+  font-weight: 600;
+  font-size: 3rem;
+}
+
+.homecardBtn {
+  background-color: #8b4513;
+  color: white;
+  border: none;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+  font-size: 1.5rem;
+
+  &:hover {
+    background-color: #654321;
+  }
+}
