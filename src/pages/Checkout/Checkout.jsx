@@ -1,10 +1,20 @@
 import { useState, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import { images } from '../../constants/image';
 
 const Checkout = () => {
+  const { display_id } = useParams();
+  const navigate = useNavigate();
+
+  // Modal 狀態
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalMsg, setModalMsg] = useState('');
+  const [modalType, setModalType] = useState('');
+  const [modalTitle, setModalTitle] = useState('訊息');
+
   const [agreeCredit, setAgreeCredit] = useState({
     confirmOrder: false,
     agreeTerms: false,
@@ -36,8 +46,16 @@ const Checkout = () => {
     String(new Date().getFullYear() + i),
   );
 
+  // 關閉 modal
+  const handleCloseModal = () => {
+    setIsOpen(false);
+    if (modalType === 'success') {
+      navigate('/payment/success');
+    }
+  };
+
   // 送出選單控制
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
     let newFieldErr = { paymentMethod: '', agree: '' };
@@ -53,7 +71,7 @@ const Checkout = () => {
         hasError = true;
       }
     } else if (paymentMethod === 'cod') {
-      if (!agreeCOD) {
+      if (!agreeChecked) {
         newFieldErr.agree = '請勾選同意條款';
         hasError = true;
       }
@@ -64,6 +82,40 @@ const Checkout = () => {
 
     if (hasError) {
       return;
+    }
+
+    // 串接 API
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/checkout', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          display_id,
+          payment_method_id: paymentMethod === 'cod' ? 1 : 2,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setModalTitle('結帳成功');
+        setModalMsg('訂單已完成結帳！');
+        setModalType('success');
+        setIsOpen(true);
+      } else {
+        setModalTitle('結帳失敗');
+        setModalMsg(data.message || '結帳失敗');
+        setModalType('error');
+        setIsOpen(true);
+      }
+    } catch (err) {
+      setModalTitle('系統錯誤');
+      setModalMsg('系統錯誤，請稍後再試');
+      setModalType('error');
+      setIsOpen(true);
     }
   };
 
@@ -374,6 +426,41 @@ const Checkout = () => {
         </div>
       </div>
       <Footer />
+
+      {/* Modal  */}
+      {isOpen && (
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">{modalTitle}</h5>
+                <button
+                  type="button"
+                  className="custom-modal-close"
+                  onClick={handleCloseModal}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="btn-custom-confirm"
+                  onClick={handleCloseModal}
+                >
+                  確定
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        )
+      }
     </>
   );
 };
