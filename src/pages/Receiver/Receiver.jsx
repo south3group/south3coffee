@@ -81,6 +81,9 @@ const Receiver = () => {
   const addressHandler = (e) => {
     e.preventDefault();
     let isError = false;
+    
+    const postReceiverRoute = `${apiUrl}/api/v1/users/membership/receiver`;
+    const token = localStorage.getItem('token');
 
     // 姓名
     const namePattern = /^[\p{L}\p{N}]{2,10}$/u;
@@ -120,7 +123,7 @@ const Receiver = () => {
 
     // 郵遞區號
     const postCodePattern = /^(\d{5}|\d{6})$/;
-    if ( userData.userPostCode.trim() !== '') {
+    if (userData.userPostCode.trim() !== '') {
       if (!postCodePattern.test(userData.userPostCode)) {
         setFieldErr((prev) => ({
           ...prev,
@@ -546,79 +549,70 @@ const Receiver = () => {
       return;
     }
 
-    axios;
-    // .put(  
-    //   route,
-    //   {
-    //     name: userData.userName,
-    //     phone: userData.userPhone,
-    //     post_code: userData.userPostCode || '',
-    //     address: userData.userAddress,
-    //   },
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   },
-    // )
-    // .then(() => {
-    //   setModalTitle('更新通知');
-    //   setModalMsg('收件資料更新成功！');
-    //   setIsOpen(true);
-    // })
-    // .catch((err) => {
-    //   const errMsg = err.response?.data?.message || '更新失敗';
-    //   const errStatus = err.status;
-    //   if (errStatus === 400) {
-    //     switch (errMsg) {
-    //       case '姓名格式錯誤':
-    //         setFieldErr((prev) => ({
-    //           ...prev,
-    //           userName: errMsg,
-    //         }));
-    //         break;
+    axios
+      .post(
+        postReceiverRoute,
+        {
+          name: userData.userName,
+          phone: userData.userPhone,
+          post_code: userData.userPostCode || '',
+          address: userData.userAddress,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      .then((res) => {
+        setModalTitle('更新通知');
+        setModalMsg(
+          res.data?.message === '收件人資訊新增成功'
+            ? '收件資料新增成功！'
+            : '收件資料更新成功！',
+        );
+        setModalType('noChange');
+        setIsOpen(true);
+      })
+      .catch((err) => {
+        const errMsg = err.response?.data?.message || '更新失敗';
+        const errStatus = err.response?.status;
 
-    //       case '手機號碼不符合規則，需為台灣手機號碼':
-    //         setFieldErr((prev) => ({
-    //           ...prev,
-    //           userPhone: errMsg,
-    //         }));
-    //         break;
-
-    //       case '郵遞區號不符合規則，需 5 或 6 碼數字':
-    //         setFieldErr((prev) => ({
-    //           ...prev,
-    //           userPostCode: errMsg,
-    //         }));
-    //         break;
-
-    //       case '地址格式錯誤，需為台灣地址':
-    //         setFieldErr((prev) => ({
-    //           ...prev,
-    //           userAddress: errMsg,
-    //         }));
-    //         break;
-
-    //       case '資料未變更':
-    //         setModalTitle('更新通知');
-    //         setModalMsg(errMsg || '更新失敗');
-    //         setModalType('noChange');
-    //         setIsOpen(true);
-    //         break;
-    //     }
-    //   } else if (errStatus === 401) {
-    //     setModalTitle('載入失敗');
-    //     setModalMsg('請先重新登入！');
-    //     setModalType('toLogin');
-    //     setIsOpen(true);
-    //     return;
-    //   } else {
-    //     setModalTitle('更新通知');
-    //     setModalMsg(errMsg || '更新失敗');
-    //     setModalType('noChange');
-    //     setIsOpen(true);
-    //   }
-    // });
+        if (errStatus === 400) {
+          switch (errMsg) {
+            case '收件者姓名格式錯誤':
+              setFieldErr((prev) => ({ ...prev, userName: errMsg }));
+              break;
+            case '手機號碼不符合規則，需為台灣手機號碼':
+              setFieldErr((prev) => ({ ...prev, userPhone: errMsg }));
+              break;
+            case '地址格式錯誤，需為台灣地址':
+              setFieldErr((prev) => ({ ...prev, userAddress: errMsg }));
+              break;
+            case '欄位未填寫正確':
+              setModalTitle('表單錯誤');
+              setModalMsg(errMsg);
+              setModalType('noChange');
+              setIsOpen(true);
+              break;
+            default:
+              setModalTitle('更新通知');
+              setModalMsg(errMsg || '更新失敗');
+              setModalType('noChange');
+              setIsOpen(true);
+          }
+        } else if (errStatus === 401) {
+          setModalTitle('驗證失敗');
+          setModalMsg('請重新登入');
+          setModalType('toLogin');
+          setIsOpen(true);
+        } else {
+          setModalTitle('更新通知');
+          setModalMsg(errMsg || '更新失敗');
+          setModalType('noChange');
+          setIsOpen(true);
+        }
+      });
   };
 
   return (
@@ -709,7 +703,9 @@ const Receiver = () => {
                     value={userData.userPostCode}
                     onChange={handleInputChange}
                   />
-                  <div className="invalid-feedback">{fieldErr.userPostCode}</div>
+                  <div className="invalid-feedback">
+                    {fieldErr.userPostCode}
+                  </div>
                 </div>
                 <div className="form-input-custom">
                   <label
@@ -752,39 +748,39 @@ const Receiver = () => {
           </MemberSidebar>
         </div>
 
-      {/* Modal */}
-      {isOpen && (
-        <div
-          className="modal show fade d-block custom-modal"
-          tabIndex="-1"
-          role="dialog"
-        >
-          <div className="modal-dialog custom-modal-dialog">
-            <div className="modal-content custom-modal-content">
-              <div className="modal-header custom-modal-header">
-                <h5 className="custom-modal-title">{modalTitle}</h5>
-                <button
-                  type="button"
-                  className="custom-modal-close"
-                  onClick={handleCloseModal}
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="modal-body custom-modal-body">{modalMsg}</div>
-              <div className="modal-footer custom-modal-footer">
-                <button
-                  type="button"
-                  className="custom-modal-btn"
-                  onClick={handleCloseModal}
-                >
-                  關閉
-                </button>
+        {/* Modal */}
+        {isOpen && (
+          <div
+            className="modal show fade d-block custom-modal"
+            tabIndex="-1"
+            role="dialog"
+          >
+            <div className="modal-dialog custom-modal-dialog">
+              <div className="modal-content custom-modal-content">
+                <div className="modal-header custom-modal-header">
+                  <h5 className="custom-modal-title">{modalTitle}</h5>
+                  <button
+                    type="button"
+                    className="custom-modal-close"
+                    onClick={handleCloseModal}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="modal-body custom-modal-body">{modalMsg}</div>
+                <div className="modal-footer custom-modal-footer">
+                  <button
+                    type="button"
+                    className="custom-modal-btn"
+                    onClick={handleCloseModal}
+                  >
+                    關閉
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
         <Footer />
       </div>

@@ -19,6 +19,7 @@ import CartList from './pages/CartList/CartList';
 import PaySuccess from './pages/Payment/PaySuccess';
 import PayError from './pages/Payment/PayError';
 import Checkout from './pages/Checkout/Checkout';
+import CreateOrder from './pages/CreateOrder/CreateOrder';
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
         <Route path="/products" element={<Products />} />
         <Route path="/products/:product_id" element={<ProductDetail />} />
         <Route path="/cart" element={<CartList />} />
+        <Route path="/create-order" element={<CreateOrder />} />
         <Route path="/payment/success" element={<PaySuccess />} />
         <Route path="/payment/error" element={<PayError />} />
         <Route path="/checkout" element={<Checkout />} />

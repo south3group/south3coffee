@@ -1,30 +1,150 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import { images } from '../../constants/image';
 
 const CartList = () => {
-  const minValue = 1;
-  const [quantity, setQuantity] = useState(minValue);
+  const [cartItems, setCartItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState(new Set());
+  const [total, setTotal] = useState(0);
+  const [modalMsg, setModalMsg] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // 數量加減事件
-  const handleDecrease = () => {
-    if (quantity > minValue) {
-      setQuantity(quantity - 1);
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  const getCart = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setModalMsg('請先登入會員');
+        setIsOpen(true);
+        return;
+      }
+      const res = await axios.get(`${apiUrl}/api/v1/users/membership/cart`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache',
+        },
+      });
+
+      const cartData = res.data?.data?.items;
+      const cartInfo = res.data?.data;
+
+      if (!Array.isArray(cartData)) {
+        throw new Error('從伺服器收到的購物車資料格式不正確');
+      }
+
+      setCartItems(
+        cartData.map((item) => ({
+          product: {
+            id: item.product_id,
+            name: item.name,
+            image_url: item.image_url,
+            price: item.price,
+          },
+          quantity: item.quantity || 1,
+          price: item.price,
+        })),
+      );
+
+      if (cartInfo && typeof cartInfo.final_price !== 'undefined') {
+        setTotal(cartInfo.final_price);
+      } else {
+        const newTotal = cartData.reduce(
+          (acc, item) => acc + item.price * (item.quantity || 1),
+          0,
+        );
+        setTotal(newTotal);
+      }
+
+      // 當從 API 載入購物車時，預設全選
+      const allItemIds = new Set(cartData.map((item) => item.product_id));
+      setSelectedItems(allItemIds);
+    } catch (error) {
+      if (
+        error.response?.status === 404 ||
+        error.response?.data?.message === '購物車是空的'
+      ) {
+        setCartItems([]);
+        setTotal(0);
+      } else {
+        const msg =
+          error.response?.data?.message || error.message || '取得購物車失敗';
+        setModalMsg(msg);
+        setIsOpen(true);
+      }
     }
   };
 
-  const handleIncrease = () => {
-    setQuantity(quantity + 1);
+  useEffect(() => {
+    getCart();
+  }, []);
+
+  useEffect(() => {
+    // 當購物車項目或選中項目改變時，重新計算總金額
+    const newTotal = cartItems
+      .filter((item) => selectedItems.has(item.product.id))
+      .reduce((acc, item) => acc + item.price * item.quantity, 0);
+    setTotal(newTotal);
+  }, [cartItems, selectedItems]);
+
+  const updateQuantity = (productId, newQuantity) => {
+    setCartItems(
+      cartItems.map((item) =>
+        item.product.id === productId
+          ? { ...item, quantity: Math.max(1, newQuantity) }
+          : item,
+      ),
+    );
+    // TODO: Call API to update quantity on the server
   };
 
-  const handleChange = (e) => {
+  const removeItem = (productId) => {
+    setCartItems(cartItems.filter((item) => item.product.id !== productId));
+    // TODO: Call API to remove item from the cart on the server
+  };
+
+  const handleDecrease = (item) => {
+    updateQuantity(item.product.id, item.quantity - 1);
+  };
+
+  const handleIncrease = (item) => {
+    updateQuantity(item.product.id, item.quantity + 1);
+  };
+
+  const handleChange = (e, item) => {
     const val = Number(e.target.value);
-    if (!isNaN(val) && val >= minValue) {
-      setQuantity(val);
+    if (!isNaN(val)) {
+      updateQuantity(item.product.id, val);
     }
   };
+
+  const handleSelectItem = (productId) => {
+    setSelectedItems((prevSelected) => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(productId)) {
+        newSelected.delete(productId);
+      } else {
+        newSelected.add(productId);
+      }
+      return newSelected;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItems.size === cartItems.length) {
+      setSelectedItems(new Set()); // Deselect all
+    } else {
+      const allItemIds = new Set(cartItems.map((item) => item.product.id));
+      setSelectedItems(allItemIds); // Select all
+    }
+  };
+
+  const minValue = 1;
 
   return (
     <>
@@ -34,7 +154,7 @@ const CartList = () => {
           <img
             src={images.hotCoffeeBanner}
             alt="cart banner"
-            className='narrow-banner'
+            className="narrow-banner"
           />
         </div>
         <div className="container cart-container p-0 ">
@@ -48,480 +168,291 @@ const CartList = () => {
           <div className="content-style m-0">
             <div className="content-style-cart p-0">
               <div className="cart-custom">
-                
-                {/* 商品清單 */}
-                {/* 手機版 */}
-                <div className="d-flex d-md-none cart-custom-mobile">
-                  {/* 商品 */}
-                  <div className="order-card">
-                    <div className="text-group">
-                      <div className="product-img-group">
-                        <input
-                          type="checkbox"
-                          className="checkbox-custom rounded-0"
-                        />
-                        <img
-                          src="https://images.unsplash.com/photo-1625021659159-f63f546d74a7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                          alt="coffee bean img"
-                          className="cart-product-img"
-                        />
-                      </div>
-                      <div className="product-info-group">
-                        <div className="info-header">
-                          <div className="m-0 text-group-header">
-                            <p className="text-group-text m-0">
-                              嘉義阿里山咖啡豆(500g)
-                            </p>
-                            <div className="del-icon">
-                              <img
-                                src={images.delIcon}
-                                alt="delete icon-detail"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <p className="m-0 text-group-price">
-                          NTD$ <span className="text-group-text">500</span>
-                        </p>
-                        {/* 增減數量 */}
-                        <div className="order-options">
-                          <div className="order-options-quantity">
-                            <button
-                              type="button"
-                              className="quantity-decrease"
-                              onClick={handleDecrease}
-                            >
-                              <div className="decrease-icon">
-                                <img
-                                  src={images.productDecrease}
-                                  alt="product-decrease"
-                                  className="decrease-detail"
-                                />
-                              </div>
-                            </button>
-                            <div className="quantity-value">
+                {cartItems.length > 0 ? (
+                  <>
+                    {/* 商品清單 */}
+                    {/* 手機版 */}
+                    <div className="d-flex d-md-none cart-custom-mobile">
+                      {cartItems.map((item) => (
+                        <div className="order-card" key={item.product.id}>
+                          <div className="text-group">
+                            <div className="product-img-group">
                               <input
-                                type="number"
-                                className="value-input border-0"
-                                value={quantity}
-                                onChange={handleChange}
-                                min={minValue}
+                                type="checkbox"
+                                className="checkbox-custom rounded-0"
+                                checked={selectedItems.has(item.product.id)}
+                                onChange={() =>
+                                  handleSelectItem(item.product.id)
+                                }
+                              />
+                              <img
+                                src={item.product.image_url}
+                                alt={item.product.name}
+                                className="cart-product-img"
                               />
                             </div>
-                            <button
-                              type="button"
-                              className="quantity-increase"
-                              onClick={handleIncrease}
-                            >
-                              <div className="increase-icon">
-                                <img
-                                  src={images.productIncrease}
-                                  alt="product-increase"
-                                  className="increase-detail"
-                                />
+                            <div className="product-info-group">
+                              <div className="info-header">
+                                <div className="m-0 text-group-header">
+                                  <p className="text-group-text m-0">
+                                    {item.product.name}
+                                  </p>
+                                  <div
+                                    className="del-icon"
+                                    onClick={() => removeItem(item.product.id)}
+                                  >
+                                    <img
+                                      src={images.delIcon}
+                                      alt="delete icon-detail"
+                                    />
+                                  </div>
+                                </div>
                               </div>
-                            </button>
+                              <p className="m-0 text-group-price">
+                                NTD${' '}
+                                <span className="text-group-text">
+                                  {item.product.price}
+                                </span>
+                              </p>
+                              {/* 增減數量 */}
+                              <div className="order-options">
+                                <div className="order-options-quantity">
+                                  <button
+                                    type="button"
+                                    className="quantity-decrease"
+                                    onClick={() => handleDecrease(item)}
+                                  >
+                                    <div className="decrease-icon">
+                                      <img
+                                        src={images.productDecrease}
+                                        alt="product-decrease"
+                                        className="decrease-detail"
+                                      />
+                                    </div>
+                                  </button>
+                                  <div className="quantity-value">
+                                    <input
+                                      type="number"
+                                      className="value-input border-0"
+                                      value={item.quantity}
+                                      onChange={(e) => handleChange(e, item)}
+                                      min={minValue}
+                                    />
+                                  </div>
+                                  <button
+                                    type="button"
+                                    className="quantity-increase"
+                                    onClick={() => handleIncrease(item)}
+                                  >
+                                    <div className="increase-icon">
+                                      <img
+                                        src={images.productIncrease}
+                                        alt="product-increase"
+                                        className="increase-detail"
+                                      />
+                                    </div>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
+                      ))}
+                    </div>
+
+                    {/* 桌電版 */}
+                    <div className="d-none d-md-block">
+                      <table className="table cart-custom-table m-0">
+                        <colgroup>
+                          <col style={{ width: '5%' }} />
+                          <col style={{ width: '15%' }} />
+                          <col style={{ width: '30%' }} />
+                          <col style={{ width: '15%' }} />
+                          <col style={{ width: '15%' }} />
+                          <col style={{ width: '15%' }} />
+                          <col style={{ width: '5%' }} />
+                        </colgroup>
+                        <thead className="cart-custom-style">
+                          <tr>
+                            <th scope="col" className="cart-custom-style-th">
+                              <input
+                                type="checkbox"
+                                className="checkbox-custom"
+                                onChange={handleSelectAll}
+                                checked={
+                                  cartItems.length > 0 &&
+                                  selectedItems.size === cartItems.length
+                                }
+                              />
+                            </th>
+                            <th scope="col" className="cart-custom-style-th">
+                              商品圖片
+                            </th>
+                            <th scope="col" className="cart-custom-style-th">
+                              商品名稱
+                            </th>
+                            <th scope="col" className="cart-custom-style-th">
+                              單價
+                            </th>
+                            <th scope="col" className="cart-custom-style-th">
+                              數量
+                            </th>
+                            <th scope="col" className="cart-custom-style-th">
+                              小計
+                            </th>
+                            <th
+                              scope="col"
+                              className="cart-custom-style-th"
+                            ></th>
+                          </tr>
+                        </thead>
+                      </table>
+                      <div className="table-body-scroll-container">
+                        <table className="table cart-custom-table m-0">
+                          <colgroup>
+                            <col style={{ width: '5%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '30%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '15%' }} />
+                            <col style={{ width: '5%' }} />
+                          </colgroup>
+                          <tbody className="cart-custom-tbody">
+                            {cartItems.map((item) => (
+                              <tr key={item.product.id}>
+                                <th
+                                  scope="row"
+                                  className="cart-custom-tbody-th"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    className="checkbox-custom"
+                                    checked={selectedItems.has(item.product.id)}
+                                    onChange={() =>
+                                      handleSelectItem(item.product.id)
+                                    }
+                                  />
+                                </th>
+                                <td className="cart-custom-tbody-td cart-product">
+                                  <img
+                                    src={item.product.image_url}
+                                    alt={item.product.name}
+                                    className="cart-product-img"
+                                  />
+                                </td>
+                                <td className="cart-custom-tbody-td">
+                                  {item.product.name}
+                                </td>
+                                <td className="cart-custom-tbody-td">
+                                  <p className="box-currency m-0">
+                                    NTD$ <span>{item.product.price}</span>
+                                  </p>
+                                </td>
+                                <td className="cart-custom-tbody-td">
+                                  {/* 增減數量 */}
+                                  <div className="order-options">
+                                    <div className="order-options-quantity">
+                                      <button
+                                        type="button"
+                                        className="quantity-decrease"
+                                        onClick={() => handleDecrease(item)}
+                                      >
+                                        <div className="decrease-icon">
+                                          <img
+                                            src={images.productDecrease}
+                                            alt="product-decrease"
+                                            className="decrease-detail"
+                                          />
+                                        </div>
+                                      </button>
+                                      <div className="quantity-value">
+                                        <input
+                                          type="number"
+                                          className="value-input border-0"
+                                          value={item.quantity}
+                                          onChange={(e) =>
+                                            handleChange(e, item)
+                                          }
+                                          min={minValue}
+                                        />
+                                      </div>
+                                      <button
+                                        type="button"
+                                        className="quantity-increase"
+                                        onClick={() => handleIncrease(item)}
+                                      >
+                                        <div className="increase-icon">
+                                          <img
+                                            src={images.productIncrease}
+                                            alt="product-increase"
+                                            className="increase-detail"
+                                          />
+                                        </div>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="cart-custom-tbody-td">
+                                  <p className="box-currency m-0">
+                                    NTD${' '}
+                                    <span>
+                                      {item.product.price * item.quantity}
+                                    </span>
+                                  </p>
+                                </td>
+                                <td className="cart-custom-tbody-td">
+                                  <div
+                                    className="del-icon"
+                                    onClick={() => removeItem(item.product.id)}
+                                  >
+                                    <img
+                                      src={images.delIcon}
+                                      alt="delete icon-detail"
+                                    />
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
-                  </div>
-                  {/* 商品 */}
-                  <div className="order-card">
-                    <div className="text-group">
-                      <div className="product-img-group">
-                        <input
-                          type="checkbox"
-                          className="checkbox-custom rounded-0"
-                        />
-                        <img
-                          src="https://images.unsplash.com/photo-1625021659159-f63f546d74a7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                          alt="coffee bean img"
-                          className="cart-product-img"
-                        />
-                      </div>
-                      <div className="product-info-group">
-                        <div className="info-header">
-                          <div className="m-0 text-group-header">
-                            <p className="text-group-text m-0">
-                              嘉義阿里山咖啡豆(500g)
-                            </p>
-                            <div className="del-icon">
-                              <img
-                                src={images.delIcon}
-                                alt="delete icon-detail"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <p className="m-0 text-group-price">
-                          NTD$ <span className="text-group-text">500</span>
-                        </p>
-                        {/* 增減數量 */}
-                        <div className="order-options">
-                          <div className="order-options-quantity">
-                            <button
-                              type="button"
-                              className="quantity-decrease"
-                              onClick={handleDecrease}
-                            >
-                              <div className="decrease-icon">
-                                <img
-                                  src={images.productDecrease}
-                                  alt="product-decrease"
-                                  className="decrease-detail"
-                                />
-                              </div>
-                            </button>
-                            <div className="quantity-value">
-                              <input
-                                type="number"
-                                className="value-input border-0"
-                                value={quantity}
-                                onChange={handleChange}
-                                min={minValue}
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              className="quantity-increase"
-                              onClick={handleIncrease}
-                            >
-                              <div className="increase-icon">
-                                <img
-                                  src={images.productIncrease}
-                                  alt="product-increase"
-                                  className="increase-detail"
-                                />
-                              </div>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* 商品 */}
-                  <div className="order-card">
-                    <div className="text-group">
-                      <div className="product-img-group">
-                        <input
-                          type="checkbox"
-                          className="checkbox-custom rounded-0"
-                        />
-                        <img
-                          src="https://images.unsplash.com/photo-1625021659159-f63f546d74a7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                          alt="coffee bean img"
-                          className="cart-product-img"
-                        />
-                      </div>
-                      <div className="product-info-group">
-                        <div className="info-header">
-                          <div className="m-0 text-group-header">
-                            <p className="text-group-text m-0">
-                              嘉義阿里山咖啡豆(500g)
-                            </p>
-                            <div className="del-icon">
-                              <img
-                                src={images.delIcon}
-                                alt="delete icon-detail"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <p className="m-0 text-group-price">
-                          NTD$ <span className="text-group-text">500</span>
-                        </p>
-                        {/* 增減數量 */}
-                        <div className="order-options">
-                          <div className="order-options-quantity">
-                            <button
-                              type="button"
-                              className="quantity-decrease"
-                              onClick={handleDecrease}
-                            >
-                              <div className="decrease-icon">
-                                <img
-                                  src={images.productDecrease}
-                                  alt="product-decrease"
-                                  className="decrease-detail"
-                                />
-                              </div>
-                            </button>
-                            <div className="quantity-value">
-                              <input
-                                type="number"
-                                className="value-input border-0"
-                                value={quantity}
-                                onChange={handleChange}
-                                min={minValue}
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              className="quantity-increase"
-                              onClick={handleIncrease}
-                            >
-                              <div className="increase-icon">
-                                <img
-                                  src={images.productIncrease}
-                                  alt="product-increase"
-                                  className="increase-detail"
-                                />
-                              </div>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 桌電版 */}
-                <table className="d-none d-md-table table cart-custom-table m-0 ">
-                  <thead className="cart-custom-style">
-                    <tr>
-                      <th scope="col" className="cart-custom-style-th">
-                        <img src={images.checkboxIcon} alt="checkbox icon" />
-                      </th>
-                      <th scope="col" className="cart-custom-style-th">
-                        商品圖片
-                      </th>
-                      <th scope="col" className="cart-custom-style-th">
-                        商品名稱
-                      </th>
-                      <th scope="col" className="cart-custom-style-th">
-                        單價
-                      </th>
-                      <th scope="col" className="cart-custom-style-th">
-                        數量
-                      </th>
-                      <th scope="col" className="cart-custom-style-th">
-                        小計
-                      </th>
-                      <th scope="col" className="cart-custom-style-th"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="cart-custom-tbody">
-                    <tr>
-                      <th scope="row" className="cart-custom-tbody-th">
-                        <input type="checkbox" className="checkbox-custom" />
-                      </th>
-                      <td className="cart-custom-tbody-td cart-product">
-                        <img
-                          src="https://images.unsplash.com/photo-1625021659159-f63f546d74a7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                          alt="coffee bean img"
-                          className="cart-product-img"
-                        />
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        哥倫比亞咖啡豆(500g)
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        <p className="box-currency m-0">
-                          NTD$ <span>600</span>
-                        </p>
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        {/* 增減數量 */}
-                        <div className="order-options">
-                          <div className="order-options-quantity">
-                            <button
-                              type="button"
-                              className="quantity-decrease"
-                              onClick={handleDecrease}
-                            >
-                              <div className="decrease-icon">
-                                <img
-                                  src={images.productDecrease}
-                                  alt="product-decrease"
-                                  className="decrease-detail"
-                                />
-                              </div>
-                            </button>
-                            <div className="quantity-value">
-                              <input
-                                type="number"
-                                className="value-input border-0"
-                                value={quantity}
-                                onChange={handleChange}
-                                min={minValue}
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              className="quantity-increase"
-                              onClick={handleIncrease}
-                            >
-                              <div className="increase-icon">
-                                <img
-                                  src={images.productIncrease}
-                                  alt="product-increase"
-                                  className="increase-detail"
-                                />
-                              </div>
-                            </button>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        <p className="box-currency m-0">
-                          NTD$ <span>1,800</span>
-                        </p>
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        <div className="del-icon">
-                          <img src={images.delIcon} alt="delete icon-detail" />
-                        </div>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <th scope="row" className="cart-custom-tbody-th">
-                        <input type="checkbox" className="checkbox-custom" />
-                      </th>
-                      <td className="cart-custom-tbody-td cart-product">
-                        <img
-                          src="https://images.unsplash.com/photo-1625021659159-f63f546d74a7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                          alt="coffee bean img"
-                          className="cart-product-img"
-                        />
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        哥倫比亞咖啡豆(500g)
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        <p className="box-currency m-0">
-                          NTD$ <span>600</span>
-                        </p>
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        {/* 增減數量 */}
-                        <div className="order-options">
-                          <div className="order-options-quantity">
-                            <button
-                              type="button"
-                              className="quantity-decrease"
-                              onClick={handleDecrease}
-                            >
-                              <div className="decrease-icon">
-                                <img
-                                  src={images.productDecrease}
-                                  alt="product-decrease"
-                                  className="decrease-detail"
-                                />
-                              </div>
-                            </button>
-                            <div className="quantity-value">
-                              <input
-                                type="number"
-                                className="value-input border-0"
-                                value={quantity}
-                                onChange={handleChange}
-                                min={minValue}
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              className="quantity-increase"
-                              onClick={handleIncrease}
-                            >
-                              <div className="increase-icon">
-                                <img
-                                  src={images.productIncrease}
-                                  alt="product-increase"
-                                  className="increase-detail"
-                                />
-                              </div>
-                            </button>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        <p className="box-currency m-0">
-                          NTD$ <span>1,800</span>
-                        </p>
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        <div className="del-icon">
-                          <img src={images.delIcon} alt="delete icon-detail" />
-                        </div>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <th scope="row" className="cart-custom-tbody-th">
-                        <input type="checkbox" className="checkbox-custom" />
-                      </th>
-                      <td className="cart-custom-tbody-td cart-product">
-                        <img
-                          src="https://images.unsplash.com/photo-1625021659159-f63f546d74a7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                          alt="coffee bean img"
-                          className="cart-product-img"
-                        />
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        哥倫比亞咖啡豆(500g)
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        <p className="box-currency m-0">
-                          NTD$ <span>600</span>
-                        </p>
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        {/* 增減數量 */}
-                        <div className="order-options">
-                          <div className="order-options-quantity">
-                            <button
-                              type="button"
-                              className="quantity-decrease"
-                              onClick={handleDecrease}
-                            >
-                              <div className="decrease-icon">
-                                <img
-                                  src={images.productDecrease}
-                                  alt="product-decrease"
-                                  className="decrease-detail"
-                                />
-                              </div>
-                            </button>
-                            <div className="quantity-value">
-                              <input
-                                type="number"
-                                className="value-input border-0"
-                                value={quantity}
-                                onChange={handleChange}
-                                min={minValue}
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              className="quantity-increase"
-                              onClick={handleIncrease}
-                            >
-                              <div className="increase-icon">
-                                <img
-                                  src={images.productIncrease}
-                                  alt="product-increase"
-                                  className="increase-detail"
-                                />
-                              </div>
-                            </button>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        <p className="box-currency m-0">
-                          NTD$ <span>1,800</span>
-                        </p>
-                      </td>
-                      <td className="cart-custom-tbody-td">
-                        <div className="del-icon">
-                          <img src={images.delIcon} alt="delete icon-detail" />
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                  </>
+                ) : (
+                  <table className="table cart-custom-table m-0 ">
+                    <thead className="cart-custom-style">
+                      <tr>
+                        <th scope="col" className="cart-custom-style-th">
+                          <input type="checkbox" className="checkbox-custom" />
+                        </th>
+                        <th scope="col" className="cart-custom-style-th">
+                          商品圖片
+                        </th>
+                        <th scope="col" className="cart-custom-style-th">
+                          商品名稱
+                        </th>
+                        <th scope="col" className="cart-custom-style-th">
+                          單價
+                        </th>
+                        <th scope="col" className="cart-custom-style-th">
+                          數量
+                        </th>
+                        <th scope="col" className="cart-custom-style-th">
+                          小計
+                        </th>
+                        <th scope="col" className="cart-custom-style-th"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="cart-custom-tbody">
+                      <tr>
+                        <td colSpan="7" className="text-center py-5">
+                          您的購物車是空的
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
 
@@ -541,7 +472,9 @@ const CartList = () => {
                   <p className="product-title m-0">商品金額</p>
                   <div className="price-box">
                     <p className="product-price m-0">NTD$</p>
-                    <p className="product-price m-0">3,550</p>
+                    <p className="product-price m-0">
+                      {total.toLocaleString()}
+                    </p>
                   </div>
                 </div>
                 <div className="price-detail">
@@ -558,17 +491,22 @@ const CartList = () => {
                   <p className="total-title m-0">金額總計</p>
                   <div className="price-box">
                     <p className="total-price m-0">NTD$</p>
-                    <p className="total-price m-0">3,550</p>
+                    <p className="total-price m-0">{total.toLocaleString()}</p>
                   </div>
                 </div>
 
                 <div className="coupon-check">
-                  <button type="button" className="coupon-check-continue">
+                  <button
+                    type="button"
+                    className="coupon-check-continue"
+                    onClick={() => navigate('/products')}
+                  >
                     繼續選購
                   </button>
                   <button
                     type="button"
                     className="coupon-check-proceed border-0"
+                    onClick={() => navigate('/create-order')}
                   >
                     前往結帳
                   </button>
@@ -763,6 +701,43 @@ const CartList = () => {
         </div>
         <div></div>
       </div>
+      {isOpen && (
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">系統通知</h5>
+                <button
+                  type="button"
+                  className="custom-modal-close"
+                  onClick={() => setIsOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="custom-modal-btn"
+                  onClick={() => {
+                    setIsOpen(false);
+                    if (modalMsg === '請先登入會員') {
+                      navigate('/login');
+                    }
+                  }}
+                >
+                  關閉
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
     </>
   );

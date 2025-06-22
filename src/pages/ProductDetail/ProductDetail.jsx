@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  useParams,
+  useNavigate,
+} from 'react-router-dom';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -17,7 +21,7 @@ const thumbnailUrls = [
 const ProductDetail = () => {
   const { product_id } = useParams();
   const minValue = 1;
-  const [quantity, setQuantity] = useState(minValue);
+  const [selectedQuantity, setSelectedQuantity] = useState(minValue); 
   const [mainImage, setMainImage] = useState('');
   const [product, setProduct] = useState(null);
 
@@ -31,19 +35,8 @@ const ProductDetail = () => {
   const [showTopBtn, setShowTopBtn] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
-  const route = `${apiUrl}/api/v1/products/${product_id}`;
-
-  const classificationNameMap = {
-    Taiwan: '台灣咖啡豆系列',
-    SouthAsia: '東南亞咖啡豆',
-    LatinAmerica: '中南美洲咖啡豆',
-    AficaSeries: '非洲咖啡豆',
-    Others: '相關用品及其他',
-  };
-  const classificationName = product
-    ? classificationNameMap[product.classification_name] ||
-      product.classification_name
-    : '';
+  const productRoute = `${apiUrl}/api/v1/products/${product_id}`;
+  const cartRoute = `${apiUrl}/api/v1/users/membership/cart`;
 
   const handleGoBack = () => {
     navigate('/products');
@@ -75,7 +68,7 @@ const ProductDetail = () => {
   // 取單商品詳情
   useEffect(() => {
     axios
-      .get(route)
+      .get(productRoute)
       .then((res) => {
         const data = res.data.data;
 
@@ -92,24 +85,37 @@ const ProductDetail = () => {
       });
   }, [product_id]);
 
+
   // 加入購物車
-  const handleAddToCart = async () => {
-    if (!product) return;
+  const handleAddToCart = () => {
+    if (!product || !product.id) {
+      setModalMsg('商品資訊有誤，請稍後再試');
+      setIsOpen(true);
+      return;
+    }
+  
+    if (selectedQuantity <= 0) {
+      setModalMsg('數量無效，請重新輸入');
+      setIsOpen(true);
+      return;
+    }
+  
+    setAddingId(true);
+    const token = localStorage.getItem('token');
 
-    try {
-      setAddingId(true);
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setModalMsg('尚未登入，請先登入會員');
-        setIsOpen(true);
-        return;
-      }
-
-      await axios.post(
-        `${apiUrl}/api/v1/users/membership/cart`,
+    if (!token) {
+      setModalMsg('尚未登入，請先登入會員');
+      setIsOpen(true);
+      setAddingId(false);
+      return;
+    }
+  
+    axios
+      .post(
+        cartRoute,
         {
-          product_id: product.id,
-          quantity: quantity,
+          product_id: product?.id,
+          quantity: selectedQuantity,
         },
         {
           headers: {
@@ -117,35 +123,38 @@ const ProductDetail = () => {
             'Content-Type': 'application/json',
           },
         },
-      );
-
-      setModalMsg('已加入購物車');
-    } catch (error) {
-      const msg = error.response?.data?.message || '加入失敗，請稍後再試';
-      setModalMsg(msg);
-    } finally {
-      setAddingId(false);
-      setIsOpen(true);
-    }
+      )
+      .then(() => {
+        setModalMsg('已加入購物車');
+      })
+      .catch((error) => {
+        const msg = error.response?.data?.message || '加入失敗，請稍後再試';
+        setModalMsg(msg);
+      })
+      .finally(() => {
+        setAddingId(false);
+        setIsOpen(true);
+      });
   };
 
   // 數量加減事件
   const handleDecrease = () => {
-    if (quantity > minValue) {
-      setQuantity(quantity - 1);
-    }
+    setSelectedQuantity((prevQuantity) => Math.max(prevQuantity - 1, minValue));
   };
-
+  
   const handleIncrease = () => {
-    setQuantity(quantity + 1);
+    setSelectedQuantity((prevQuantity) => prevQuantity + 1);
   };
 
   const handleChange = (e) => {
     const val = Number(e.target.value);
     if (!isNaN(val) && val >= minValue) {
-      setQuantity(val);
+      setSelectedQuantity(val);
+    } else {
+      setSelectedQuantity(minValue);
     }
   };
+
 
   if (!product) {
     return <div></div>;
@@ -173,7 +182,7 @@ const ProductDetail = () => {
             <li className="products-breadcrumb-arrow">&gt;</li>
             <li className="products-breadcrumb-item">
               <Link to="/products" className="products-breadcrumb-link">
-                {classificationName}
+                所有商品
               </Link>
             </li>
           </ul>
@@ -293,7 +302,7 @@ const ProductDetail = () => {
                             <input
                               type="number"
                               className="value-input border-0"
-                              value={quantity}
+                              value={selectedQuantity}
                               onChange={handleChange}
                               min={minValue}
                               inputMode="numeric"
@@ -319,7 +328,9 @@ const ProductDetail = () => {
                         </div>
                       </div>
 
-                      <div className="product-price">NTD${product.price || 999}</div>
+                      <div className="product-price">
+                        NTD${product.price || 999}
+                      </div>
                     </div>
 
                     <button
@@ -562,7 +573,7 @@ const ProductDetail = () => {
           <div className="modal-dialog custom-modal-dialog">
             <div className="modal-content custom-modal-content">
               <div className="modal-header custom-modal-header">
-                <h5 className="custom-modal-title">註冊失敗</h5>
+                <h5 className="custom-modal-title">系統通知</h5>
                 <button
                   type="button"
                   className="custom-modal-close"
