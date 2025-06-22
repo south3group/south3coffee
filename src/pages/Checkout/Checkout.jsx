@@ -459,6 +459,7 @@ const Checkout = () => {
             </div>
           </div>
         </div>
+        )
       }
     </>
   );
