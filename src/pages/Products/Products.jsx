@@ -104,13 +104,13 @@ const Products = () => {
         },
       );
 
-      // navigate('/cart');
+      setModalMsg('已加入購物車');
     } catch (error) {
       const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
       setModalMsg(msg);
-      setIsOpen(true);
     } finally {
       setAddingId(null);
+      setIsOpen(true);
     }
   };
 
