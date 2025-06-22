@@ -42,22 +42,27 @@ const CreateOrder = () => {
   // 取得訂單
   useEffect(() => {
     const token = localStorage.getItem('token');
-  
+
     axios
       .get(getRoute, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
         const data = res.data.data;
-  
+
         if (!data.orderItems || data.orderItems.length === 0) {
           setModalMsg('購物車內沒有商品，請先加入商品');
-          navigate('/products')
+          navigate('/products');
           setIsOpen(true);
-        } else if (!data.receiver || !data.receiver.name || !data.receiver.phone || !data.receiver.address) {
+        } else if (
+          !data.receiver ||
+          !data.receiver.name ||
+          !data.receiver.phone ||
+          !data.receiver.address
+        ) {
           setModalMsg('收件資料不完整，請先填寫收件資料');
           setIsOpen(true);
-          navigate('/member/receiver')
+          navigate('/member/receiver');
         } else {
           setOrderData(data);
         }
@@ -66,6 +71,9 @@ const CreateOrder = () => {
         if (err.response?.status === 401) {
           localStorage.removeItem('token');
           navigate('/');
+          }else if (err.response?.status === 400){
+            // const msg = err.response?.data?.message || '收件資訊或購物車為空';
+            navigate('/member/receiver');
         } else {
           const msg = err.response?.data?.message || '發生錯誤';
           setModalMsg(msg);
@@ -76,11 +84,10 @@ const CreateOrder = () => {
         setLoading(false);
       });
   }, [navigate]);
-  
+
   //建立訂單
   const handleCreateOrder = () => {
     const token = localStorage.getItem('token');
-    console.log('看看',orderData.receiver)
 
     axios
       .post(
@@ -88,7 +95,7 @@ const CreateOrder = () => {
         {
           name: orderData.receiver.name,
           phone: orderData.receiver.phone,
-          post_code: orderData.receiver.post_code || '000000' ,
+          post_code: orderData.receiver.post_code || '000000',
           address: orderData.receiver.address,
         },
         {
@@ -98,8 +105,9 @@ const CreateOrder = () => {
         },
       )
       .then((res) => {
-        const orderId = res.data.data.display_id
-        navigate(`/checkout/${orderId}`)
+        // const orderId = res.data.data.display_id;
+        // navigate(`/checkout/${orderId}`);
+        navigate(`/checkout`);
       })
       .catch((err) => {
         if (err.response?.status === 401) {
@@ -406,7 +414,11 @@ const CreateOrder = () => {
                       </div>
 
                       <div className="total-check">
-                        <button type="button" className="total-check-continue">
+                        <button
+                          type="button"
+                          className="total-check-continue"
+                          onClick={() => navigate('/products')}
+                        >
                           繼續選購
                         </button>
                         <button
