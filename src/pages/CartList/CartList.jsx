@@ -652,7 +652,7 @@ const CartList = () => {
           <div className="modal-dialog custom-modal-dialog">
             <div className="modal-content custom-modal-content">
               <div className="modal-header custom-modal-header">
-                <h5 className="custom-modal-title">提醒</h5>
+                <h5 className="custom-modal-title">系統通知</h5>
                 <button
                   type="button"
                   className="custom-modal-close"
