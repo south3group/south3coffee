@@ -239,9 +239,11 @@
       table-layout: auto;
       width: 100%;
       border-spacing: 0;
+      display: table;
     }
 
     &-style {
+      display: table-header-group;
       &-th {
         padding: 24px 16px;
         color: $coffee-primary-1000;
@@ -295,7 +297,16 @@
     }
 
     &-tbody {
+      display: block;
+      max-height: 740px; // 5 items * (120px height + 24px*2 padding + 1px border)
+      overflow-y: auto;
       background-color: $coffee-grey-000;
+
+      & > tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+      }
 
       .checkbox-custom {
         width: 20px;
