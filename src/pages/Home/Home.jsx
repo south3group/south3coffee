@@ -8,6 +8,9 @@ import HomeBanner from '../../components/Banner/HomeBanner';
 import About from '../../components/Abouts/About';
 import Carousel from '../../components/Carousel/Carousel';
 import HomeCard from '../../components/ProductCard/HomeCard';
+
+// import { images } from '../../constants/image';
+
 // 商品照片
 import equipment1 from '../../assets/Images/coffee-equipment1.png';
 import equipment2 from '../../assets/Images/coffee-equipment2.png';
@@ -33,26 +36,43 @@ const Home = () => {
   const navigate = useNavigate();
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
   const [equipmentProducts, setEquipmentProducts] = useState([]);
+  // const [showTopBtn, setShowTopBtn] = useState(false);
+  // const scrollToTop = () => {
+  //   window.scrollTo({
+  //     top: 0,
+  //     behavior: 'smooth',
+  //   });
+  // };
+
+  // // top 按鈕
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     setShowTopBtn(window.scrollY > 300);
+  //   };
+
+  //   window.addEventListener('scroll', handleScroll);
+  //   return () => window.removeEventListener('scroll', handleScroll);
+  // }, []);
 
   // useEffect(() => {
   // // 取得熱賣商品
   // axios
-  // .get(`${import.meta.env.VITE_API_URL}/products/bestsellers`)
+  // .get(`${import.meta.env.VITE_API_URL}/api/v1/products`)
   // .then((response) => {
-  //   setBestSellerProducts(response.data); // 設定到 state 中
+  //   setBestSellerProducts(response.data);
   // })
   // .catch((error) => {
   //   console.error('API 取得熱賣商品失敗', error);
   // });
 
-  // // 取得咖啡器具商品
+  // // 取得咖啡用具商品
   // axios
-  // .get(`${import.meta.env.VITE_API_URL}/products/equipments`)
+  // .get(`${import.meta.env.VITE_API_URL}/api/v1/products`)
   // .then((response) => {
   //   setEquipmentProducts(response.data);
   // })
   // .catch((error) => {
-  //   console.error('API 取得咖啡器具商品失敗', error);
+  //   console.error('API 取得咖啡用具商品失敗', error);
   // });
   // }, []); // 空陣列代表只在首次渲染時執行一次
 
@@ -293,6 +313,12 @@ const Home = () => {
       )}
 
       <About />
+
+      {/* {showTopBtn && (
+        <button className="back-to-top" onClick={scrollToTop}>
+          <img src={images.topBtn} alt="back to top btn" />
+        </button>
+      )} */}
       <Footer />
     </>
   );
