@@ -10,8 +10,10 @@ const CartList = () => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [total, setTotal] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0);
   const [modalMsg, setModalMsg] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -77,6 +79,44 @@ const CartList = () => {
         setModalMsg(msg);
         setIsOpen(true);
       }
+    }
+  };
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setModalMsg('請輸入優惠序號');
+      setIsOpen(true);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setModalMsg('請先登入會員');
+        setIsOpen(true);
+        return;
+      }
+
+      const res = await axios.post(
+        `${apiUrl}/api/v1/users/discount`,
+        {
+          discount_kol: couponCode.trim(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const discount = res.data.data;
+      setDiscountAmount(discount);
+      setModalMsg('優惠券套用成功！');
+      setIsOpen(true);
+    } catch (error) {
+      const msg = error.response?.data?.message || '套用優惠券失敗';
+      setModalMsg(msg);
+      setIsOpen(true);
     }
   };
 
@@ -462,8 +502,17 @@ const CartList = () => {
                 <div className="coupon-section">
                   <p className="coupon-title m-0">優惠券</p>
                   <div className="coupon-input">
-                    <input type="text" placeholder="請輸入優惠序號" />
-                    <button type="button" className="coupon-btn border-0">
+                    <input
+                      type="text"
+                      placeholder="請輸入優惠序號"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className={`coupon-btn border-0 ${couponCode ? 'active' : ''}`}
+                      onClick={applyCoupon}
+                    >
                       <p className="m-0">套用</p>
                     </button>
                   </div>
@@ -481,7 +530,9 @@ const CartList = () => {
                   <p className="account-title m-0">折扣金額</p>
                   <div className="price-box">
                     <p className="account-price m-0">NTD$</p>
-                    <p className="account-price m-0">0</p>
+                    <p className="account-price m-0">
+                      {discountAmount.toLocaleString()}
+                    </p>
                   </div>
                 </div>
 
@@ -491,7 +542,9 @@ const CartList = () => {
                   <p className="total-title m-0">金額總計</p>
                   <div className="price-box">
                     <p className="total-price m-0">NTD$</p>
-                    <p className="total-price m-0">{total.toLocaleString()}</p>
+                    <p className="total-price m-0">
+                      {(total - discountAmount).toLocaleString()}
+                    </p>
                   </div>
                 </div>
 
