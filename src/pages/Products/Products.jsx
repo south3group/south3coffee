@@ -264,19 +264,38 @@ const Products = () => {
                       </Link>
                     </li>
                   )}
-                  {[...Array(totalPages)].map((_, i) => (
-                    <li
-                      className={`page-item pagination-custom-item ${i + 1 === page ? 'active' : ''}`}
-                      key={i}
-                    >
-                      <Link
-                        to={`/products?classification=${classification}&page=${i + 1}`}
-                        className="page-link pagination-custom-link"
+
+                  {(() => {
+                    const maxPagesToShow = 10;
+                    let startPage = Math.max(
+                      1,
+                      page - Math.floor(maxPagesToShow / 2),
+                    );
+                    let endPage = startPage + maxPagesToShow - 1;
+
+                    if (endPage > totalPages) {
+                      endPage = totalPages;
+                      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                    }
+
+                    return Array.from(
+                      { length: endPage - startPage + 1 },
+                      (_, i) => startPage + i,
+                    ).map((p) => (
+                      <li
+                        key={p}
+                        className={`page-item pagination-custom-item ${p === page ? 'active' : ''}`}
                       >
-                        {i + 1}
-                      </Link>
-                    </li>
-                  ))}
+                        <Link
+                          to={`/products?classification=${classification}&page=${p}`}
+                          className="page-link pagination-custom-link"
+                        >
+                          {p}
+                        </Link>
+                      </li>
+                    ));
+                  })()}
+
                   {page < totalPages && (
                     <li className="page-item pagination-custom-item">
                       <Link
@@ -317,7 +336,6 @@ const Products = () => {
                   className="custom-modal-close"
                   onClick={() => {
                     setIsOpen(false);
-                    navigate('/products');
                   }}
                 >
                   ✕
@@ -330,7 +348,6 @@ const Products = () => {
                   className="custom-modal-btn"
                   onClick={() => {
                     setIsOpen(false);
-                    navigate('/products');
                   }}
                 >
                   關閉

@@ -153,7 +153,7 @@ const Header = () => {
 
         {/* 使用者大頭貼 */}
         {token && (
-          <div className="user">
+          <div className="user d-block d-md-none">
             <button
               className="border-0 bg-transparent profile-btn"
               onClick={() => {

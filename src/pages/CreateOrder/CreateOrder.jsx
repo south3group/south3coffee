@@ -9,12 +9,13 @@ import { images } from '../../constants/image';
 
 const CreateOrder = () => {
   const [orderData, setOrderData] = useState(null);
-  const [loading, setLoading] = useState(true); // 先設定 loading 狀態
+  const [loading, setLoading] = useState(true);
 
   const [showTopBtn, setShowTopBtn] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
+  const [isReceiverModalOpen, setIsReceiverModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -53,7 +54,7 @@ const CreateOrder = () => {
         if (!data.orderItems || data.orderItems.length === 0) {
           setModalMsg('購物車內沒有商品，請先加入商品');
           navigate('/products');
-          setIsOpen(true);
+          setIsReceiverModalOpen(true);
         } else if (
           !data.receiver ||
           !data.receiver.name ||
@@ -61,8 +62,7 @@ const CreateOrder = () => {
           !data.receiver.address
         ) {
           setModalMsg('收件資料不完整，請先填寫收件資料');
-          setIsOpen(true);
-          navigate('/member/receiver');
+          setIsReceiverModalOpen(true);
         } else {
           setOrderData(data);
         }
@@ -71,9 +71,9 @@ const CreateOrder = () => {
         if (err.response?.status === 401) {
           localStorage.removeItem('token');
           navigate('/');
-          }else if (err.response?.status === 400){
-            // const msg = err.response?.data?.message || '收件資訊或購物車為空';
-            navigate('/member/receiver');
+        } else if (err.response?.status === 400) {
+          setModalMsg('收件資料不完整，請先填寫收件資料');
+          setIsReceiverModalOpen(true);
         } else {
           const msg = err.response?.data?.message || '發生錯誤';
           setModalMsg(msg);
@@ -106,9 +106,7 @@ const CreateOrder = () => {
       )
       .then((res) => {
         const orderId = res.data.data.order_id;
-        // navigate(`/checkout/${orderId}`);
         navigate(`/checkout?order_id=${orderId}`);
-        // navigate(`/checkout`);
       })
       .catch((err) => {
         if (err.response?.status === 401) {
@@ -167,6 +165,45 @@ const CreateOrder = () => {
             </div>
           </div>
         )}
+
+        {isReceiverModalOpen && (
+          <div
+            className="modal show fade d-block custom-modal"
+            tabIndex="-1"
+            role="dialog"
+          >
+            <div className="modal-dialog custom-modal-dialog">
+              <div className="modal-content custom-modal-content">
+                <div className="modal-header custom-modal-header">
+                  <h5 className="custom-modal-title">系統通知</h5>
+                  <button
+                    type="button"
+                    className="custom-modal-close"
+                    onClick={() => {
+                      setIsReceiverModalOpen(false);
+                      navigate('/member/receiver');
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="modal-body custom-modal-body">{modalMsg}</div>
+                <div className="modal-footer custom-modal-footer">
+                  <button
+                    type="button"
+                    className="custom-modal-btn"
+                    onClick={() => {
+                      setIsReceiverModalOpen(false);
+                      navigate('/member/receiver');
+                    }}
+                  >
+                    關閉
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </>
     );
   }
@@ -195,38 +232,42 @@ const CreateOrder = () => {
                 <div className="orders-custom">
                   {/* 訂單詳情 */}
                   {/* 手機版 */}
-                  <div className="d-block d-md-none orders-custom-mobile">
-                    {orderData.orderItems.map((item, idx) => (
-                      <div className="order-card" key={idx}>
-                        <div className="order-card-content">
-                          <div className="text-group">
-                            <p className="text-group-title m-0">購買品項</p>
-                            <p className="text-group-text m-0">{item.name}</p>
-                          </div>
-                          <div className="text-group">
-                            <p className="text-group-title m-0">單價</p>
-                            <p className="text-group-text m-0">
-                              NTD$ {item.price}
-                            </p>
-                          </div>
-                          <div className="text-group">
-                            <p className="text-group-title m-0">數量</p>
-                            <p className="text-group-text m-0">
-                              {item.quantity}
-                            </p>
-                          </div>
-                          <div className="text-group">
-                            <p className="text-group-title m-0">總金額</p>
-                            <p className="text-group-text m-0">
-                              NTD$ {item.subtotal}
-                            </p>
+                  <div className="table-body-scroll-container d-block d-md-none">
+                    <div className="orders-custom-mobile">
+                      {orderData.orderItems.map((item, idx) => (
+                        <div className="order-card" key={idx}>
+                          <div className="order-card-content">
+                            <div className="text-group">
+                              <p className="text-group-title m-0">購買品項</p>
+                              <p className="text-group-text m-0">{item.name}</p>
+                            </div>
+                            <div className="text-group">
+                              <p className="text-group-title m-0">單價</p>
+                              <p className="text-group-text m-0">
+                                NTD$ {item.price}
+                              </p>
+                            </div>
+                            <div className="text-group">
+                              <p className="text-group-title m-0">數量</p>
+                              <p className="text-group-text m-0">
+                                {item.quantity}
+                              </p>
+                            </div>
+                            <div className="text-group">
+                              <p className="text-group-title m-0">總金額</p>
+                              <p className="text-group-text m-0">
+                                NTD$ {item.subtotal}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  </div>
 
-                    {/* 桌電版 */}
-                    <table className="d-none d-md-table table orders-custom-table m-0 ">
+                  {/* 桌電版 */}
+                  <div className="d-none d-md-block table-body-scroll-container">
+                    <table className="orders-custom-table">
                       <thead className="orders-custom-style">
                         <tr>
                           <th scope="col" className="orders-custom-style-th">
@@ -244,91 +285,27 @@ const CreateOrder = () => {
                         </tr>
                       </thead>
                       <tbody className="orders-custom-tbody">
-                        <tr>
-                          <th scope="row" className="orders-custom-tbody-th">
-                            嘉義阿里山咖啡豆(500g)
-                          </th>
-                          <td className="orders-custom-tbody-td price-box">
-                            <p className="box-currency m-0">NTD$</p>
-                            <p className="box-price m-0">500</p>
-                          </td>
-                          <td className="orders-custom-tbody-td">2</td>
-                          <td className="orders-custom-tbody-td price-box">
-                            <p className="box-currency m-0">NTD$</p>
-                            <p className="box-price m-0">1,000</p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="row" className="orders-custom-tbody-th">
-                            哥倫比亞咖啡豆(300g)
-                          </th>
-                          <td className="orders-custom-tbody-td price-box">
-                            <p className="box-currency m-0">NTD$</p>
-                            <p className="box-price m-0">600</p>
-                          </td>
-                          <td className="orders-custom-tbody-td">3</td>
-                          <td className="orders-custom-tbody-td price-box">
-                            <p className="box-currency m-0">NTD$</p>
-                            <p className="box-price m-0">1,800</p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="row" className="orders-custom-tbody-th">
-                            雛型咖啡濾紙100張
-                          </th>
-                          <td className="orders-custom-tbody-td price-box">
-                            <p className="box-currency m-0">NTD$</p>
-                            <p className="box-price m-0">150</p>
-                          </td>
-                          <td className="orders-custom-tbody-td">5</td>
-                          <td className="orders-custom-tbody-td price-box">
-                            <p className="box-currency m-0">NTD$</p>
-                            <p className="box-price m-0">750</p>
-                          </td>
-                        </tr>
+                        {orderData.orderItems.map((item, idx) => (
+                          <tr key={idx}>
+                            <td className="orders-custom-tbody-td">
+                              {item.name}
+                            </td>
+                            <td className="orders-custom-tbody-td price-box">
+                              <p className="box-currency m-0">NTD$</p>
+                              <p className="box-price m-0">{item.price}</p>
+                            </td>
+                            <td className="orders-custom-tbody-td">
+                              {item.quantity}
+                            </td>
+                            <td className="orders-custom-tbody-td price-box">
+                              <p className="box-currency m-0">NTD$</p>
+                              <p className="box-price m-0">{item.subtotal}</p>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
-
-                  {/* 桌電版 */}
-                  <table className="d-none d-md-table table orders-custom-table m-0 ">
-                    <thead className="orders-custom-style">
-                      <tr>
-                        <th scope="col" className="orders-custom-style-th">
-                          商品名稱
-                        </th>
-                        <th scope="col" className="orders-custom-style-th">
-                          單價
-                        </th>
-                        <th scope="col" className="orders-custom-style-th">
-                          數量
-                        </th>
-                        <th scope="col" className="orders-custom-style-th">
-                          小計
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="orders-custom-tbody">
-                      {orderData.orderItems.map((item, idx) => (
-                        <tr key={idx}>
-                          <td className="orders-custom-tbody-td">
-                            {item.name}
-                          </td>
-                          <td className="orders-custom-tbody-td price-box">
-                            <p className="box-currency m-0">NTD$</p>
-                            <p className="box-price m-0">{item.price}</p>
-                          </td>
-                          <td className="orders-custom-tbody-td">
-                            {item.quantity}
-                          </td>
-                          <td className="orders-custom-tbody-td price-box">
-                            <p className="box-currency m-0">NTD$</p>
-                            <p className="box-price m-0">{item.subtotal}</p>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
                 </div>
                 <div className="bottom-style">
                   {/* 確認收貨資訊 */}
@@ -461,7 +438,10 @@ const CreateOrder = () => {
                 <button
                   type="button"
                   className="custom-modal-close"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsReceiverModalOpen(false);
+                    navigate('/member/receiver');
+                  }}
                 >
                   ✕
                 </button>
@@ -471,7 +451,50 @@ const CreateOrder = () => {
                 <button
                   type="button"
                   className="custom-modal-btn"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsReceiverModalOpen(false);
+                    navigate('/member/receiver'); 
+                  }}
+                >
+                  關閉
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Receiver Modal */}
+      {isReceiverModalOpen && (
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">系統通知</h5>
+                <button
+                  type="button"
+                  className="custom-modal-close"
+                  onClick={() => {
+                    setIsReceiverModalOpen(false);
+                    navigate('/member/receiver');
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="custom-modal-btn"
+                  onClick={() => {
+                    setIsReceiverModalOpen(false);
+                    navigate('/member/receiver');
+                  }}
                 >
                   關閉
                 </button>
