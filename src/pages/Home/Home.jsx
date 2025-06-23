@@ -164,10 +164,10 @@ const Home = () => {
 
       {/* 熱賣商品區塊 */}
       {bestSellerProducts.length > 0 && (
-        <section className="py-5">
+        <section className="py-4">
           <div className="container">
-            <div className="text-center mb-5">
-              <h2 className="display-6 mb-2">熱賣商品</h2>
+            <div className="text-center homeTitle mb-3">
+              <h1 className="mb-2">熱賣商品</h1>
               <p className="text-muted">Best seller</p>
               <hr
                 className="w-25 mx-auto"
@@ -186,7 +186,7 @@ const Home = () => {
             </div>
 
             {/* 查看更多按鈕 */}
-            <div className="text-center mt-5">
+            <div className="text-center mt-4 mb-5">
               <button
                 className="btn btn-outline-dark btn-lg px-5"
                 onClick={() => navigate('/products')}
@@ -203,71 +203,12 @@ const Home = () => {
         <Carousel autoPlay={true} interval={15000} />
       </div>
 
-      {/* 賽事認證 */}
-      <section className="py-5" style={{ backgroundColor: '#f8f6f3' }}>
-        <div className="container">
-          <div className="row justify-content-center align-items-center g-4">
-            <div className="text-center homeTitle">
-              <h1>榮獲國內外賽事及評鑒的得獎咖啡豆</h1>
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={HomeImg.logos[0]}
-                alt="巴拿馬認證"
-                className="img-fluid cert-logo"
-              />
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={HomeImg.logos[1]}
-                alt="有機認證"
-                className="img-fluid cert-logo"
-              />
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={HomeImg.logos[2]}
-                alt="雨林聯盟的UTZ認證"
-                className="img-fluid cert-logo"
-              />
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={HomeImg.logos[3]}
-                alt="國際級精品咖啡評鑑"
-                className="img-fluid cert-logo"
-              />
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={HomeImg.logos[4]}
-                alt="公平貿易認證"
-                className="img-fluid cert-logo"
-              />
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={HomeImg.logos[5]}
-                alt="COE卓越盃"
-                className="img-fluid cert-logo"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* 咖啡用品區 */}
       {equipmentProducts.length > 0 && (
-        <section className="py-5 bg-light">
+        <section className="py-4 bg-light">
           <div className="container">
-            <div className="text-center mb-5">
-              <h2 className="display-6 mb-2">咖啡用具及其他</h2>
+            <div className="text-center mb-3 homeTitle">
+              <h1 className="mb-2">咖啡用具及其他</h1>
               <p className="text-muted">Coffee Equipment & Extras</p>
               <hr
                 className="w-25 mx-auto"
@@ -283,7 +224,7 @@ const Home = () => {
             </div>
 
             {/* 查看更多按鈕 */}
-            <div className="text-center mt-5">
+            <div className="text-center mt-4 mb-5">
               <button
                 className="btn btn-outline-dark btn-lg px-5"
                 onClick={() => navigate('/products')}
@@ -294,6 +235,44 @@ const Home = () => {
           </div>
         </section>
       )}
+
+      {/* 賽事認證 */}
+      <section className="py-4" style={{ backgroundColor: '#f8f6f3' }}>
+        <div className="container">
+          <div className="text-center homeTitle mb-5">
+            <h1>榮獲國內外賽事及評鑒的得獎咖啡豆</h1>
+          </div>
+
+          {/* 手機版滑動logo */}
+          <div className="d-flex d-md-none overflow-auto px-2">
+            {HomeImg.logos.map((logo, index) => (
+              <div
+                key={index}
+                className="flex-shrink-0 text-center me-3 cert-logo-slide"
+              >
+                <img
+                  src={logo}
+                  alt={`logo-${index}`}
+                  className="img-fluid cert-logo"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* 電腦版logo */}
+          <div className="row justify-content-center align-items-center g-4 d-none d-md-flex">
+            {HomeImg.logos.map((logo, index) => (
+              <div key={index} className="col-6 col-md-4 col-lg-2 text-center">
+                <img
+                  src={logo}
+                  alt={`logo-${index}`}
+                  className="img-fluid cert-logo"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <About />
 
