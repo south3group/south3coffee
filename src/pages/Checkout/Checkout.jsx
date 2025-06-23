@@ -45,7 +45,7 @@ const Checkout = () => {
     String(new Date().getFullYear() + i),
   );
 
-  // 獲取訂單資訊
+  // 取得訂單資訊
   useEffect(() => {
     const fetchOrderInfo = async () => {
       try {
