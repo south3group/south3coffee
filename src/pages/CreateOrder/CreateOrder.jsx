@@ -266,7 +266,7 @@ const CreateOrder = () => {
                   </div>
 
                   {/* 桌電版 */}
-                  <div className="d-none d-md-table table-body-scroll-container">
+                  <div className="d-none d-md-block table-body-scroll-container">
                     <table className="orders-custom-table">
                       <thead className="orders-custom-style">
                         <tr>
