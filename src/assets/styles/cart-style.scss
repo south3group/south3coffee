@@ -232,240 +232,89 @@
     }
 
     // 桌電版
-    &-table {
+    .cart-custom-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 1.6rem;
-      table-layout: auto;
-      width: 100%;
+      table-layout: fixed;
       border-spacing: 0;
-      display: table;
+    }
+
+    .table-body-scroll-container {
+      max-height: 785px; /* 5 個 item * (108px img + 48px padding + 1px border) */
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      border-top: none;
     }
 
     &-style {
-      display: table-header-group;
+      // thead
       &-th {
         padding: 24px 16px;
         color: $coffee-primary-1000;
         font-weight: 700;
-        text-align: left;
-        border-bottom: 1px solid $coffee-primary-100;
-        background-color: #f7f7f7;
+        border-bottom: 1px solid #e0e0e0;
+        background-color: #f8f5f1;
         vertical-align: middle;
 
-        &:first-child {
-          text-align: center;
-          vertical-align: middle;
-        }
-
-        .checkbox-custom {
-          width: 20px;
-          height: 20px;
-          min-width: 20px;
-          min-height: 20px;
-          accent-color: #7c5c37;
-          border: 1.5px solid #7c5c37;
-          border-radius: 4px;
-          background-color: #fff;
-          box-sizing: border-box;
-          appearance: none;
-          -webkit-appearance: none;
-          outline: none;
-          cursor: pointer;
-          display: inline-block;
-          position: relative;
-        }
-
-        .checkbox-custom:checked {
-          background-color: #7c5c37;
-          border-color: #7c5c37;
-        }
-
-        .checkbox-custom:checked::after {
-          content: '';
-          position: absolute;
-          left: 5px;
-          top: 1.5px;
-          width: 6px;
-          height: 12px;
-          border: solid #fff;
-          border-width: 0 2.5px 2.5px 0;
-          transform: rotate(45deg);
-          display: block;
+        &:nth-child(4),
+        &:nth-child(5),
+        &:nth-child(6) {
+          text-align: right;
         }
       }
     }
 
     &-tbody {
-      display: block;
-      max-height: 740px; // 5 items * (120px height + 24px*2 padding + 1px border)
-      overflow-y: auto;
       background-color: $coffee-grey-000;
 
-      & > tr {
-        display: table;
-        width: 100%;
-        table-layout: fixed;
-      }
-
-      .checkbox-custom {
-        width: 20px;
-        height: 20px;
-        min-width: 20px;
-        min-height: 20px;
-        accent-color: #7c5c37;
-        border: 1.5px solid #7c5c37;
-        border-radius: 4px;
-        background-color: #fff;
-        box-sizing: border-box;
-        appearance: none;
-        -webkit-appearance: none;
-        outline: none;
-        cursor: pointer;
-        display: inline-block;
-        position: relative;
-      }
-
-      .checkbox-custom:checked {
-        background-color: #7c5c37;
-        border-color: #7c5c37;
-      }
-
-      .checkbox-custom:checked::after {
-        content: '';
-        position: absolute;
-        left: 5px;
-        top: 1.5px;
-        width: 6px;
-        height: 12px;
-        border: solid #fff;
-        border-width: 0 2.5px 2.5px 0;
-        transform: rotate(45deg);
-        display: block;
-      }
-
-      .cart-product {
-        max-width: 152px;
-        &-img {
-          width: 120px;
-          height: 120px;
-          object-fit: cover;
-        }
-      }
-
-      &-th {
-        &:first-child {
-          text-align: center;
-          vertical-align: middle;
-        }
+      tr:last-child > td,
+      tr:last-child > th {
+        border-bottom: none;
       }
 
       &-th,
       &-td {
         padding: 24px 16px;
         color: $coffee-primary-700;
-        border-bottom: 1px solid $coffee-primary-100;
-        font-weight: inherit;
+        font-weight: 700;
+        border-bottom: 1px solid #e0e0e0;
         vertical-align: middle;
-        height: 100%;
-        &-unpaid,
-        &-unshipped {
-          padding: 16px;
-          color: $coffee-notification;
-          border-bottom: 1px solid $coffee-primary-100;
-          font-weight: inherit;
-          vertical-align: middle;
-          height: 100%;
+      }
+
+      &-td {
+        &:nth-child(4),
+        &:nth-child(5),
+        &:nth-child(6) {
+          text-align: right;
         }
 
-        .del-icon {
-          width: 24px;
-          height: 24px;
+        .box-currency {
           display: flex;
-          flex-direction: row;
-          justify-content: center;
-          align-items: center;
-          cursor: pointer;
+          justify-content: flex-end;
+          gap: 4px;
         }
 
-        .check-order {
+        .order-options {
           display: flex;
-          align-items: center;
-          gap: 8px;
-          max-width: 330px;
-          min-width: 0;
-          height: 100%;
-          line-height: 1.5;
-          overflow: hidden;
-
-          &-text {
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            flex-shrink: 1;
-            min-width: 0;
-          }
-
-          &-btn {
-            &-view {
-              font-size: 1.4rem;
-              color: $coffee-primary-000;
-              background-color: $coffee-primary-700;
-              padding: 4px 8px;
-              line-height: 1.2;
-              white-space: nowrap;
-
-              &:hover {
-                background-color: $coffee-primary-300;
-                color: $coffee-primary-700;
-              }
-
-              &:active {
-                background-color: $coffee-primary-800;
-                color: $coffee-primary-000;
-              }
-            }
-
-            &-reorder {
-              font-size: 1.4rem;
-              color: $coffee-primary-500;
-              background-color: $coffee-primary-100;
-              padding: 4px 8px;
-
-              &:hover {
-                background-color: $coffee-primary-000;
-                color: $coffee-primary-600;
-              }
-
-              &:active {
-                color: $coffee-primary-000;
-              }
-            }
-
-            &-checkout {
-              font-size: 1.4rem;
-              color: $coffee-primary-100;
-              background-color: $coffee-primary-500;
-              padding: 4px 8px;
-
-              &:hover {
-                background-color: $coffee-primary-100;
-                color: $coffee-primary-700;
-              }
-
-              &:active {
-                background-color: $coffee-primary-800;
-                color: $coffee-primary-000;
-              }
-            }
-          }
+          justify-content: flex-end;
         }
       }
 
-      tr:last-child th,
-      tr:last-child td {
-        border-bottom: none;
+      .del-icon {
+        display: flex;
+        justify-content: flex-end;
+        cursor: pointer;
+        img {
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .cart-product-img {
+        width: 108px;
+        height: 108px;
+        object-fit: cover;
       }
     }
   }
