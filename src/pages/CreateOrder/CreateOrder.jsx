@@ -9,7 +9,7 @@ import { images } from '../../constants/image';
 
 const CreateOrder = () => {
   const [orderData, setOrderData] = useState(null);
-  const [loading, setLoading] = useState(true); // 先設定 loading 狀態
+  const [loading, setLoading] = useState(true);
 
   const [showTopBtn, setShowTopBtn] = useState(false);
 
@@ -173,7 +173,6 @@ const CreateOrder = () => {
             tabIndex="-1"
             role="dialog"
           >
-            {/* 這段要加回來 Receiver Modal 的內容 */}
             <div className="modal-dialog custom-modal-dialog">
               <div className="modal-content custom-modal-content">
                 <div className="modal-header custom-modal-header">
@@ -502,7 +501,7 @@ const CreateOrder = () => {
                   className="custom-modal-close"
                   onClick={() => {
                     setIsReceiverModalOpen(false);
-                    navigate('/member/receiver'); // ✅ 這裡才跳轉
+                    navigate('/member/receiver');
                   }}
                 >
                   ✕
@@ -515,7 +514,7 @@ const CreateOrder = () => {
                   className="custom-modal-btn"
                   onClick={() => {
                     setIsReceiverModalOpen(false);
-                    navigate('/member/receiver'); // ✅ 這裡才跳轉
+                    navigate('/member/receiver'); 
                   }}
                 >
                   關閉
