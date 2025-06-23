@@ -9,7 +9,7 @@ import { images } from '../../constants/image';
 
 const CreateOrder = () => {
   const [orderData, setOrderData] = useState(null);
-  const [loading, setLoading] = useState(true); // 先設定 loading 狀態
+  const [loading, setLoading] = useState(true);
 
   const [showTopBtn, setShowTopBtn] = useState(false);
 
