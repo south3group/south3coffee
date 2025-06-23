@@ -453,7 +453,7 @@ const CreateOrder = () => {
                   className="custom-modal-btn"
                   onClick={() => {
                     setIsReceiverModalOpen(false);
-                    navigate('/member/receiver');
+                    navigate('/member/receiver'); 
                   }}
                 >
                   關閉
