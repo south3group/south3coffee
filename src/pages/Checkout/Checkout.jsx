@@ -1,10 +1,19 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import { images } from '../../constants/image';
 
 const Checkout = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const order_id = searchParams.get('order_id');
+
+  const [orderInfo, setOrderInfo] = useState(null);
+
   const [agreeCredit, setAgreeCredit] = useState({
     confirmOrder: false,
     agreeTerms: false,
@@ -13,7 +22,7 @@ const Checkout = () => {
     agree: '',
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('credit');
+  const [paymentMethod, setPaymentMethod] = useState('cod');
   const [formValidated, setFormValidated] = useState(false);
 
   const cardRefs = [useRef(), useRef(), useRef(), useRef()];
@@ -21,6 +30,9 @@ const Checkout = () => {
 
   const [agreeCOD, _] = useState(false);
   const [agreeChecked, setAgreeChecked] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalMsg, setModalMsg] = useState('');
 
   const handleCardInput = (e, idx) => {
     const value = e.target.value;
@@ -36,8 +48,59 @@ const Checkout = () => {
     String(new Date().getFullYear() + i),
   );
 
+  // 取得訂單資訊
+  useEffect(() => {
+    const fetchOrderInfo = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const token = localStorage.getItem('token');
+        
+        const response = await axios.get(
+          `${apiUrl}/api/v1/users/checkout?order_id=${order_id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data?.data) {
+          setOrderInfo(response.data.data);
+        }
+      } catch (error) {
+        console.error('獲取訂單資訊失敗:', error);
+        // 如果獲取訂單資訊失敗，導回上一頁
+        navigate(-1);
+      }
+    };
+
+    if (order_id) {
+      fetchOrderInfo();
+    } else {
+      // 如果沒有 order_id，導回上一頁
+      navigate(-1);
+    }
+  }, [order_id, navigate]);
+
+  // 修改付款方式選擇的處理
+  const handlePaymentMethodChange = (method) => {
+    
+    if (method === 'credit') {
+      setModalMsg('目前金流維護中，請選擇貨到付款，謝謝');
+      setIsOpen(true);
+      setPaymentMethod('cod');
+    } else {
+      setPaymentMethod(method);
+    }
+    setFieldErr((prev) => ({
+      ...prev,
+      paymentMethod: '',
+      agree: '',
+    }));
+  };
+
   // 送出選單控制
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
     let newFieldErr = { paymentMethod: '', agree: '' };
@@ -53,7 +116,7 @@ const Checkout = () => {
         hasError = true;
       }
     } else if (paymentMethod === 'cod') {
-      if (!agreeCOD) {
+      if (!agreeChecked) {
         newFieldErr.agree = '請勾選同意條款';
         hasError = true;
       }
@@ -65,7 +128,47 @@ const Checkout = () => {
     if (hasError) {
       return;
     }
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.put(
+        `${apiUrl}/api/v1/users/checkout`,
+        {
+          display_id: orderInfo?.order?.display_id,
+          payment_method_id: paymentMethod === 'cod' ? 1 : 2, // 1 為貨到付款，2 為信用卡
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        navigate('/payment/success');
+      }
+    } catch (error) {
+      console.error('結帳失敗:', error);
+      navigate('/payment/error');
+    }
   };
+
+  // 在訂單資訊載入前顯示載入中
+  if (!orderInfo) {
+    return (
+      <>
+        <Header />
+        <div className="bg-coffee-bg-light checkout-style">
+          <div className="container checkout-container">
+            <div className="text-center py-5">載入中...</div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -91,13 +194,13 @@ const Checkout = () => {
                   <h4 className="box-title">訂單資訊</h4>
                   <div className="box-content">
                     <p className="box-content-title">訂單編號</p>
-                    <p className="box-content-text">Coffee3</p>
+                    <p className="box-content-text">{orderInfo.order.display_id}</p>
                   </div>
                   <div className="box-content">
                     <p className="box-content-title">訂單金額</p>
                     <div className="box-content-price">
                       <p className="box-content-price-currency m-0">NTD$</p>
-                      <p className="box-content-price-num m-0">5,500</p>
+                      <p className="box-content-price-num m-0">{orderInfo.order.total_price}</p>
                     </div>
                   </div>
                   <span className="total-line"></span>
@@ -105,7 +208,7 @@ const Checkout = () => {
                     <p className="order-total-title m-0">應付金額</p>
                     <div className="order-total-price">
                       <p className="order-total-price-currency m-0">NTD$</p>
-                      <p className="order-total-price-num m-0">5,500</p>
+                      <p className="order-total-price-num m-0">{orderInfo.order.total_price}</p>
                     </div>
                   </div>
                 </div>
@@ -115,17 +218,15 @@ const Checkout = () => {
                   <h4 className="box-title">收件資訊</h4>
                   <div className="box-content">
                     <p className="box-content-title">收件人</p>
-                    <p className="box-content-text">南三</p>
+                    <p className="box-content-text">{orderInfo.receiver.name}</p>
                   </div>
                   <div className="box-content">
                     <p className="box-content-title">連絡電話</p>
-                    <p className="box-content-text">0912345678</p>
+                    <p className="box-content-text">{orderInfo.receiver.phone}</p>
                   </div>
                   <div className="box-content">
                     <p className="box-content-title">收件地址</p>
-                    <p className="box-content-text">
-                      889898高雄市鹽埕區大仁路155號超長地址會以這種方跑到第二行
-                    </p>
+                    <p className="box-content-text">{orderInfo.receiver.address}</p>
                   </div>
                 </div>
               </div>
@@ -140,14 +241,7 @@ const Checkout = () => {
                       id="pay-credit"
                       name="payment"
                       checked={paymentMethod === 'credit'}
-                      onChange={() => {
-                        setPaymentMethod('credit');
-                        setFieldErr((prev) => ({
-                          ...prev,
-                          paymentMethod: '',
-                          agree: '',
-                        }));
-                      }}
+                      onChange={() => handlePaymentMethodChange('credit')}
                       className={fieldErr.paymentMethod ? 'input-error' : ''}
                     />
                     <label htmlFor="pay-credit" className="box-content-text">
@@ -160,14 +254,7 @@ const Checkout = () => {
                       id="pay-cod"
                       name="payment"
                       checked={paymentMethod === 'cod'}
-                      onChange={() => {
-                        setPaymentMethod('cod');
-                        setFieldErr((prev) => ({
-                          ...prev,
-                          paymentMethod: '',
-                          agree: '',
-                        }));
-                      }}
+                      onChange={() => handlePaymentMethodChange('cod')}
                       className={fieldErr.paymentMethod ? 'input-error' : ''}
                     />
                     <label htmlFor="pay-cod" className="box-content-text">
@@ -373,6 +460,41 @@ const Checkout = () => {
           </form>
         </div>
       </div>
+
+      {/* Modal */}
+      {isOpen && (
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">系統通知</h5>
+                <button
+                  type="button"
+                  className="custom-modal-close"
+                  onClick={() => setIsOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="custom-modal-btn"
+                  onClick={() => setIsOpen(false)}
+                >
+                  關閉
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <Footer />
     </>
   );
