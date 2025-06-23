@@ -22,7 +22,7 @@ const Checkout = () => {
     agree: '',
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('credit');
+  const [paymentMethod, setPaymentMethod] = useState('cod');
   const [formValidated, setFormValidated] = useState(false);
 
   const cardRefs = [useRef(), useRef(), useRef(), useRef()];
@@ -30,6 +30,9 @@ const Checkout = () => {
 
   const [agreeCOD, _] = useState(false);
   const [agreeChecked, setAgreeChecked] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalMsg, setModalMsg] = useState('');
 
   const handleCardInput = (e, idx) => {
     const value = e.target.value;
@@ -78,6 +81,23 @@ const Checkout = () => {
       navigate(-1);
     }
   }, [order_id, navigate]);
+
+  // 修改付款方式選擇的處理
+  const handlePaymentMethodChange = (method) => {
+    
+    if (method === 'credit') {
+      setModalMsg('目前金流維護中，請選擇貨到付款，謝謝');
+      setIsOpen(true);
+      setPaymentMethod('cod');
+    } else {
+      setPaymentMethod(method);
+    }
+    setFieldErr((prev) => ({
+      ...prev,
+      paymentMethod: '',
+      agree: '',
+    }));
+  };
 
   // 送出選單控制
   const handleSubmit = async (e) => {
@@ -221,14 +241,7 @@ const Checkout = () => {
                       id="pay-credit"
                       name="payment"
                       checked={paymentMethod === 'credit'}
-                      onChange={() => {
-                        setPaymentMethod('credit');
-                        setFieldErr((prev) => ({
-                          ...prev,
-                          paymentMethod: '',
-                          agree: '',
-                        }));
-                      }}
+                      onChange={() => handlePaymentMethodChange('credit')}
                       className={fieldErr.paymentMethod ? 'input-error' : ''}
                     />
                     <label htmlFor="pay-credit" className="box-content-text">
@@ -241,14 +254,7 @@ const Checkout = () => {
                       id="pay-cod"
                       name="payment"
                       checked={paymentMethod === 'cod'}
-                      onChange={() => {
-                        setPaymentMethod('cod');
-                        setFieldErr((prev) => ({
-                          ...prev,
-                          paymentMethod: '',
-                          agree: '',
-                        }));
-                      }}
+                      onChange={() => handlePaymentMethodChange('cod')}
                       className={fieldErr.paymentMethod ? 'input-error' : ''}
                     />
                     <label htmlFor="pay-cod" className="box-content-text">
@@ -454,6 +460,41 @@ const Checkout = () => {
           </form>
         </div>
       </div>
+
+      {/* Modal */}
+      {isOpen && (
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">系統通知</h5>
+                <button
+                  type="button"
+                  className="custom-modal-close"
+                  onClick={() => setIsOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="custom-modal-btn"
+                  onClick={() => setIsOpen(false)}
+                >
+                  關閉
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <Footer />
     </>
   );
