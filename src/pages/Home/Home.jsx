@@ -8,51 +8,50 @@ import HomeBanner from '../../components/Banner/HomeBanner';
 import About from '../../components/Abouts/About';
 import Carousel from '../../components/Carousel/Carousel';
 import HomeCard from '../../components/ProductCard/HomeCard';
-// 商品照片
-import equipment1 from '../../assets/Images/coffee-equipment1.png';
-import equipment2 from '../../assets/Images/coffee-equipment2.png';
-import equipment3 from '../../assets/Images/coffee-equipment3.png';
-import equipment4 from '../../assets/Images/coffee-equipment4.png';
-import equipment5 from '../../assets/Images/coffee-equipment5.png';
-import equipment6 from '../../assets/Images/coffee-equipment6.png';
-
-import coffee1 from '../../assets/Images/image12.jpg';
-import coffee2 from '../../assets/Images/image8.jpg';
-import coffee3 from '../../assets/Images/image9.jpg';
-import coffee4 from '../../assets/Images/image10.jpg';
-
-// 認證照片
-import logo1 from '../../assets/Images/competition-logo1.png';
-import logo2 from '../../assets/Images/competition-logo2.png';
-import logo3 from '../../assets/Images/competition-logo3.png';
-import logo4 from '../../assets/Images/competition-logo4.png';
-import logo5 from '../../assets/Images/competition-logo5.png';
-import logo6 from '../../assets/Images/competition-logo6.png';
+import { images } from '../../constants/image';
+import { HomeImg } from '../../constants/HomeImg';
 
 const Home = () => {
   const navigate = useNavigate();
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
   const [equipmentProducts, setEquipmentProducts] = useState([]);
+  const [showTopBtn, setShowTopBtn] = useState(false);
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  // top 按鈕
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowTopBtn(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // useEffect(() => {
   // // 取得熱賣商品
   // axios
-  // .get(`${import.meta.env.VITE_API_URL}/products/bestsellers`)
+  // .get(`${import.meta.env.VITE_API_URL}/api/v1/products`)
   // .then((response) => {
-  //   setBestSellerProducts(response.data); // 設定到 state 中
+  //   setBestSellerProducts(response.data);
   // })
   // .catch((error) => {
   //   console.error('API 取得熱賣商品失敗', error);
   // });
 
-  // // 取得咖啡器具商品
+  // // 取得咖啡用具商品
   // axios
-  // .get(`${import.meta.env.VITE_API_URL}/products/equipments`)
+  // .get(`${import.meta.env.VITE_API_URL}/api/v1/products`)
   // .then((response) => {
   //   setEquipmentProducts(response.data);
   // })
   // .catch((error) => {
-  //   console.error('API 取得咖啡器具商品失敗', error);
+  //   console.error('API 取得咖啡用具商品失敗', error);
   // });
   // }, []); // 空陣列代表只在首次渲染時執行一次
 
@@ -64,7 +63,7 @@ const Home = () => {
         id: 1,
         name: '耶加雪菲 日曬',
         price: 450,
-        image: coffee1,
+        image: HomeImg.coffee[0],
         tags: ['衣索比亞'],
         flavor: '莓果、花香',
         description:
@@ -74,7 +73,7 @@ const Home = () => {
         id: 2,
         name: '肯亞 AA',
         price: 520,
-        image: coffee2,
+        image: HomeImg.coffee[1],
         tags: ['肯亞'],
         flavor: '葡萄柚、黑醋栗',
         description: '中深焙帶出成熟果香與濃郁香氣，餘韻持久。',
@@ -83,7 +82,7 @@ const Home = () => {
         id: 3,
         name: '巴西 黃波旁',
         price: 400,
-        image: coffee3,
+        image: HomeImg.coffee[2],
         tags: ['巴西'],
         flavor: '榛果、巧克力',
         description: '低酸平衡、口感滑順，是入門者首選。',
@@ -92,7 +91,7 @@ const Home = () => {
         id: 4,
         name: '巴西 黃波旁',
         price: 400,
-        image: coffee4,
+        image: HomeImg.coffee[3],
         tags: ['巴西'],
         flavor: '榛果、巧克力',
         description: '低酸平衡、口感滑順，是入門者首選。',
@@ -105,7 +104,7 @@ const Home = () => {
         id: 101,
         name: '手沖壺 Hario V60',
         price: 980,
-        image: equipment1,
+        image: HomeImg.equipment[0],
         tags: ['日本製'],
         description: '設計流暢水流控制精準，手沖必備器具。',
       },
@@ -113,7 +112,7 @@ const Home = () => {
         id: 102,
         name: '濾杯組 V60',
         price: 450,
-        image: equipment2,
+        image: HomeImg.equipment[1],
         tags: ['台灣製'],
         description: '透明濾杯搭配量匙，輕鬆掌握每一杯風味。',
       },
@@ -121,7 +120,7 @@ const Home = () => {
         id: 103,
         name: '磨豆機 手搖款',
         price: 1200,
-        image: equipment3,
+        image: HomeImg.equipment[2],
         tags: ['不鏽鋼刀盤'],
         description: '可調粗細設計，讓你隨時享受現磨咖啡香。',
       },
@@ -129,7 +128,7 @@ const Home = () => {
         id: 104,
         name: '磨豆機 手搖款',
         price: 1200,
-        image: equipment4,
+        image: HomeImg.equipment[3],
         tags: ['不鏽鋼刀盤'],
         description: '可調粗細設計，讓你隨時享受現磨咖啡香。',
       },
@@ -137,7 +136,7 @@ const Home = () => {
         id: 105,
         name: '磨豆機 手搖款',
         price: 1200,
-        image: equipment5,
+        image: HomeImg.equipment[4],
         tags: ['不鏽鋼刀盤'],
         description: '可調粗細設計，讓你隨時享受現磨咖啡香。',
       },
@@ -145,7 +144,7 @@ const Home = () => {
         id: 106,
         name: '磨豆機 手搖款',
         price: 1200,
-        image: equipment6,
+        image: HomeImg.equipment[5],
         tags: ['不鏽鋼刀盤'],
         description: '可調粗細設計，讓你隨時享受現磨咖啡香。',
       },
@@ -165,10 +164,10 @@ const Home = () => {
 
       {/* 熱賣商品區塊 */}
       {bestSellerProducts.length > 0 && (
-        <section className="py-5">
+        <section className="py-4">
           <div className="container">
-            <div className="text-center mb-5">
-              <h2 className="display-6 mb-2">熱賣商品</h2>
+            <div className="text-center homeTitle mb-3">
+              <h1 className="mb-2">熱賣商品</h1>
               <p className="text-muted">Best seller</p>
               <hr
                 className="w-25 mx-auto"
@@ -187,7 +186,7 @@ const Home = () => {
             </div>
 
             {/* 查看更多按鈕 */}
-            <div className="text-center mt-5">
+            <div className="text-center mt-4 mb-5">
               <button
                 className="btn btn-outline-dark btn-lg px-5"
                 onClick={() => navigate('/products')}
@@ -204,67 +203,12 @@ const Home = () => {
         <Carousel autoPlay={true} interval={15000} />
       </div>
 
-      {/* 賽事認證 */}
-      <section className="py-5" style={{ backgroundColor: '#f8f6f3' }}>
-        <div className="container">
-          <div className="row justify-content-center align-items-center g-4">
-            <div className="text-center homeTitle">
-              <h1>榮獲國內外賽事及評鑒的得獎咖啡豆</h1>
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={logo1}
-                alt="巴拿馬認證"
-                className="img-fluid cert-logo"
-              />
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img src={logo2} alt="有機認證" className="img-fluid cert-logo" />
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={logo3}
-                alt="雨林聯盟的UTZ認證"
-                className="img-fluid cert-logo"
-              />
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={logo5}
-                alt="國際級精品咖啡評鑑"
-                className="img-fluid cert-logo"
-              />
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={logo4}
-                alt="公平貿易認證"
-                className="img-fluid cert-logo"
-              />
-            </div>
-
-            <div className="col-6 col-md-4 col-lg-2 text-center">
-              <img
-                src={logo6}
-                alt="COE卓越盃"
-                className="img-fluid cert-logo"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* 咖啡用品區 */}
       {equipmentProducts.length > 0 && (
-        <section className="py-5 bg-light">
+        <section className="py-4 bg-light">
           <div className="container">
-            <div className="text-center mb-5">
-              <h2 className="display-6 mb-2">咖啡用具及其他</h2>
+            <div className="text-center mb-3 homeTitle">
+              <h1 className="mb-2">咖啡用具及其他</h1>
               <p className="text-muted">Coffee Equipment & Extras</p>
               <hr
                 className="w-25 mx-auto"
@@ -280,7 +224,7 @@ const Home = () => {
             </div>
 
             {/* 查看更多按鈕 */}
-            <div className="text-center mt-5">
+            <div className="text-center mt-4 mb-5">
               <button
                 className="btn btn-outline-dark btn-lg px-5"
                 onClick={() => navigate('/products')}
@@ -292,7 +236,51 @@ const Home = () => {
         </section>
       )}
 
+      {/* 賽事認證 */}
+      <section className="py-4" style={{ backgroundColor: '#f8f6f3' }}>
+        <div className="container">
+          <div className="text-center homeTitle mb-5">
+            <h1>榮獲國內外賽事及評鑒的得獎咖啡豆</h1>
+          </div>
+
+          {/* 手機版滑動logo */}
+          <div className="d-flex d-md-none overflow-auto px-2">
+            {HomeImg.logos.map((logo, index) => (
+              <div
+                key={index}
+                className="flex-shrink-0 text-center me-3 cert-logo-slide"
+              >
+                <img
+                  src={logo}
+                  alt={`logo-${index}`}
+                  className="img-fluid cert-logo"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* 電腦版logo */}
+          <div className="row justify-content-center align-items-center g-4 d-none d-md-flex">
+            {HomeImg.logos.map((logo, index) => (
+              <div key={index} className="col-6 col-md-4 col-lg-2 text-center">
+                <img
+                  src={logo}
+                  alt={`logo-${index}`}
+                  className="img-fluid cert-logo"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <About />
+
+      {showTopBtn && (
+        <button className="back-to-top" onClick={scrollToTop}>
+          <img src={images.topBtn} alt="back to top btn" />
+        </button>
+      )}
       <Footer />
     </>
   );
