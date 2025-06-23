@@ -104,10 +104,11 @@ const CreateOrder = () => {
           },
         },
       )
-      .then(() => {
-        // const orderId = res.data.data.display_id;
+      .then((res) => {
+        const orderId = res.data.data.order_id;
         // navigate(`/checkout/${orderId}`);
-        navigate(`/checkout`);
+        navigate(`/checkout?order_id=${orderId}`);
+        // navigate(`/checkout`);
       })
       .catch((err) => {
         if (err.response?.status === 401) {
