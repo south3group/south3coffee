@@ -44,8 +44,9 @@ const Receiver = () => {
   };
 
   const apiUrl = import.meta.env.VITE_API_URL;
-  const route = `${apiUrl}/api/v1/users/membership/profile`;
+  const route = `${apiUrl}/api/v1/users/membership/receiver`;
 
+  // 取得收件資訊
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -62,7 +63,8 @@ const Receiver = () => {
         },
       })
       .then((res) => {
-        const data = res.data?.data?.user;
+        const data = res.data?.data;
+        console.log(data);
         setUserData({
           userName: data.name || '',
           userPhone: data.phone || '',
@@ -78,10 +80,11 @@ const Receiver = () => {
       });
   }, [navigate]);
 
+  // 編輯收件資訊
   const addressHandler = (e) => {
     e.preventDefault();
     let isError = false;
-    
+
     const postReceiverRoute = `${apiUrl}/api/v1/users/membership/receiver`;
     const token = localStorage.getItem('token');
 
