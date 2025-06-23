@@ -54,6 +54,7 @@ const Receiver = () => {
       return;
     }
 
+    axios;
     axios
       .get(route, {
         headers: {
@@ -63,8 +64,12 @@ const Receiver = () => {
         },
       })
       .then((res) => {
+        
         const data = res.data?.data;
-        console.log(data);
+        if (!data) {
+          return; // 留在頁面填資料
+        }
+
         setUserData({
           userName: data.name || '',
           userPhone: data.phone || '',
@@ -72,11 +77,21 @@ const Receiver = () => {
           userAddress: data.address || '',
         });
       })
-      .catch(() => {
-        setModalTitle('錯誤訊息');
-        setModalMsg('伺服器錯誤');
-        setModalType('toLogin');
-        setIsOpen(true);
+      .catch((err) => {
+        const status = err.response?.status;
+
+        // 只有 401 未授權才導去登入
+        if (status === 401) {
+          setModalTitle('驗證失敗');
+          setModalMsg('請重新登入');
+          setModalType('toLogin');
+          setIsOpen(true);
+        } else {
+          setModalTitle('錯誤訊息');
+          setModalMsg('伺服器錯誤');
+          setModalType('noChange');
+          setIsOpen(true);
+        }
       });
   }, [navigate]);
 

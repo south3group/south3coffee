@@ -15,6 +15,7 @@ const CreateOrder = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
+  const [isReceiverModalOpen, setIsReceiverModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -53,7 +54,7 @@ const CreateOrder = () => {
         if (!data.orderItems || data.orderItems.length === 0) {
           setModalMsg('購物車內沒有商品，請先加入商品');
           navigate('/products');
-          setIsOpen(true);
+          setIsReceiverModalOpen(true);
         } else if (
           !data.receiver ||
           !data.receiver.name ||
@@ -61,8 +62,7 @@ const CreateOrder = () => {
           !data.receiver.address
         ) {
           setModalMsg('收件資料不完整，請先填寫收件資料');
-          setIsOpen(true);
-          navigate('/member/receiver');
+          setIsReceiverModalOpen(true);
         } else {
           setOrderData(data);
         }
@@ -71,9 +71,9 @@ const CreateOrder = () => {
         if (err.response?.status === 401) {
           localStorage.removeItem('token');
           navigate('/');
-          }else if (err.response?.status === 400){
-            // const msg = err.response?.data?.message || '收件資訊或購物車為空';
-            navigate('/member/receiver');
+        } else if (err.response?.status === 400) {
+          setModalMsg('收件資料不完整，請先填寫收件資料');
+          setIsReceiverModalOpen(true);
         } else {
           const msg = err.response?.data?.message || '發生錯誤';
           setModalMsg(msg);
@@ -104,7 +104,7 @@ const CreateOrder = () => {
           },
         },
       )
-      .then((res) => {
+      .then(() => {
         // const orderId = res.data.data.display_id;
         // navigate(`/checkout/${orderId}`);
         navigate(`/checkout`);
@@ -158,6 +158,46 @@ const CreateOrder = () => {
                     type="button"
                     className="custom-modal-btn"
                     onClick={() => navigate('/products')}
+                  >
+                    關閉
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isReceiverModalOpen && (
+          <div
+            className="modal show fade d-block custom-modal"
+            tabIndex="-1"
+            role="dialog"
+          >
+            {/* 這段要加回來 Receiver Modal 的內容 */}
+            <div className="modal-dialog custom-modal-dialog">
+              <div className="modal-content custom-modal-content">
+                <div className="modal-header custom-modal-header">
+                  <h5 className="custom-modal-title">系統通知</h5>
+                  <button
+                    type="button"
+                    className="custom-modal-close"
+                    onClick={() => {
+                      setIsReceiverModalOpen(false);
+                      navigate('/member/receiver');
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="modal-body custom-modal-body">{modalMsg}</div>
+                <div className="modal-footer custom-modal-footer">
+                  <button
+                    type="button"
+                    className="custom-modal-btn"
+                    onClick={() => {
+                      setIsReceiverModalOpen(false);
+                      navigate('/member/receiver');
+                    }}
                   >
                     關閉
                   </button>
@@ -460,7 +500,10 @@ const CreateOrder = () => {
                 <button
                   type="button"
                   className="custom-modal-close"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsReceiverModalOpen(false);
+                    navigate('/member/receiver'); // ✅ 這裡才跳轉
+                  }}
                 >
                   ✕
                 </button>
@@ -470,7 +513,50 @@ const CreateOrder = () => {
                 <button
                   type="button"
                   className="custom-modal-btn"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsReceiverModalOpen(false);
+                    navigate('/member/receiver'); // ✅ 這裡才跳轉
+                  }}
+                >
+                  關閉
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Receiver Modal */}
+      {isReceiverModalOpen && (
+        <div
+          className="modal show fade d-block custom-modal"
+          tabIndex="-1"
+          role="dialog"
+        >
+          <div className="modal-dialog custom-modal-dialog">
+            <div className="modal-content custom-modal-content">
+              <div className="modal-header custom-modal-header">
+                <h5 className="custom-modal-title">系統通知</h5>
+                <button
+                  type="button"
+                  className="custom-modal-close"
+                  onClick={() => {
+                    setIsReceiverModalOpen(false);
+                    navigate('/member/receiver');
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="modal-body custom-modal-body">{modalMsg}</div>
+              <div className="modal-footer custom-modal-footer">
+                <button
+                  type="button"
+                  className="custom-modal-btn"
+                  onClick={() => {
+                    setIsReceiverModalOpen(false);
+                    navigate('/member/receiver');
+                  }}
                 >
                   關閉
                 </button>
