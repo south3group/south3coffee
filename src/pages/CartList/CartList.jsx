@@ -31,6 +31,7 @@ const CartList = () => {
           Authorization: `Bearer ${token}`,
           'Cache-Control': 'no-cache',
         },
+        params: { t: Date.now() }, // 強制避免快取
       });
 
       const cartData = res.data?.data?.items;
@@ -40,8 +41,10 @@ const CartList = () => {
         throw new Error('從伺服器收到的購物車資料格式不正確');
       }
 
+      const filtered = cartData.filter((item) => !item.deleted_at); // 防止顯示軟刪除項
+
       setCartItems(
-        cartData.map((item) => ({
+        filtered.map((item) => ({
           product: {
             id: item.product_id,
             name: item.name,
@@ -53,18 +56,15 @@ const CartList = () => {
         })),
       );
 
-      if (cartInfo && typeof cartInfo.final_price !== 'undefined') {
-        setTotal(cartInfo.final_price);
-      } else {
-        const newTotal = cartData.reduce(
+      const price =
+        cartInfo?.final_price ||
+        filtered.reduce(
           (acc, item) => acc + item.price * (item.quantity || 1),
           0,
         );
-        setTotal(newTotal);
-      }
+      setTotal(price);
 
-      // 當從 API 載入購物車時，預設全選
-      const allItemIds = new Set(cartData.map((item) => item.product_id));
+      const allItemIds = new Set(filtered.map((item) => item.product_id));
       setSelectedItems(allItemIds);
     } catch (error) {
       if (
@@ -79,6 +79,57 @@ const CartList = () => {
         setModalMsg(msg);
         setIsOpen(true);
       }
+    }
+  };
+
+  const updateQuantity = async (productId, newQuantity) => {
+    const quantity = Math.max(1, newQuantity);
+    setCartItems(
+      cartItems.map((item) =>
+        item.product.id === productId ? { ...item, quantity } : item,
+      ),
+    );
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setModalMsg('請先登入會員');
+        setIsOpen(true);
+        return;
+      }
+
+      await axios.patch(
+        `${apiUrl}/api/v1/users/membership/cart`,
+        { product_id: productId, quantity },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+    } catch (error) {
+      const msg = error.response?.data?.message || '更新數量失敗';
+      setModalMsg(msg);
+      setIsOpen(true);
+    }
+  };
+
+  const removeItem = async (productId) => {
+    setCartItems(cartItems.filter((item) => item.product.id !== productId));
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${apiUrl}/api/v1/users/membership/cart/delete`,
+        { product_id: productId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+    } catch (error) {
+      const msg = error.response?.data?.message || '刪除失敗';
+      setModalMsg(msg);
+      setIsOpen(true);
     }
   };
 
@@ -131,22 +182,6 @@ const CartList = () => {
       .reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotal(newTotal);
   }, [cartItems, selectedItems]);
-
-  const updateQuantity = (productId, newQuantity) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.product.id === productId
-          ? { ...item, quantity: Math.max(1, newQuantity) }
-          : item,
-      ),
-    );
-    // TODO: Call API to update quantity on the server
-  };
-
-  const removeItem = (productId) => {
-    setCartItems(cartItems.filter((item) => item.product.id !== productId));
-    // TODO: Call API to remove item from the cart on the server
-  };
 
   const handleDecrease = (item) => {
     updateQuantity(item.product.id, item.quantity - 1);
@@ -560,6 +595,12 @@ const CartList = () => {
                     type="button"
                     className="coupon-check-proceed border-0"
                     onClick={() => navigate('/create-order')}
+                    disabled={cartItems.length === 0}
+                    style={{
+                      cursor:
+                        cartItems.length === 0 ? 'not-allowed' : 'pointer',
+                      opacity: cartItems.length === 0 ? 0.5 : 1,
+                    }}
                   >
                     前往結帳
                   </button>
