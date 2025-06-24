@@ -10,10 +10,12 @@ const CartList = () => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [total, setTotal] = useState(0);
-  const [discountAmount, setDiscountAmount] = useState(0);
   const [modalMsg, setModalMsg] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [couponCode, setCouponCode] = useState('');
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponError, setCouponError] = useState('');
+
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -134,40 +136,41 @@ const CartList = () => {
   };
 
   const applyCoupon = async () => {
-    if (!couponCode.trim()) {
-      setModalMsg('請輸入優惠序號');
-      setIsOpen(true);
-      return;
-    }
+    if (!couponCode.trim()) return;
 
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        setModalMsg('請先登入會員');
-        setIsOpen(true);
-        return;
-      }
-
-      const res = await axios.post(
-        `${apiUrl}/api/v1/users/discount`,
+      const response = await fetch(
+        `${apiUrl}/api/v1/users/membership/discount`,
         {
-          discount_kol: couponCode.trim(),
-        },
-        {
+          method: 'POST',
           headers: {
-            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // ✅ 加上 Bearer
           },
+          body: JSON.stringify({ discount_kol: couponCode }),
         },
       );
 
-      const discount = res.data.data;
-      setDiscountAmount(discount);
-      setModalMsg('優惠券套用成功！');
+      const result = await response.json();
+
+      if (response.ok) {
+        setDiscountAmount(result.data.discount_amount || 0);
+        setCouponError('');
+        setModalMsg('已成功套用優惠券');
+        setIsOpen(true);
+      } else {
+        setDiscountAmount(0);
+        setCouponError(result.message || '優惠碼無效');
+        setModalMsg(result.message || '優惠碼無效');
+        setIsOpen(true);
+      }
+    } catch (err) {
+      setDiscountAmount(0);
+      setCouponError('伺服器錯誤');
+      setModalMsg('伺服器錯誤，請稍後再試');
       setIsOpen(true);
-    } catch (error) {
-      const msg = error.response?.data?.message || '套用優惠券失敗';
-      setModalMsg(msg);
-      setIsOpen(true);
+      console.error('applyCoupon error:', err);
     }
   };
 
