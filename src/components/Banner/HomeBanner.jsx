@@ -5,7 +5,7 @@ import './Banner.scss';
 const HomeBanner = () => {
   return (
     <>
-      <div className="row banner">
+      <div className="col-12 banner">
         <img src={bannerImg} alt="SiteBanner" />
       </div>
       <div className="banner-text homeTitle">
