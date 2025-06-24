@@ -16,6 +16,7 @@ const Home = () => {
   const [bestSellerProducts, setBestSellerProducts] = useState([]);
   const [equipmentProducts, setEquipmentProducts] = useState([]);
   const [showTopBtn, setShowTopBtn] = useState(false);
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -158,7 +159,7 @@ const Home = () => {
     <>
       <Header />
 
-      <div className="banner-container">
+      <div className="banner-container ">
         <HomeBanner />
       </div>
 
@@ -166,7 +167,7 @@ const Home = () => {
       {bestSellerProducts.length > 0 && (
         <section className="py-4">
           <div className="container">
-            <div className="text-center homeTitle mb-3">
+            <div className="text-center homeTitle mb-5">
               <h1 className="mb-2">熱賣商品</h1>
               <p className="text-muted">Best seller</p>
               <hr
@@ -207,7 +208,7 @@ const Home = () => {
       {equipmentProducts.length > 0 && (
         <section className="py-4 bg-light">
           <div className="container">
-            <div className="text-center mb-3 homeTitle">
+            <div className="text-center mb-5 homeTitle">
               <h1 className="mb-2">咖啡用具及其他</h1>
               <p className="text-muted">Coffee Equipment & Extras</p>
               <hr
