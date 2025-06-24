@@ -117,7 +117,6 @@ const Products = () => {
   return (
     <>
       <Header />
-      <div className="bg-coffee-bg-light products-custom-style">
         <div className="products-banner-container">
           <img
             src={images.productsBanner}
@@ -125,6 +124,7 @@ const Products = () => {
             className="narrow-banner"
           />
         </div>
+      <div className="bg-coffee-bg-light products-custom-style">
         <div className="container products-container p-0 ">
           {/* 分類項目 */}
           <ul className="products-breadcrumb m-0 p-0">
@@ -172,7 +172,7 @@ const Products = () => {
               </ul>
             </div>
 
-            <div className="col-md-10 p-0 m-0 ps-md-5 products-card-container">
+            <div className="col-md-10 p-0 m-0 products-card-container">
               {/* 分類名稱 */}
               <div className="products-title">
                 <p className="products-title-chinese m-0">
@@ -233,7 +233,7 @@ const Products = () => {
                         <div>
                           <Link
                             to={`/products/${product.id}`}
-                            className="nav-link btn px-3 py-2 card-btn rounded-0 w-100"
+                            className="btn card-btn rounded-0"
                           >
                             查看詳情
                           </Link>

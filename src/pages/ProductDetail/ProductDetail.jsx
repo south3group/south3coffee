@@ -16,6 +16,9 @@ const thumbnailUrls = [
   'https://images.unsplash.com/photo-1524350876685-274059332603?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   'https://images.unsplash.com/photo-1553292218-4892c2e7e1ae?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   'https://images.unsplash.com/photo-1604838699342-2343976f84ab?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://images.unsplash.com/photo-1590019028558-4719611156c4?q=80&w=804&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://images.unsplash.com/photo-1522825180917-a355ef45e880?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+
 ];
 
 const ProductDetail = () => {
@@ -200,7 +203,7 @@ const ProductDetail = () => {
                 {/* 商品縮圖 */}
                 <div className="product-thumbnails">
                   {[product.image_url, ...thumbnailUrls]
-                    .slice(0, 4)
+                    .slice(0, 8)
                     .map((url, idx) => (
                       <img
                         key={idx}
@@ -358,7 +361,7 @@ const ProductDetail = () => {
           <div className="reviews-custom">
             <button
               type="button"
-              className="d-none d-md-block reviews-custom-btn border-0"
+              className="reviews-custom-btn border-0"
             >
               <div className="arrow-icon">
                 <img
@@ -545,7 +548,7 @@ const ProductDetail = () => {
 
             <button
               type="button"
-              className="d-none d-md-block reviews-custom-btn border-0"
+              className="reviews-custom-btn border-0"
             >
               <div className="arrow-icon">
                 <img
