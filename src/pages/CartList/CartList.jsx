@@ -133,7 +133,6 @@ const CartList = () => {
     }
   };
 
-
   const applyCoupon = async () => {
     if (!couponCode.trim()) {
       setModalMsg('請輸入優惠序號');
@@ -596,6 +595,12 @@ const CartList = () => {
                     type="button"
                     className="coupon-check-proceed border-0"
                     onClick={() => navigate('/create-order')}
+                    disabled={cartItems.length === 0}
+                    style={{
+                      cursor:
+                        cartItems.length === 0 ? 'not-allowed' : 'pointer',
+                      opacity: cartItems.length === 0 ? 0.5 : 1,
+                    }}
                   >
                     前往結帳
                   </button>
