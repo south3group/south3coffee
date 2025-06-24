@@ -83,7 +83,7 @@ const Signup = () => {
         name: memberName,
       })
       .then(() => {
-        navigate('/member/profile');
+        navigate('/');
       })
       .catch((err) => {
         const msg = err.response?.data?.message || '發生錯誤';

@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Link,
-  useParams,
-  useNavigate,
-} from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -16,12 +12,14 @@ const thumbnailUrls = [
   'https://images.unsplash.com/photo-1524350876685-274059332603?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   'https://images.unsplash.com/photo-1553292218-4892c2e7e1ae?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   'https://images.unsplash.com/photo-1604838699342-2343976f84ab?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://images.unsplash.com/photo-1590019028558-4719611156c4?q=80&w=804&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://images.unsplash.com/photo-1522825180917-a355ef45e880?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 ];
 
 const ProductDetail = () => {
   const { product_id } = useParams();
   const minValue = 1;
-  const [selectedQuantity, setSelectedQuantity] = useState(minValue); 
+  const [selectedQuantity, setSelectedQuantity] = useState(minValue);
   const [mainImage, setMainImage] = useState('');
   const [product, setProduct] = useState(null);
 
@@ -85,7 +83,6 @@ const ProductDetail = () => {
       });
   }, [product_id]);
 
-
   // 加入購物車
   const handleAddToCart = () => {
     if (!product || !product.id) {
@@ -93,13 +90,13 @@ const ProductDetail = () => {
       setIsOpen(true);
       return;
     }
-  
+
     if (selectedQuantity <= 0) {
       setModalMsg('數量無效，請重新輸入');
       setIsOpen(true);
       return;
     }
-  
+
     setAddingId(true);
     const token = localStorage.getItem('token');
 
@@ -109,7 +106,7 @@ const ProductDetail = () => {
       setAddingId(false);
       return;
     }
-  
+
     axios
       .post(
         cartRoute,
@@ -141,7 +138,7 @@ const ProductDetail = () => {
   const handleDecrease = () => {
     setSelectedQuantity((prevQuantity) => Math.max(prevQuantity - 1, minValue));
   };
-  
+
   const handleIncrease = () => {
     setSelectedQuantity((prevQuantity) => prevQuantity + 1);
   };
@@ -155,10 +152,11 @@ const ProductDetail = () => {
     }
   };
 
-
   if (!product) {
     return <div></div>;
   }
+
+  const isSoldOut = product.stock === 0;
 
   return (
     <>
@@ -200,7 +198,7 @@ const ProductDetail = () => {
                 {/* 商品縮圖 */}
                 <div className="product-thumbnails">
                   {[product.image_url, ...thumbnailUrls]
-                    .slice(0, 4)
+                    .slice(0, 8)
                     .map((url, idx) => (
                       <img
                         key={idx}
@@ -284,47 +282,53 @@ const ProductDetail = () => {
                     {/* 購買相關 */}
                     <div className="product-main-summary">
                       <div className="product-order-options">
-                        <div className="product-order-options-quantity">
-                          <button
-                            type="button"
-                            className="quantity-decrease"
-                            onClick={handleDecrease}
-                          >
-                            <div className="decrease-icon">
-                              <img
-                                src={images.productDecrease}
-                                alt="product-decrease"
-                                className="decrease-detail"
+                        {!isSoldOut && (
+                          <div className="product-order-options-quantity">
+                            <button
+                              type="button"
+                              className="quantity-decrease"
+                              onClick={handleDecrease}
+                            >
+                              <div className="decrease-icon">
+                                <img
+                                  src={images.productDecrease}
+                                  alt="product-decrease"
+                                  className="decrease-detail"
+                                />
+                              </div>
+                            </button>
+                            <div className="quantity-value">
+                              <input
+                                type="number"
+                                className="value-input border-0"
+                                value={selectedQuantity}
+                                onChange={handleChange}
+                                min={minValue}
+                                inputMode="numeric"
                               />
                             </div>
-                          </button>
-                          <div className="quantity-value">
-                            <input
-                              type="number"
-                              className="value-input border-0"
-                              value={selectedQuantity}
-                              onChange={handleChange}
-                              min={minValue}
-                              inputMode="numeric"
-                            />
+                            <button
+                              type="button"
+                              className="quantity-increase"
+                              onClick={handleIncrease}
+                            >
+                              <div className="increase-icon">
+                                <img
+                                  src={images.productIncrease}
+                                  alt="product-increase"
+                                  className="increase-detail"
+                                />
+                              </div>
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            className="quantity-increase"
-                            onClick={handleIncrease}
-                          >
-                            <div className="increase-icon">
-                              <img
-                                src={images.productIncrease}
-                                alt="product-increase"
-                                className="increase-detail"
-                              />
-                            </div>
-                          </button>
-                        </div>
+                        )}
 
                         <div className="product-order-options-stock">
-                          庫存：{product.stock || 999}
+                          <div
+                            className={`product-order-options-stock ${isSoldOut ? 'sold-out-text' : ''}`}
+                          >
+                            {isSoldOut ? '售罄' : `庫存：${product.stock}`}
+                          </div>{' '}
                         </div>
                       </div>
 
@@ -334,11 +338,15 @@ const ProductDetail = () => {
                     </div>
 
                     <button
-                      className="product-main-cart border-0"
+                      className={`product-main-cart border-0 ${isSoldOut ? 'sold-out' : ''}`}
                       onClick={handleAddToCart}
-                      disabled={addingId}
+                      disabled={addingId || isSoldOut}
                     >
-                      {addingId ? '加入中...' : '加入購物車'}
+                      {isSoldOut
+                        ? '已售罄'
+                        : addingId
+                          ? '加入中...'
+                          : '加入購物車'}
                     </button>
                   </div>
 
@@ -356,10 +364,7 @@ const ProductDetail = () => {
 
           {/* 評論 */}
           <div className="reviews-custom">
-            <button
-              type="button"
-              className="d-none d-md-block reviews-custom-btn border-0"
-            >
+            <button type="button" className="reviews-custom-btn border-0">
               <div className="arrow-icon">
                 <img
                   src={images.reviewArrowL}
@@ -543,10 +548,7 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            <button
-              type="button"
-              className="d-none d-md-block reviews-custom-btn border-0"
-            >
+            <button type="button" className="reviews-custom-btn border-0">
               <div className="arrow-icon">
                 <img
                   src={images.reviewArrowR}

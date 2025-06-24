@@ -117,14 +117,14 @@ const Products = () => {
   return (
     <>
       <Header />
+      <div className="products-banner-container">
+        <img
+          src={images.productsBanner}
+          alt="products banner"
+          className="narrow-banner"
+        />
+      </div>
       <div className="bg-coffee-bg-light products-custom-style">
-        <div className="products-banner-container">
-          <img
-            src={images.productsBanner}
-            alt="products banner"
-            className="narrow-banner"
-          />
-        </div>
         <div className="container products-container p-0 ">
           {/* 分類項目 */}
           <ul className="products-breadcrumb m-0 p-0">
@@ -172,7 +172,7 @@ const Products = () => {
               </ul>
             </div>
 
-            <div className="col-md-10 p-0 m-0 ps-md-5 products-card-container">
+            <div className="col-md-10 p-0 m-0 products-card-container">
               {/* 分類名稱 */}
               <div className="products-title">
                 <p className="products-title-chinese m-0">
@@ -188,67 +188,75 @@ const Products = () => {
 
               {/* 商品 */}
               <div className="products-card">
-                {products.map((product) => (
-                  <div
-                    className="card products-card-custom rounded-0"
-                    key={product.id}
-                  >
-                    <img
-                      src={product.image_url}
-                      className="card-img-top card-img rounded-0"
-                      alt={product.name}
-                    />
-                    <div className="products-card-body">
-                      <div className="products-card-title-detail">
-                        <h5 className="card-title products-card-title m-0">
-                          {product.name}
-                        </h5>
-                        <div className="products-card-title-icon">
-                          <img
-                            src={images.unlikeIcon}
-                            alt="unlike icon"
-                            className="icon-detail"
-                          />
-                        </div>
-                      </div>
-                      <div className="products-card-text">
-                        <div className="text-icon-group">
-                          <div className="text-icon">
+                {products.map((product) => {
+                  const isSoldOut = product.stock === 0;
+
+                  return (
+                    <div
+                      className="card products-card-custom rounded-0"
+                      key={product.id}
+                    >
+                      <img
+                        src={product.image_url}
+                        className="card-img-top card-img rounded-0"
+                        alt={product.name}
+                      />
+                      <div className="products-card-body">
+                        <div className="products-card-title-detail">
+                          <h5 className="card-title products-card-title m-0">
+                            {product.name}
+                          </h5>
+                          <div className="products-card-title-icon">
                             <img
-                              src={images.flavorIcon}
-                              alt="icon"
-                              className="text-icon-detail"
+                              src={images.unlikeIcon}
+                              alt="unlike icon"
+                              className="icon-detail"
                             />
                           </div>
-                          <p className="text-title m-0">特徵</p>
                         </div>
-                        <p className="text-content m-0">{product.feature}</p>
+                        <div className="products-card-text">
+                          <div className="text-icon-group">
+                            <div className="text-icon">
+                              <img
+                                src={images.flavorIcon}
+                                alt="icon"
+                                className="text-icon-detail"
+                              />
+                            </div>
+                            <p className="text-title m-0">特徵</p>
+                          </div>
+                          <p className="text-content m-0">{product.feature}</p>
+                        </div>
+                        <div className="products-card-bottom">
+                          <div>
+                            <p className="card-price m-0">
+                              NTD$&nbsp;{product.price}
+                            </p>
+                          </div>
+                          <div>
+                            <Link
+                              to={`/products/${product.id}`}
+                              className="btn card-btn rounded-0"
+                            >
+                              查看詳情
+                            </Link>
+                          </div>
+                        </div>
+                        <button
+                          className={`btn products-card-btn rounded-0 ${isSoldOut ? 'sold-out' : ''}`}
+                          onClick={() => handleAddToCart(product.id)}
+                          disabled={addingId === product.id || isSoldOut}
+                        >
+                          {isSoldOut
+                            ? '已售罄'
+                            : addingId === product.id
+                              ? '加入中...'
+                              : '加入購物車'}
+                        </button>
                       </div>
-                      <div className="products-card-bottom">
-                        <div>
-                          <p className="card-price m-0">
-                            NTD$&nbsp;{product.price}
-                          </p>
-                        </div>
-                        <div>
-                          <Link
-                            to={`/products/${product.id}`}
-                            className="nav-link btn px-3 py-2 card-btn rounded-0 w-100"
-                          >
-                            查看詳情
-                          </Link>
-                        </div>
-                      </div>
-                      <button
-                        className="btn products-card-btn rounded-0"
-                        onClick={() => handleAddToCart(product.id)}
-                        disabled={addingId === product.id}
-                      >
-                        {addingId === product.id ? '加入中...' : '加入購物車'}
-                      </button>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* 頁碼 */}
@@ -264,19 +272,38 @@ const Products = () => {
                       </Link>
                     </li>
                   )}
-                  {[...Array(totalPages)].map((_, i) => (
-                    <li
-                      className={`page-item pagination-custom-item ${i + 1 === page ? 'active' : ''}`}
-                      key={i}
-                    >
-                      <Link
-                        to={`/products?classification=${classification}&page=${i + 1}`}
-                        className="page-link pagination-custom-link"
+
+                  {(() => {
+                    const maxPagesToShow = 10;
+                    let startPage = Math.max(
+                      1,
+                      page - Math.floor(maxPagesToShow / 2),
+                    );
+                    let endPage = startPage + maxPagesToShow - 1;
+
+                    if (endPage > totalPages) {
+                      endPage = totalPages;
+                      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                    }
+
+                    return Array.from(
+                      { length: endPage - startPage + 1 },
+                      (_, i) => startPage + i,
+                    ).map((p) => (
+                      <li
+                        key={p}
+                        className={`page-item pagination-custom-item ${p === page ? 'active' : ''}`}
                       >
-                        {i + 1}
-                      </Link>
-                    </li>
-                  ))}
+                        <Link
+                          to={`/products?classification=${classification}&page=${p}`}
+                          className="page-link pagination-custom-link"
+                        >
+                          {p}
+                        </Link>
+                      </li>
+                    ));
+                  })()}
+
                   {page < totalPages && (
                     <li className="page-item pagination-custom-item">
                       <Link
@@ -317,7 +344,6 @@ const Products = () => {
                   className="custom-modal-close"
                   onClick={() => {
                     setIsOpen(false);
-                    navigate('/products');
                   }}
                 >
                   ✕
@@ -330,7 +356,6 @@ const Products = () => {
                   className="custom-modal-btn"
                   onClick={() => {
                     setIsOpen(false);
-                    navigate('/products');
                   }}
                 >
                   關閉

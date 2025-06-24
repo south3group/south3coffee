@@ -44,8 +44,9 @@ const Receiver = () => {
   };
 
   const apiUrl = import.meta.env.VITE_API_URL;
-  const route = `${apiUrl}/api/v1/users/membership/profile`;
+  const route = `${apiUrl}/api/v1/users/membership/receiver`;
 
+  // 取得收件資訊
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -53,6 +54,7 @@ const Receiver = () => {
       return;
     }
 
+    axios;
     axios
       .get(route, {
         headers: {
@@ -62,7 +64,12 @@ const Receiver = () => {
         },
       })
       .then((res) => {
-        const data = res.data?.data?.user;
+        
+        const data = res.data?.data;
+        if (!data) {
+          return; // 留在頁面填資料
+        }
+
         setUserData({
           userName: data.name || '',
           userPhone: data.phone || '',
@@ -70,18 +77,29 @@ const Receiver = () => {
           userAddress: data.address || '',
         });
       })
-      .catch(() => {
-        setModalTitle('錯誤訊息');
-        setModalMsg('伺服器錯誤');
-        setModalType('toLogin');
-        setIsOpen(true);
+      .catch((err) => {
+        const status = err.response?.status;
+
+        // 只有 401 未授權才導去登入
+        if (status === 401) {
+          setModalTitle('驗證失敗');
+          setModalMsg('請重新登入');
+          setModalType('toLogin');
+          setIsOpen(true);
+        } else {
+          setModalTitle('錯誤訊息');
+          setModalMsg('伺服器錯誤');
+          setModalType('noChange');
+          setIsOpen(true);
+        }
       });
   }, [navigate]);
 
+  // 編輯收件資訊
   const addressHandler = (e) => {
     e.preventDefault();
     let isError = false;
-    
+
     const postReceiverRoute = `${apiUrl}/api/v1/users/membership/receiver`;
     const token = localStorage.getItem('token');
 
