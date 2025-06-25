@@ -13,8 +13,8 @@ const HomeCardDefault = ({ product, clickable = false }) => {
     image = defultImg,
     description = '',
     isFavorite = false,
-    tags = [],
-    flavor = '',
+    origin = [],
+    feature = '',
   } = product || {};
 
   const handleClick = () => {
@@ -46,29 +46,31 @@ const HomeCardDefault = ({ product, clickable = false }) => {
             }}
           >
             <i
-              className={`bi ${isFavorite ? 'bi-heart-fill' : 'bi-heart'}`}
-            ></i>
+              className={`material-symbols-outlined ${isFavorite ? 'heart-filled' : 'heart-outlined'}`}
+            >
+              favorite
+            </i>
           </button>
         </div>
 
         <div className="card-body d-flex flex-column p-3">
           <h5 className="card-title mb-2 homecardTitle">{name}</h5>
 
-          {tags.length > 0 && (
+          {origin.length > 0 && (
             <div className="mb-2">
-              {tags.map((tag, index) => (
+              {origin.map((origin, index) => (
                 <span key={index} className="d-block mb-1">
                   <i className="bi bi-geo-alt me-1 text-muted"></i>
-                  <small className="text-muted fs-3">產地：{tag}</small>
+                  <small className="text-muted fs-3">產地：{origin}</small>
                 </span>
               ))}
             </div>
           )}
 
-          {flavor && (
+          {feature && (
             <div className="mb-2">
               <i className="bi bi-cup me-1 text-muted"></i>
-              <small className="text-muted fs-3">風味：{flavor}</small>
+              <small className="text-muted fs-3">風味：{feature}</small>
             </div>
           )}
 

@@ -43,12 +43,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
 
-  i {
-    font-weight: 600;
-    font-size: 2rem;
+  .heart-filled {
+    font-variation-settings: 'FILL' 1, 'wght' 600;
     color: #dc3545;
+    font-size: 2rem;
   }
+
+  .heart-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 600;
+    color: #dc3545;
+    font-size: 2rem;
+  }
+  
 
   &:hover {
     i {
@@ -58,6 +66,12 @@
 
 
 }
+
+
+
+
+
+
 
 .homecardTitle {
   font-size: 3rem;
