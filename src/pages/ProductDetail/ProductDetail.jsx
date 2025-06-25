@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -84,34 +86,38 @@ const ProductDetail = () => {
   }, [product_id]);
 
   // 加入購物車
-  const handleAddToCart = () => {
+  const handleAddToCart = (productId, event) => {
+    if (addingId) return;
+    setAddingId(productId);
+  
     if (!product || !product.id) {
       setModalMsg('商品資訊有誤，請稍後再試');
       setIsOpen(true);
+      setAddingId(null);
       return;
     }
-
+  
     if (selectedQuantity <= 0) {
       setModalMsg('數量無效，請重新輸入');
       setIsOpen(true);
+      setAddingId(null);
       return;
     }
-
-    setAddingId(true);
+  
     const token = localStorage.getItem('token');
-
+  
     if (!token) {
       setModalMsg('尚未登入，請先登入會員');
       setIsOpen(true);
-      setAddingId(false);
+      setAddingId(null);
       return;
     }
-
+  
     axios
       .post(
         cartRoute,
         {
-          product_id: product?.id,
+          product_id: product.id,
           quantity: selectedQuantity,
         },
         {
@@ -119,20 +125,29 @@ const ProductDetail = () => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        },
+        }
       )
       .then(() => {
-        setModalMsg('已加入購物車');
+        toast.success('已加入購物車', {
+          autoClose: 1000,
+          className: 'product-toast-success',
+          bodyClassName: 'product-toast-success-body',
+        });
+        if (event?.target) event.target.blur();
       })
       .catch((error) => {
         const msg = error.response?.data?.message || '加入失敗，請稍後再試';
-        setModalMsg(msg);
+        toast.error(msg, {
+          autoClose: 2000,
+          className: 'product-toast-error',
+          bodyClassName: 'product-toast-error-body',
+        });
       })
       .finally(() => {
-        setAddingId(false);
-        setIsOpen(true);
+        setTimeout(() => setAddingId(null), 1000);
       });
   };
+  
 
   // 數量加減事件
   const handleDecrease = () => {

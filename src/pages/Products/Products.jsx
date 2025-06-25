@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -80,13 +81,16 @@ const Products = () => {
   }, [classification, page]);
 
   // 加入購物車
-  const handleAddToCart = async (productId) => {
+  const handleAddToCart = async (productId, event) => {
+    if (addingId) return;
+    setAddingId(productId);
+
     try {
-      setAddingId(productId);
       const token = localStorage.getItem('token');
       if (!token) {
         setModalMsg('尚未登入，請先登入會員');
         setIsOpen(true);
+        setAddingId(null);
         return;
       }
 
@@ -104,13 +108,22 @@ const Products = () => {
         },
       );
 
-      setModalMsg('已加入購物車');
+      toast.success('已加入購物車', {
+        autoClose: 1000,
+        className: 'product-toast-success',
+        bodyClassName: 'product-toast-success-body',
+      });
+      if (event?.target) event.target.blur();
+
     } catch (error) {
       const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
-      setModalMsg(msg);
+      toast.error(msg, {
+        autoClose: 2000,
+        className: 'product-toast-error',
+        bodyClassName: 'product-toast-error-body',
+      });
     } finally {
-      setAddingId(null);
-      setIsOpen(true);
+      setTimeout(() => setAddingId(null), 1000);
     }
   };
 
@@ -124,6 +137,7 @@ const Products = () => {
           className="narrow-banner"
         />
       </div>
+      <div></div>
       <div className="bg-coffee-bg-light products-custom-style">
         <div className="container products-container p-0 ">
           {/* 分類項目 */}
