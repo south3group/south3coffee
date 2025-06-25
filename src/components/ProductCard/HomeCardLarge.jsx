@@ -13,8 +13,8 @@ const HomeCardLarge = ({ product, clickable = false }) => {
     image = defultImg,
     description = '',
     isFavorite = false,
-    tags = [],
-    flavor = '',
+    origin = [],
+    feature = '',
   } = product || {};
 
   const handleClick = () => {
@@ -46,36 +46,48 @@ const HomeCardLarge = ({ product, clickable = false }) => {
             }}
           >
             <i
-              className={`bi ${isFavorite ? 'bi-heart-fill' : 'bi-heart'}`}
-            ></i>
+              className={`material-symbols-outlined ${isFavorite ? 'heart-filled' : 'heart-outlined'}`}
+            >
+              favorite
+            </i>
           </button>
         </div>
 
         {/* 文字在右 */}
-        <div className="col-md-7 d-flex flex-column p-3">
+        <div className="col-md-7 d-flex flex-column p-3 home-card">
           <h5 className="card-title mb-2 homecardTitle">{name}</h5>
 
-          {tags.length > 0 && (
+          {origin.length > 0 && (
             <div className="mb-2">
-              {tags.map((tag, index) => (
+              {origin.map((origin, index) => (
                 <span key={index} className="d-block mb-1">
-                  <i className="bi bi-geo-alt me-1 text-muted"></i>
-                  <small className="text-muted fs-3">產地：{tag}</small>
+                  <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
+                    location_on
+                  </i>
+                  <small className="fs-3 text-coffee-primary-800 fw-bolder">
+                    產地 -{' '}
+                  </small>
+                  <small className="fs-4 text-coffee-primary-800">
+                    {origin}
+                  </small>
                 </span>
               ))}
             </div>
           )}
 
-          {flavor && (
-            <div className="mb-2">
-              <i className="bi bi-cup me-1 text-muted"></i>
-              <small className="text-muted fs-3">風味：{flavor}</small>
+          {feature && (
+            <div className="mb-2 text-coffee-primary-800">
+              <i className="material-symbols-outlined me-1 fw-bolder">spa</i>
+              <small className="fs-3 text-coffee-primary-800 fw-bolder">
+                風味 -{' '}
+              </small>
+              <small className="fs-4 text-coffee-primary-800">{feature}</small>
             </div>
           )}
 
           {description && (
             <p
-              className="card-text  homecardText flex-grow-1 mb-3"
+              className="card-text  homecardText flex-grow-1 mb-3 text-coffee-grey-600"
               style={{ lineHeight: '1.4' }}
             >
               {description.length > 56

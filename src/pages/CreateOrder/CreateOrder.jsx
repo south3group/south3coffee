@@ -50,22 +50,7 @@ const CreateOrder = () => {
       })
       .then((res) => {
         const data = res.data.data;
-
-        if (!data.orderItems || data.orderItems.length === 0) {
-          setModalMsg('購物車內沒有商品，請先加入商品');
-          navigate('/products');
-          setIsReceiverModalOpen(true);
-        } else if (
-          !data.receiver ||
-          !data.receiver.name ||
-          !data.receiver.phone ||
-          !data.receiver.address
-        ) {
-          setModalMsg('收件資料不完整，請先填寫收件資料');
-          setIsReceiverModalOpen(true);
-        } else {
-          setOrderData(data);
-        }
+        setOrderData(data);
       })
       .catch((err) => {
         if (err.response?.status === 401) {
@@ -400,11 +385,22 @@ const CreateOrder = () => {
                           繼續選購
                         </button>
                         <button
-                          type="button"
-                          className="total-check-proceed border-0"
+                          className={`total-check-proceed border-0 ${
+                            orderData.cost_summary.totalPrice === 0 ||
+                            orderData.orderItems.length === 0
+                              ? 'cant-check'
+                              : ''
+                          }`}
                           onClick={handleCreateOrder}
+                          disabled={
+                            orderData.cost_summary.totalPrice === 0 ||
+                            orderData.orderItems.length === 0
+                          }
                         >
-                          前往付款
+                          {orderData.cost_summary.totalPrice === 0 ||
+                          orderData.orderItems.length === 0
+                            ? '請前往購物'
+                            : '前往付款'}
                         </button>
                       </div>
                     </div>
@@ -453,7 +449,7 @@ const CreateOrder = () => {
                   className="custom-modal-btn"
                   onClick={() => {
                     setIsReceiverModalOpen(false);
-                    navigate('/member/receiver'); 
+                    navigate('/member/receiver');
                   }}
                 >
                   關閉

@@ -162,7 +162,8 @@ const CartList = () => {
       const result = await response.json();
 
       if (response.ok) {
-        setDiscountAmount(result.data.discount_amount || 0);
+        const safeDiscount = Math.min(result.data.discount_amount || 0, total);
+        setDiscountAmount(safeDiscount);
         setCouponError('');
         setCouponSuccess('已成功套用優惠券');
       } else {
@@ -596,9 +597,14 @@ const CartList = () => {
                       placeholder="請輸入優惠序號"
                       value={couponCode}
                       onChange={(e) => {
-                        setCouponCode(e.target.value);
+                        const value = e.target.value;
+                        setCouponCode(value);
                         setCouponError('');
                         setCouponSuccess('');
+                        // 清空輸入，就把折扣金額歸 0
+                        if (value.trim() === '') {
+                          setDiscountAmount(0);
+                        }
                       }}
                     />
                     <button
@@ -651,7 +657,7 @@ const CartList = () => {
                   <div className="price-box">
                     <p className="total-price m-0">NTD$</p>
                     <p className="total-price m-0">
-                      {(total - discountAmount).toLocaleString()}
+                      {Math.max(total - discountAmount, 0).toLocaleString()}
                     </p>
                   </div>
                 </div>

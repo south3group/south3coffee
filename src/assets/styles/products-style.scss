@@ -65,9 +65,16 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+
     @media (min-width: 768px) {
       max-width: 1280px;
       gap: 40px;
+    }
+    @media (min-width: 1130px) and (max-width: 1315px) {
+      max-width: 1100px;
+    }
+    @media (min-width: 768px) and (max-width: 1129px) {
+      max-width: 900px;
     }
 
     .products-breadcrumb {
@@ -88,6 +95,10 @@
         padding: 8px 16px;
         color: $coffee-primary-700;
         font-size: 1.6rem;
+
+        @media (max-width: 350px) {
+          font-size: 1.2rem;
+        }
       }
     }
 
@@ -116,6 +127,12 @@
           color: $coffee-primary-600;
           font-size: 1.6rem;
           text-align: center;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          @media (min-width: 769px) and (max-width: 850px) {
+            font-size: 1.4rem;
+          }
 
           &:hover {
             background-color: $coffee-primary-300;
@@ -134,16 +151,22 @@
         flex-direction: column;
         gap: 40px;
 
+        @media (min-width: 768px) {
+          padding: 40px;
+        }
+
+        @media (min-width: 769px) and (max-width: 1225px) {
+          padding: 0;
+        }
+
         .products-card {
-          flex: 1;
           display: flex;
           flex-direction: row;
           justify-content: center;
           flex-wrap: wrap;
           gap: 28px 16px;
-
-          @media (min-width: 768px) {
-            justify-content: start;
+          @media (max-width: 1315px) {
+            gap: 16px 8px;
           }
 
           &-custom {
@@ -153,11 +176,25 @@
             overflow-wrap: break-word;
             display: flex;
             flex-direction: column;
+            @media (min-width: 1131px) and (max-width: 1315px) {
+              justify-content: center;
+              max-width: 250px;
+            }
+            @media (min-width: 826px) and (max-width: 1130px) {
+              max-width: 330px;
+            }
+            @media (min-width: 768px) and (max-width: 825px) {
+              justify-content: center;
+              max-width: 250px;
+            }
 
             .card-img {
               max-height: 200px;
               width: auto;
               object-fit: cover;
+              @media (max-width: 1315px) {
+                max-height: 150px;
+              }
             }
           }
 
@@ -169,6 +206,11 @@
             gap: 16px;
           }
 
+          .sold-out {
+            color: $coffee-grey-000;
+            background-color: #d2d2d2;
+          }
+
           &-title {
             flex: 1;
             width: 100%;
@@ -178,6 +220,10 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            @media (min-width: 769px) and (max-width: 1315px) {
+              font-size: 2rem;
+              font-weight: 700;
+            }
 
             &-detail {
               display: flex;
@@ -192,10 +238,17 @@
               justify-content: center;
               padding: 8px;
               gap: 12px;
+              @media (min-width: 769px) and (max-width: 1315px) {
+                padding: 4px;
+              }
 
               .icon-detail {
                 width: 20px;
                 height: 20px;
+                @media (min-width: 769px) and (max-width: 1315px) {
+                  width: 16px;
+                  height: 16px;
+                }
               }
             }
           }
@@ -208,10 +261,12 @@
             gap: 8px;
 
             .text-icon-group {
-              display: flex;
               gap: 8px;
               white-space: nowrap;
               flex-shrink: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
 
               .text-icon {
                 display: flex;
@@ -220,11 +275,17 @@
                 width: 20px;
                 height: 20px;
                 padding: 2px;
+                @media (min-width: 769px) and (max-width: 1225px) {
+                  font-size: 1.4rem;
+                }
               }
             }
 
             .text-title {
               font-weight: 700;
+              @media (min-width: 769px) and (max-width: 1225px) {
+                font-size: 1.4rem;
+              }
             }
 
             .text-content {
@@ -241,6 +302,10 @@
                 line-height: 1.5;
                 max-height: calc(1.5em * 2);
               }
+
+              @media (min-width: 769px) and (max-width: 1225px) {
+                font-size: 1.4rem;
+              }
             }
           }
 
@@ -248,13 +313,17 @@
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            align-items: center;
             margin-top: auto;
+            align-items: stretch;
 
             .card-price {
               font-size: 2.4rem;
               font-weight: 900;
               color: $coffee-secondary-700;
+
+              @media (min-width: 769px) and (max-width: 1315px) {
+                font-size: 2rem;
+              }
             }
 
             .card-btn {
@@ -262,6 +331,12 @@
               color: $coffee-primary-600;
               background-color: $coffee-primary-100;
               padding: 4px 8px;
+              height: 100%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              line-height: 0;
+
               &:hover {
                 background-color: $coffee-primary-000;
                 color: $coffee-primary-700;
@@ -345,6 +420,10 @@
         gap: 32px;
       }
 
+      @media (min-width: 769px) and (max-width: 1315px) {
+        gap: 16px;
+      }
+
       &-img {
         width: 100%;
         height: 180px;
@@ -366,12 +445,16 @@
         padding: 0;
 
         @media (min-width: 768px) {
-          display: flex;
           flex-direction: column;
-          overflow: visible;
-          order: 0;
           width: 100px;
           gap: 12px;
+          overflow: visible;
+        }
+
+        @media (min-width: 769px) and (max-width: 1315px) {
+          max-height: calc(100vh);
+          overflow-y: auto;
+          scrollbar-width: thin;
         }
 
         .img-style {
@@ -388,10 +471,22 @@
       }
 
       &-content {
+        flex: 1;
         display: flex;
         flex-direction: column;
         gap: 24px;
         padding: 16px;
+
+        @media (min-width: 1131px) {
+          gap: 40px;
+          padding: 32px;
+        }
+
+        @media (min-width: 769px) and (max-width: 1130px) {
+          gap: 12px;
+          padding: 16px;
+        }
+
 
         &-info {
           display: flex;
@@ -421,6 +516,9 @@
               font-size: 3rem;
               font-weight: 900;
               color: $coffee-primary-900;
+              @media (max-width: 1100px) {
+                font-size: 2rem;
+              }
             }
           }
 
@@ -437,13 +535,16 @@
               justify-content: center;
               width: 20px;
               height: 20px;
-              padding: 2px;
             }
 
             .text-title {
               font-size: 1.6rem;
               font-weight: 700;
               color: $coffee-primary-800;
+
+              @media (max-width: 1100px) {
+                font-size: 1.4rem;
+              }
             }
           }
 
@@ -452,6 +553,9 @@
             color: $coffee-primary-800;
             padding-left: 32px;
             margin: 0;
+            @media (max-width: 1100px) {
+              font-size: 1.4rem;
+            }
           }
         }
       }
@@ -465,6 +569,9 @@
           display: flex;
           flex-direction: column;
           gap: 16px;
+          @media (min-width: 769px) and (max-width: 1315px) {
+            gap: 8px;
+          }
 
           &-quantity {
             display: flex;
@@ -536,6 +643,14 @@
               white-space: nowrap;
               align-self: center;
             }
+            @media (min-width: 769px) and (max-width: 1315px) {
+              align-self: start;
+            }
+          }
+
+          .sold-out-text {
+            font-size: 1.8rem;
+            color: $coffee-notification;
           }
         }
 
@@ -554,6 +669,11 @@
         color: $coffee-primary-000;
       }
 
+      .sold-out {
+        color: $coffee-grey-000;
+        background-color: #d2d2d2;
+      }
+
       &-description {
         background: none;
         padding: 0;
@@ -568,7 +688,12 @@
           font-size: 2rem;
           font-weight: 700;
           color: $coffee-primary-900;
+
+          @media (min-width: 769px) and (max-width: 1100px) {
+            font-size: 1.6rem;
+          }
         }
+
 
         .description-line {
           width: auto;
@@ -579,6 +704,9 @@
         .description-content {
           font-size: 1.8rem;
           color: $coffee-grey-800;
+          @media (min-width: 769px) and (max-width: 1100px) {
+            font-size: 1.6rem;
+          }
         }
       }
     }
@@ -629,10 +757,23 @@
     .reviews-select {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      @media (min-width: 768px) {
+      gap: 24px;
+      width: 100%;
+      overflow: visible;
+      padding-bottom: 0;
+
+      @media (min-width: 768px) and (max-width: 1315px) {
         flex-direction: row;
-        gap: 24px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 8px;
+      }
+
+      @media (min-width: 1316px) {
+        flex-direction: row;
+        overflow: visible;
       }
 
       .reviews-box {
@@ -642,17 +783,24 @@
         padding: 24px;
         background-color: $coffee-grey-000;
         border: 1px solid $coffee-primary-100;
-        @media (min-width: 768px) {
+        box-sizing: border-box;
+        width: 100%;
+
+        @media (min-width: 768px) and (max-width: 1315px) {
+          flex: 0 0 auto;
+          max-width: 300px;
+          scroll-snap-align: start;
+        }
+
+        @media (min-width: 1316px) {
           width: 250px;
+          max-width: none;
         }
 
         &-top {
           display: flex;
           flex-direction: row;
           gap: 16px;
-          @media (min-width: 768px) {
-            flex-direction: row;
-          }
 
           img {
             width: 52px;
@@ -716,6 +864,10 @@
       padding: 16px 24px;
       height: 56px;
 
+      @media (max-width: 1315px) {
+        display: none;
+      }
+
       .arrow-icon {
         width: 24px;
         height: 24px;
@@ -743,37 +895,34 @@
         align-items: flex-start;
         gap: 16px;
       }
-
-      .product-thumbnails {
-        flex-direction: column;
-        width: 100px;
-        gap: 12px;
-        overflow: visible;
-      }
-
       .product-main {
         flex-direction: row;
-        gap: 32px;
 
         &-img {
           width: 578px;
           height: auto;
           flex-shrink: 0;
-        }
-
-        &-content {
-          flex: 1;
-          padding: 32px;
-          gap: 40px;
+          @media (min-width: 769px) and (max-width: 1315px) {
+            max-width: 440px;
+            max-height: calc(100vh);
+          }
         }
 
         &-summary {
           flex-direction: row;
           justify-content: space-between;
 
+          @media (min-width: 769px) and (max-width: 1130px) {
+            flex-direction: column;
+          }
+
           .product-order-options {
             flex-direction: row;
             gap: 24px;
+            @media (min-width: 769px) and (max-width: 1130px) {
+              flex-direction: column;
+              gap: 8px;
+            }
 
             &-quantity {
               flex-direction: row;
@@ -818,8 +967,12 @@
   font-size: 1.6rem;
 
   @media (min-width: 768px) {
-    margin-left: auto;
+    margin: auto;
     max-width: 150px;
+  }
+
+  @media (max-width: 1315px)  {
+    margin-left: auto;
   }
 
   &:hover {

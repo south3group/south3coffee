@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -80,13 +81,16 @@ const Products = () => {
   }, [classification, page]);
 
   // 加入購物車
-  const handleAddToCart = async (productId) => {
+  const handleAddToCart = async (productId, event) => {
+    if (addingId) return;
+    setAddingId(productId);
+
     try {
-      setAddingId(productId);
       const token = localStorage.getItem('token');
       if (!token) {
         setModalMsg('尚未登入，請先登入會員');
         setIsOpen(true);
+        setAddingId(null);
         return;
       }
 
@@ -104,27 +108,37 @@ const Products = () => {
         },
       );
 
-      setModalMsg('已加入購物車');
+      toast.success('已加入購物車', {
+        autoClose: 1000,
+        className: 'product-toast-success',
+        bodyClassName: 'product-toast-success-body',
+      });
+      if (event?.target) event.target.blur();
+
     } catch (error) {
       const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
-      setModalMsg(msg);
+      toast.error(msg, {
+        autoClose: 2000,
+        className: 'product-toast-error',
+        bodyClassName: 'product-toast-error-body',
+      });
     } finally {
-      setAddingId(null);
-      setIsOpen(true);
+      setTimeout(() => setAddingId(null), 1000);
     }
   };
 
   return (
     <>
       <Header />
+      <div className="products-banner-container">
+        <img
+          src={images.productsBanner}
+          alt="products banner"
+          className="narrow-banner"
+        />
+      </div>
+      <div></div>
       <div className="bg-coffee-bg-light products-custom-style">
-        <div className="products-banner-container">
-          <img
-            src={images.productsBanner}
-            alt="products banner"
-            className="narrow-banner"
-          />
-        </div>
         <div className="container products-container p-0 ">
           {/* 分類項目 */}
           <ul className="products-breadcrumb m-0 p-0">
@@ -172,7 +186,7 @@ const Products = () => {
               </ul>
             </div>
 
-            <div className="col-md-10 p-0 m-0 ps-md-5 products-card-container">
+            <div className="col-md-10 p-0 m-0 products-card-container">
               {/* 分類名稱 */}
               <div className="products-title">
                 <p className="products-title-chinese m-0">
@@ -188,67 +202,75 @@ const Products = () => {
 
               {/* 商品 */}
               <div className="products-card">
-                {products.map((product) => (
-                  <div
-                    className="card products-card-custom rounded-0"
-                    key={product.id}
-                  >
-                    <img
-                      src={product.image_url}
-                      className="card-img-top card-img rounded-0"
-                      alt={product.name}
-                    />
-                    <div className="products-card-body">
-                      <div className="products-card-title-detail">
-                        <h5 className="card-title products-card-title m-0">
-                          {product.name}
-                        </h5>
-                        <div className="products-card-title-icon">
-                          <img
-                            src={images.unlikeIcon}
-                            alt="unlike icon"
-                            className="icon-detail"
-                          />
-                        </div>
-                      </div>
-                      <div className="products-card-text">
-                        <div className="text-icon-group">
-                          <div className="text-icon">
+                {products.map((product) => {
+                  const isSoldOut = product.stock === 0;
+
+                  return (
+                    <div
+                      className="card products-card-custom rounded-0"
+                      key={product.id}
+                    >
+                      <img
+                        src={product.image_url}
+                        className="card-img-top card-img rounded-0"
+                        alt={product.name}
+                      />
+                      <div className="products-card-body">
+                        <div className="products-card-title-detail">
+                          <h5 className="card-title products-card-title m-0">
+                            {product.name}
+                          </h5>
+                          <div className="products-card-title-icon">
                             <img
-                              src={images.flavorIcon}
-                              alt="icon"
-                              className="text-icon-detail"
+                              src={images.unlikeIcon}
+                              alt="unlike icon"
+                              className="icon-detail"
                             />
                           </div>
-                          <p className="text-title m-0">特徵</p>
                         </div>
-                        <p className="text-content m-0">{product.feature}</p>
+                        <div className="products-card-text">
+                          <div className="text-icon-group">
+                            <div className="text-icon">
+                              <img
+                                src={images.flavorIcon}
+                                alt="icon"
+                                className="text-icon-detail"
+                              />
+                            </div>
+                            <p className="text-title m-0">特徵</p>
+                          </div>
+                          <p className="text-content m-0">{product.feature}</p>
+                        </div>
+                        <div className="products-card-bottom">
+                          <div>
+                            <p className="card-price m-0">
+                              NTD$&nbsp;{product.price}
+                            </p>
+                          </div>
+                          <div>
+                            <Link
+                              to={`/products/${product.id}`}
+                              className="btn card-btn rounded-0"
+                            >
+                              查看詳情
+                            </Link>
+                          </div>
+                        </div>
+                        <button
+                          className={`btn products-card-btn rounded-0 ${isSoldOut ? 'sold-out' : ''}`}
+                          onClick={() => handleAddToCart(product.id)}
+                          disabled={addingId === product.id || isSoldOut}
+                        >
+                          {isSoldOut
+                            ? '已售罄'
+                            : addingId === product.id
+                              ? '加入中...'
+                              : '加入購物車'}
+                        </button>
                       </div>
-                      <div className="products-card-bottom">
-                        <div>
-                          <p className="card-price m-0">
-                            NTD$&nbsp;{product.price}
-                          </p>
-                        </div>
-                        <div>
-                          <Link
-                            to={`/products/${product.id}`}
-                            className="nav-link btn px-3 py-2 card-btn rounded-0 w-100"
-                          >
-                            查看詳情
-                          </Link>
-                        </div>
-                      </div>
-                      <button
-                        className="btn products-card-btn rounded-0"
-                        onClick={() => handleAddToCart(product.id)}
-                        disabled={addingId === product.id}
-                      >
-                        {addingId === product.id ? '加入中...' : '加入購物車'}
-                      </button>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* 頁碼 */}

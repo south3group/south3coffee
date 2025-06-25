@@ -1,0 +1,50 @@
+.Toastify__toast-container {
+  z-index: 9999;
+}
+
+@media (min-width: 401px) and (max-width: 484px) {
+    .Toastify__toast-container--top-center {
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: 100%;
+      max-width: 80%;
+      padding: 16px 0;
+
+    }
+  }
+  
+  @media (max-width: 400px) {
+    .Toastify__toast-container--top-center {
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: 100%;
+      max-width: 90%;
+      padding: 16px 0;
+
+    }
+  }
+  
+
+.product-toast-success {
+  font-family: 'GenRyuMin2', 'Noto Sans TC', sans-serif !important;
+  background-color: #339e60 !important;
+  border: none !important;
+  font-size: 1.6rem;
+  color: #ffffff !important;
+  border: none !important;
+  &-body {
+    font-size: 1.6rem;
+  }
+}
+
+.product-toast-error {
+  font-family: 'GenRyuMin2', 'Noto Sans TC', sans-serif !important;
+  background-color: #d11507 !important;
+  border: none !important;
+  font-size: 1.6rem;
+  color: #ffebeb !important;
+  border: none !important;
+  &-body {
+    font-size: 1.6rem;
+  }
+}
