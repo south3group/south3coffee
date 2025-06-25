@@ -17,7 +17,8 @@ const Home = () => {
   const [equipmentProducts, setEquipmentProducts] = useState([]);
   const [showTopBtn, setShowTopBtn] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
-  const route = `${apiUrl}/api/v1/products/bestSeller`;
+  const hotRoute = `${apiUrl}/api/v1/products/bestSeller`;
+  // const equipmentRoute = `${apiUrl}/api/v1/products`;
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -36,10 +37,11 @@ const Home = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  //取得熱門商品
   useEffect(() => {
     const fetchBestSellers = async () => {
       try {
-        const response = await axios.get(route);
+        const response = await axios.get(hotRoute);
 
         if (response.status === 200 && response.data.data) {
           const apiData = response.data.data.map((item) => ({
@@ -61,6 +63,45 @@ const Home = () => {
 
     fetchBestSellers();
   }, []);
+
+  //取得咖啡用具及其他
+
+  // useEffect(() => {
+  //   const fetchequipmentProducts = async () => {
+  //     try {
+  //       const response = await axios.get(equipmentRoute);
+
+  //       if (response.status === 200 && response.data.data) {
+  //         const apiData = response.data.data.map((item) => ({
+  //           id: item.id,
+  //           name: item.name,
+  //           price: item.price,
+  //           image: item.image_url,
+  //           origin: [item.origin],
+  //           feature: item.feature,
+  //           description: item.description,
+  //         }));
+
+  //         setEquipmentProducts(apiData);
+  //       }
+  //     } catch (error) {
+  //       console.error('取得咖啡用具商品失敗:', error);
+  //     }
+  //   };
+
+  //   fetchequipmentProducts();
+  // }, []);
+
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/v1/products`)
+      .then((response) => {
+        setEquipmentProducts(response.data);
+      })
+      .catch((error) => {
+        console.error('API 取得咖啡用具商品失敗', error);
+      });
+  }, []); // 空陣列代表只在首次渲染時執行一次
 
   // 假資料模擬
   // useEffect(() => {
@@ -195,7 +236,7 @@ const Home = () => {
             {/* 查看更多按鈕 */}
             <div className="text-center mt-4 mb-5">
               <button
-                className="btn btn-outline-dark btn-lg px-5"
+                className="btn btn-outline-coffee-primary-300 btn-lg text-coffee-primary-800 px-5"
                 onClick={() => navigate('/products')}
               >
                 查看更多
@@ -233,7 +274,7 @@ const Home = () => {
             {/* 查看更多按鈕 */}
             <div className="text-center mt-4 mb-5">
               <button
-                className="btn btn-outline-dark btn-lg px-5"
+                className="btn btn-outline-coffee-primary-300 btn-lg text-coffee-primary-800 px-5"
                 onClick={() => navigate('/products')}
               >
                 查看更多
