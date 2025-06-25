@@ -18,10 +18,17 @@ const CartList = () => {
   const [couponError, setCouponError] = useState('');
   const [addingId, setAddingId] = useState(null);
   const [recommendList, setRecommendList] = useState([]);
+  const [isCouponValid, setIsCouponValid] = useState(false);
 
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL;
+
+  // 驗證優惠券格式
+  const validateCouponCode = (value) => {
+    const regex = /^[A-Z0-9]{6}$/;
+    return regex.test(value);
+  };
 
   // 取得購物車
   const getCart = async () => {
@@ -601,16 +608,20 @@ const CartList = () => {
                         setCouponCode(value);
                         setCouponError('');
                         setCouponSuccess('');
-                        // 清空輸入，就把折扣金額歸 0
+
                         if (value.trim() === '') {
                           setDiscountAmount(0);
+                          setIsCouponValid(false);
+                        } else {
+                          setIsCouponValid(validateCouponCode(value));
                         }
                       }}
                     />
                     <button
                       type="button"
-                      className={`coupon-btn border-0 ${couponCode ? 'active' : ''}`}
+                      className={`coupon-btn border-0 ${couponCode && isCouponValid ? 'active' : ''}`}
                       onClick={applyCoupon}
+                      disabled={!isCouponValid}
                     >
                       <p className="m-0">套用</p>
                     </button>
@@ -624,10 +635,8 @@ const CartList = () => {
                   )}
 
                   {/* 錯誤訊息 */}
-                  {couponError && (
-                    <p className="coupon-title text-danger mt-1">
-                      {couponError}
-                    </p>
+                  {couponCode && !isCouponValid && (
+                    <p className="coupon-title text-danger mt-1">無此優惠劵</p>
                   )}
                 </div>
 
