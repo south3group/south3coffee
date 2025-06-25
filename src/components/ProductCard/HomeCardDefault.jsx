@@ -60,8 +60,15 @@ const HomeCardDefault = ({ product, clickable = false }) => {
             <div className="mb-2">
               {origin.map((origin, index) => (
                 <span key={index} className="d-block mb-1">
-                  <i className="bi bi-geo-alt me-1 text-muted"></i>
-                  <small className="text-muted fs-3">產地：{origin}</small>
+                  <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
+                    location_on
+                  </i>
+                  <small className="fs-3 text-coffee-primary-800 fw-bolder">
+                    產地 -{' '}
+                  </small>
+                  <small className="fs-4 text-coffee-primary-800">
+                    {origin}
+                  </small>
                 </span>
               ))}
             </div>
@@ -69,13 +76,18 @@ const HomeCardDefault = ({ product, clickable = false }) => {
 
           {feature && (
             <div className="mb-2">
-              <i className="bi bi-cup me-1 text-muted"></i>
-              <small className="text-muted fs-3">風味：{feature}</small>
+              <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
+                spa
+              </i>
+              <small className="fs-3 text-coffee-primary-800 fw-bolder">
+                風味 -{' '}
+              </small>
+              <small className="fs-4 text-coffee-primary-800"> {feature}</small>
             </div>
           )}
 
           {description && (
-            <p className="card-text homecardText flex-grow-1 mb-3">
+            <p className="card-text homecardText flex-grow-1 mb-3 text-coffee-grey-600">
               {description.length > 56
                 ? `${description.substring(0, 56)}...`
                 : description}
