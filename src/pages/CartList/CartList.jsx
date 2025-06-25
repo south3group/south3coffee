@@ -10,10 +10,13 @@ const CartList = () => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [total, setTotal] = useState(0);
-  const [discountAmount, setDiscountAmount] = useState(0);
   const [modalMsg, setModalMsg] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [couponCode, setCouponCode] = useState('');
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponSuccess, setCouponSuccess] = useState('');
+  const [couponError, setCouponError] = useState('');
+
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -134,40 +137,39 @@ const CartList = () => {
   };
 
   const applyCoupon = async () => {
-    if (!couponCode.trim()) {
-      setModalMsg('請輸入優惠序號');
-      setIsOpen(true);
-      return;
-    }
+    if (!couponCode.trim()) return;
 
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        setModalMsg('請先登入會員');
-        setIsOpen(true);
-        return;
-      }
-
-      const res = await axios.post(
-        `${apiUrl}/api/v1/users/discount`,
+      const response = await fetch(
+        `${apiUrl}/api/v1/users/membership/discount`,
         {
-          discount_kol: couponCode.trim(),
-        },
-        {
+          method: 'POST',
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
+          body: JSON.stringify({ discount_kol: couponCode }),
         },
       );
 
-      const discount = res.data.data;
-      setDiscountAmount(discount);
-      setModalMsg('優惠券套用成功！');
-      setIsOpen(true);
-    } catch (error) {
-      const msg = error.response?.data?.message || '套用優惠券失敗';
-      setModalMsg(msg);
-      setIsOpen(true);
+      const result = await response.json();
+
+      if (response.ok) {
+        const safeDiscount = Math.min(result.data.discount_amount || 0, total);
+        setDiscountAmount(safeDiscount);
+        setCouponError('');
+        setCouponSuccess('已成功套用優惠券');
+      } else {
+        setDiscountAmount(0);
+        setCouponError(result.message || '優惠碼無效');
+        setCouponSuccess('');
+      }
+    } catch (err) {
+      setDiscountAmount(0);
+      setCouponError('伺服器錯誤，請稍後再試');
+      setCouponSuccess('');
+      console.error('applyCoupon error:', err);
     }
   };
 
@@ -541,7 +543,16 @@ const CartList = () => {
                       type="text"
                       placeholder="請輸入優惠序號"
                       value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setCouponCode(value);
+                        setCouponError('');
+                        setCouponSuccess('');
+                        // 清空輸入，就把折扣金額歸 0
+                        if (value.trim() === '') {
+                          setDiscountAmount(0);
+                        }
+                      }}
                     />
                     <button
                       type="button"
@@ -551,7 +562,22 @@ const CartList = () => {
                       <p className="m-0">套用</p>
                     </button>
                   </div>
+
+                  {/* 成功訊息 */}
+                  {couponSuccess && (
+                    <p className="coupon-title text-success mt-1">
+                      {couponSuccess}
+                    </p>
+                  )}
+
+                  {/* 錯誤訊息 */}
+                  {couponError && (
+                    <p className="coupon-title text-danger mt-1">
+                      {couponError}
+                    </p>
+                  )}
                 </div>
+
                 <div className="price-detail">
                   <p className="product-title m-0">商品金額</p>
                   <div className="price-box">
@@ -578,7 +604,7 @@ const CartList = () => {
                   <div className="price-box">
                     <p className="total-price m-0">NTD$</p>
                     <p className="total-price m-0">
-                      {(total - discountAmount).toLocaleString()}
+                      {Math.max(total - discountAmount, 0).toLocaleString()}
                     </p>
                   </div>
                 </div>
