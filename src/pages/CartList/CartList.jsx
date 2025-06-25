@@ -738,8 +738,9 @@ const CartList = () => {
                       <button
                         className="btn recommend-card-btn rounded-0"
                         onClick={() => handleAddToCart(item.id)}
+                        disabled={addingId === item.id}
                       >
-                        加入購物車
+                        {addingId === item.id ? '加入中...' : '加入購物車'}
                       </button>
                     </div>
                   </div>
