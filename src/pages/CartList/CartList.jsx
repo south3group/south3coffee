@@ -172,7 +172,6 @@ const CartList = () => {
     }
   };
 
-
   useEffect(() => {
     getCart();
   }, []);
@@ -544,9 +543,14 @@ const CartList = () => {
                       placeholder="請輸入優惠序號"
                       value={couponCode}
                       onChange={(e) => {
-                        setCouponCode(e.target.value);
+                        const value = e.target.value;
+                        setCouponCode(value);
                         setCouponError('');
                         setCouponSuccess('');
+                        // 清空輸入，就把折扣金額歸 0
+                        if (value.trim() === '') {
+                          setDiscountAmount(0);
+                        }
                       }}
                     />
                     <button
