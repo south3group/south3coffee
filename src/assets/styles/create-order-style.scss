@@ -92,14 +92,14 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 24px;
-    
+
       // 手機版
       &-mobile {
         display: flex;
         flex-direction: column;
         gap: 8px;
         width: 100%;
-    
+
         .order-card {
           width: 100%;
           box-sizing: border-box;
@@ -112,38 +112,38 @@
           display: flex;
           flex-direction: column;
           gap: 24px;
-    
+
           &:first-child {
             border-top: 1px solid $coffee-primary-100;
           }
-    
+
           &-content {
             display: flex;
             flex-direction: column;
             gap: 12px;
-    
+
             .date-num {
               display: flex;
               justify-content: space-between;
-    
+
               &-style {
                 color: $coffee-primary-600;
               }
             }
-    
+
             .text-group {
               display: flex;
               gap: 8px;
-    
+
               &-title {
                 color: $coffee-primary-1000;
                 width: 65px;
               }
-    
+
               &-text {
                 color: $coffee-primary-600;
                 flex: 1;
-    
+
                 @media (min-width: 768px) {
                   font-weight: 700;
                 }
@@ -152,7 +152,7 @@
           }
         }
       }
-    
+
       // 桌機版
       &-table {
         width: 100%;
@@ -160,13 +160,13 @@
         table-layout: fixed;
         background-color: $coffee-grey-000;
       }
-    
+
       &-style {
         position: sticky;
         top: 0;
         background-color: $coffee-grey-000;
         z-index: 1;
-    
+
         &-th {
           padding: 24px 40px;
           color: $coffee-primary-1000;
@@ -177,15 +177,15 @@
           // border-bottom: 1px solid $coffee-primary-100;
         }
       }
-    
+
       &-tbody {
         background-color: $coffee-grey-000;
-    
+
         tr:last-child th,
         tr:last-child td {
           border-bottom: none;
         }
-    
+
         &-th,
         &-td {
           padding: 24px 40px;
@@ -193,19 +193,19 @@
           border-bottom: 1px solid $coffee-primary-100;
           vertical-align: middle;
         }
-    
+
         &-unpaid,
         &-unshipped {
           padding: 16px;
           color: $coffee-notification;
         }
-    
+
         .price-box {
           display: flex;
           flex-direction: row;
           gap: 4px;
         }
-    
+
         .check {
           display: flex;
           align-items: center;
@@ -213,14 +213,14 @@
           max-width: 330px;
           height: 100%;
           overflow: hidden;
-    
+
           &-text {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             flex-shrink: 1;
           }
-    
+
           &-btn {
             &-view,
             &-reorder,
@@ -228,45 +228,45 @@
               font-size: 1.4rem;
               padding: 4px 8px;
             }
-    
+
             &-view {
               color: $coffee-primary-000;
               background-color: $coffee-primary-700;
-    
+
               &:hover {
                 background-color: $coffee-primary-300;
                 color: $coffee-primary-700;
               }
-    
+
               &:active {
                 background-color: $coffee-primary-800;
                 color: $coffee-primary-000;
               }
             }
-    
+
             &-reorder {
               color: $coffee-primary-500;
               background-color: $coffee-primary-100;
-    
+
               &:hover {
                 background-color: $coffee-primary-000;
                 color: $coffee-primary-600;
               }
-    
+
               &:active {
                 color: $coffee-primary-000;
               }
             }
-    
+
             &-checkout {
               color: $coffee-primary-100;
               background-color: $coffee-primary-500;
-    
+
               &:hover {
                 background-color: $coffee-primary-100;
                 color: $coffee-primary-700;
               }
-    
+
               &:active {
                 background-color: $coffee-primary-800;
                 color: $coffee-primary-000;
@@ -276,7 +276,6 @@
         }
       }
     }
-    
 
     // 單一訂單資訊
     .order-summary-header {
@@ -506,10 +505,16 @@
     overflow-y: auto;
     border-top: none;
     width: 100%;
-    
+
     @media (min-width: 768px) {
       max-height: 450px;
     }
   }
-  
+  .total-check-proceed:disabled,
+  .total-check-proceed:disabled:hover,
+  .total-check-proceed:disabled:active {
+    background-color: #d2d2d2;
+    color: $coffee-grey-000;
+    cursor: not-allowed;
+  }
 }
