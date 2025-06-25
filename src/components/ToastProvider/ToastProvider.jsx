@@ -25,7 +25,7 @@ const ProductToast = () => {
       position={position}
       autoClose={1000}
       hideProgressBar
-      closeOnClick
+      closeButton={false}
       pauseOnHover={false}
       draggable
       theme="colored"
