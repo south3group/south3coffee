@@ -16,11 +16,14 @@ const CartList = () => {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [couponSuccess, setCouponSuccess] = useState('');
   const [couponError, setCouponError] = useState('');
+  const [addingId, setAddingId] = useState(null);
+  const [recommendList, setRecommendList] = useState([]);
 
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
+  // 取得購物車
   const getCart = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -85,6 +88,7 @@ const CartList = () => {
     }
   };
 
+  // 更新購物商商品數量
   const updateQuantity = async (productId, newQuantity) => {
     const quantity = Math.max(1, newQuantity);
     setCartItems(
@@ -117,6 +121,7 @@ const CartList = () => {
     }
   };
 
+  // 刪除購物車項目
   const removeItem = async (productId) => {
     setCartItems(cartItems.filter((item) => item.product.id !== productId));
 
@@ -136,6 +141,7 @@ const CartList = () => {
     }
   };
 
+  // 套用優惠券
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
 
@@ -173,8 +179,55 @@ const CartList = () => {
     }
   };
 
+  // 取得推薦商品
+  const getBestSeller = async () => {
+    try {
+      const res = await axios.get(`${apiUrl}/api/v1/products/bestSeller`);
+      setRecommendList(res.data?.data || []);
+    } catch (error) {
+      console.error('取得推薦商品失敗', error);
+    }
+  };
+
+  // 加入購物車
+  const handleAddToCart = async (productId) => {
+    try {
+      setAddingId(productId);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setModalMsg('尚未登入，請先登入會員');
+        setIsOpen(true);
+        return;
+      }
+
+      await axios.post(
+        `${apiUrl}/api/v1/users/membership/cart`,
+        {
+          product_id: productId,
+          quantity: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      setModalMsg('已加入購物車');
+      getCart(); //刷新購物車資料
+    } catch (error) {
+      const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
+      setModalMsg(msg);
+    } finally {
+      setAddingId(null);
+      setIsOpen(true);
+    }
+  };
+
   useEffect(() => {
     getCart();
+    getBestSeller();
   }, []);
 
   useEffect(() => {
@@ -654,154 +707,50 @@ const CartList = () => {
               <h5 className="recommend-title m-0">本期推薦</h5>
 
               <div className="card-group">
-                {/* 卡片 */}
-                <div className="card recommend-card-style m-0 rounded-0 border-0">
-                  <img
-                    src="https://images.unsplash.com/photo-1620820186187-fc32e79adb74?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    className="card-img-top card-img rounded-0"
-                    alt="coffee recommend"
-                  />
-                  <div className="recommend-card-content">
-                    <div className="recommend-card-body">
-                      <h5 className="card-title recommend-card-body-title m-0">
-                        晨光之秋
-                      </h5>
-                      <div className="recommend-card-body-title-icon">
-                        <img
-                          src={images.unlikeIcon}
-                          alt="unlike icon"
-                          className="icon-detail"
-                        />
+                {recommendList.map((item) => (
+                  <div
+                    className="card recommend-card-style m-0 rounded-0 border-0"
+                    key={item.id}
+                  >
+                    <img
+                      src={item.image_url}
+                      className="card-img-top card-img rounded-0"
+                      alt={item.name}
+                    />
+                    <div className="recommend-card-content">
+                      <div className="recommend-card-body">
+                        <h5 className="card-title recommend-card-body-title m-0">
+                          {item.name}
+                        </h5>
+                        <div className="recommend-card-body-title-icon">
+                          <img
+                            src={images.unlikeIcon}
+                            alt="unlike icon"
+                            className="icon-detail"
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="recommend-card-body-text">
-                      <p className="text-content m-0">
-                        帶有焦糖、堅果、可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味
-                      </p>
-                    </div>
-                    <div className="recommend-card-bottom">
-                      <div className="recommend-price-box">
-                        <p className="recommend-price m-0">NTD$</p>
-                        <p className="recommend-price m-0">500</p>
+                      <div className="recommend-card-body-text">
+                        <p className="text-content m-0">
+                          {item.feature || item.description || '無商品特色描述'}
+                        </p>
                       </div>
+                      <div className="recommend-card-bottom">
+                        <div className="recommend-price-box">
+                          <p className="recommend-price m-0">NTD$</p>
+                          <p className="recommend-price m-0">{item.price}</p>
+                        </div>
+                      </div>
+                      <button
+                        className="btn recommend-card-btn rounded-0"
+                        onClick={() => handleAddToCart(item.id)}
+                        disabled={addingId === item.id}
+                      >
+                        {addingId === item.id ? '加入中...' : '加入購物車'}
+                      </button>
                     </div>
-
-                    <button className="btn recommend-card-btn rounded-0">
-                      加入購物車
-                    </button>
                   </div>
-                </div>
-                {/* 卡片 */}
-                <div className="card recommend-card-style m-0 rounded-0 border-0">
-                  <img
-                    src="https://images.unsplash.com/photo-1620820186187-fc32e79adb74?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    className="card-img-top card-img rounded-0"
-                    alt="coffee recommend"
-                  />
-                  <div className="recommend-card-content">
-                    <div className="recommend-card-body">
-                      <h5 className="card-title recommend-card-body-title m-0">
-                        晨光之秋
-                      </h5>
-                      <div className="recommend-card-body-title-icon">
-                        <img
-                          src={images.unlikeIcon}
-                          alt="unlike icon"
-                          className="icon-detail"
-                        />
-                      </div>
-                    </div>
-                    <div className="recommend-card-body-text">
-                      <p className="text-content m-0">
-                        帶有焦糖、堅果、可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味
-                      </p>
-                    </div>
-                    <div className="recommend-card-bottom">
-                      <div className="recommend-price-box">
-                        <p className="recommend-price m-0">NTD$</p>
-                        <p className="recommend-price m-0">500</p>
-                      </div>
-                    </div>
-
-                    <button className="btn recommend-card-btn rounded-0">
-                      加入購物車
-                    </button>
-                  </div>
-                </div>
-                {/* 卡片 */}
-                <div className="card recommend-card-style m-0 rounded-0 border-0">
-                  <img
-                    src="https://images.unsplash.com/photo-1620820186187-fc32e79adb74?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    className="card-img-top card-img rounded-0"
-                    alt="coffee recommend"
-                  />
-                  <div className="recommend-card-content">
-                    <div className="recommend-card-body">
-                      <h5 className="card-title recommend-card-body-title m-0">
-                        晨光之秋
-                      </h5>
-                      <div className="recommend-card-body-title-icon">
-                        <img
-                          src={images.unlikeIcon}
-                          alt="unlike icon"
-                          className="icon-detail"
-                        />
-                      </div>
-                    </div>
-                    <div className="recommend-card-body-text">
-                      <p className="text-content m-0">
-                        帶有焦糖、堅果、可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味
-                      </p>
-                    </div>
-                    <div className="recommend-card-bottom">
-                      <div className="recommend-price-box">
-                        <p className="recommend-price m-0">NTD$</p>
-                        <p className="recommend-price m-0">500</p>
-                      </div>
-                    </div>
-
-                    <button className="btn recommend-card-btn rounded-0">
-                      加入購物車
-                    </button>
-                  </div>
-                </div>
-                {/* 卡片 */}
-                <div className="card recommend-card-style m-0 rounded-0 border-0">
-                  <img
-                    src="https://images.unsplash.com/photo-1620820186187-fc32e79adb74?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    className="card-img-top card-img rounded-0"
-                    alt="coffee recommend"
-                  />
-                  <div className="recommend-card-content">
-                    <div className="recommend-card-body">
-                      <h5 className="card-title recommend-card-body-title m-0">
-                        晨光之秋
-                      </h5>
-                      <div className="recommend-card-body-title-icon">
-                        <img
-                          src={images.unlikeIcon}
-                          alt="unlike icon"
-                          className="icon-detail"
-                        />
-                      </div>
-                    </div>
-                    <div className="recommend-card-body-text">
-                      <p className="text-content m-0">
-                        帶有焦糖、堅果、可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味可可風味可風味可風味
-                      </p>
-                    </div>
-                    <div className="recommend-card-bottom">
-                      <div className="recommend-price-box">
-                        <p className="recommend-price m-0">NTD$</p>
-                        <p className="recommend-price m-0">500</p>
-                      </div>
-                    </div>
-
-                    <button className="btn recommend-card-btn rounded-0">
-                      加入購物車
-                    </button>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
