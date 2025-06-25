@@ -14,6 +14,7 @@ const CartList = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponSuccess, setCouponSuccess] = useState('');
   const [couponError, setCouponError] = useState('');
 
   const navigate = useNavigate();
@@ -146,7 +147,7 @@ const CartList = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // ✅ 加上 Bearer
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ discount_kol: couponCode }),
         },
@@ -157,22 +158,20 @@ const CartList = () => {
       if (response.ok) {
         setDiscountAmount(result.data.discount_amount || 0);
         setCouponError('');
-        setModalMsg('已成功套用優惠券');
-        setIsOpen(true);
+        setCouponSuccess('已成功套用優惠券');
       } else {
         setDiscountAmount(0);
         setCouponError(result.message || '優惠碼無效');
-        setModalMsg(result.message || '優惠碼無效');
-        setIsOpen(true);
+        setCouponSuccess('');
       }
     } catch (err) {
       setDiscountAmount(0);
-      setCouponError('伺服器錯誤');
-      setModalMsg('伺服器錯誤，請稍後再試');
-      setIsOpen(true);
+      setCouponError('伺服器錯誤，請稍後再試');
+      setCouponSuccess('');
       console.error('applyCoupon error:', err);
     }
   };
+
 
   useEffect(() => {
     getCart();
@@ -544,7 +543,11 @@ const CartList = () => {
                       type="text"
                       placeholder="請輸入優惠序號"
                       value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value);
+                        setCouponError('');
+                        setCouponSuccess('');
+                      }}
                     />
                     <button
                       type="button"
@@ -554,7 +557,22 @@ const CartList = () => {
                       <p className="m-0">套用</p>
                     </button>
                   </div>
+
+                  {/* 成功訊息 */}
+                  {couponSuccess && (
+                    <p className="coupon-title text-success mt-1">
+                      {couponSuccess}
+                    </p>
+                  )}
+
+                  {/* 錯誤訊息 */}
+                  {couponError && (
+                    <p className="coupon-title text-danger mt-1">
+                      {couponError}
+                    </p>
+                  )}
                 </div>
+
                 <div className="price-detail">
                   <p className="product-title m-0">商品金額</p>
                   <div className="price-box">
