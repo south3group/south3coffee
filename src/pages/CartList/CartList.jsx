@@ -156,7 +156,8 @@ const CartList = () => {
       const result = await response.json();
 
       if (response.ok) {
-        setDiscountAmount(result.data.discount_amount || 0);
+        const safeDiscount = Math.min(result.data.discount_amount || 0, total);
+        setDiscountAmount(safeDiscount);
         setCouponError('');
         setCouponSuccess('已成功套用優惠券');
       } else {
@@ -603,7 +604,7 @@ const CartList = () => {
                   <div className="price-box">
                     <p className="total-price m-0">NTD$</p>
                     <p className="total-price m-0">
-                      {(total - discountAmount).toLocaleString()}
+                      {Math.max(total - discountAmount, 0).toLocaleString()}
                     </p>
                   </div>
                 </div>
