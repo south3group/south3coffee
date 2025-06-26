@@ -27,10 +27,10 @@
 
 .product-toast-success {
   font-family: 'GenRyuMin2', 'Noto Sans TC', sans-serif !important;
-  background-color: #339e60 !important;
+  background-color: #C4B0A0 !important;
   border: none !important;
   font-size: 1.6rem;
-  color: #ffffff !important;
+  color: #3E2B1B !important;
   border: none !important;
   &-body {
     font-size: 1.6rem;
@@ -39,12 +39,22 @@
 
 .product-toast-error {
   font-family: 'GenRyuMin2', 'Noto Sans TC', sans-serif !important;
-  background-color: #d11507 !important;
+  background-color: #FAC612  !important;
   border: none !important;
   font-size: 1.6rem;
-  color: #ffebeb !important;
+  color: #3E2B1B !important;
   border: none !important;
   &-body {
     font-size: 1.6rem;
   }
+}
+
+.product-toast-error-body {
+  font-size: 2rem;
+}
+
+
+.product-toast-success-body {
+  font-weight: bold;
+  font-size: 2rem;
 }

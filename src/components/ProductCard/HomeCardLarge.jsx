@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
+import useCart from '../../hooks/useCart';
 import './HomeCard.scss';
 import defultImg from '../../assets/Images/image12.jpg';
 import errorImg from '../../assets/Images/image13.jpg';
 
 const HomeCardLarge = ({ product, clickable = false }) => {
   const navigate = useNavigate();
+  const { addToCart, addingId } = useCart();
 
   const {
     id,
@@ -21,6 +23,12 @@ const HomeCardLarge = ({ product, clickable = false }) => {
     if (clickable) {
       navigate(`/product/${id}`);
     }
+  };
+
+  const handleClick2 = (e) => {
+    e.stopPropagation();
+    e.target.blur();
+    addToCart(product.id);
   };
 
   return (
@@ -111,12 +119,10 @@ const HomeCardLarge = ({ product, clickable = false }) => {
 
             <button
               className="btn w-100 py-2 homecardBtn"
-              onClick={(e) => {
-                e.stopPropagation(); // 避免點到觸發整張卡片的跳轉
-                console.log('加入購物車:', product);
-              }}
+              onClick={handleClick2}
+              disabled={addingId === product.id}
             >
-              加入購物車
+              {addingId === product.id ? '加入中…' : '加入購物車'}
             </button>
           </div>
         </div>
