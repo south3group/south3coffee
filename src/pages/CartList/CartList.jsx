@@ -33,22 +33,18 @@ const CartList = () => {
 
   // 封裝驗證邏輯
   const handleCouponValidation = (value) => {
-    if (value.trim() === '') {
+    const regex = /^[A-Z0-9]{6}$/;
+
+    if (!regex.test(value)) {
       setDiscountAmount(0);
       setIsCouponValid(false);
-      setCouponValidationError('');
-    } else if (value.length !== 6) {
-      setIsCouponValid(false);
-      setCouponValidationError('優惠碼不符合格式');
-    } else if (!/^[A-Z0-9]+$/.test(value)) {
-      setIsCouponValid(false);
-      setCouponValidationError('優惠碼不符合格式');
+      setCouponValidationError('無此優惠劵');
     } else {
-      const isValid = validateCouponCode(value);
-      setIsCouponValid(isValid);
-      setCouponValidationError(isValid ? '' : '無此優惠劵');
+      setIsCouponValid(true);
+      setCouponValidationError('');
     }
   };
+
 
   // 取得購物車
   const getCart = async () => {
@@ -240,7 +236,7 @@ const CartList = () => {
         if (knownMessages.includes(result.message)) {
           setCouponError(result.message);
         } else {
-          setCouponError('優惠券套用失敗，請稍後再試');
+          setCouponError('請重新套用優惠劵');
         }
         setCouponSuccess('');
       }
@@ -254,10 +250,9 @@ const CartList = () => {
 
   // 套用優惠券
   const applyCoupon = async () => {
-    if (!couponCode.trim()) return;
+    const trimmedCode = couponCode;
 
-    const formatValid = /^[A-Z0-9]{6}$/.test(couponCode.trim());
-    if (!formatValid) {
+    if (!trimmedCode || !/^[A-Z0-9]{6}$/.test(trimmedCode)) {
       setDiscountAmount(0);
       setCouponError('無此優惠劵');
       setCouponSuccess('');
@@ -280,8 +275,8 @@ const CartList = () => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            discount_kol: couponCode.trim(),
-            selected_total: selectedTotal, 
+            discount_kol: couponCode,
+            selected_total: selectedTotal,
           }),
         },
       );
@@ -309,7 +304,7 @@ const CartList = () => {
         if (knownMessages.includes(result.message)) {
           setCouponError(result.message);
         } else {
-          setCouponError('優惠券套用失敗，請稍後再試');
+          setCouponError('請重新套用優惠劵');
         }
         setCouponSuccess('');
       }
@@ -320,7 +315,6 @@ const CartList = () => {
       console.error('applyCoupon error:', err);
     }
   };
-
 
   // 取得推薦商品
   const getBestSeller = async () => {
@@ -343,7 +337,7 @@ const CartList = () => {
       .filter((item) => selectedItems.has(item.product.id))
       .reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotal(newTotal);
-    if (couponCode) revalidateCoupon(); 
+    if (couponCode) revalidateCoupon();
   }, [cartItems, selectedItems]);
 
   const handleDecrease = (item) => {
@@ -708,6 +702,7 @@ const CartList = () => {
                       onChange={(e) => {
                         const value = e.target.value.slice(0, 10);
                         setCouponCode(value);
+                        handleCouponValidation(value);
                         setCouponError('');
                         setCouponSuccess('');
                       }}
