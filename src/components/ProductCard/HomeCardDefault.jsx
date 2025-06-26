@@ -59,7 +59,10 @@ const HomeCardDefault = ({ product, clickable = false }) => {
           {origin.length > 0 && (
             <div className="mb-2">
               {origin.map((origin, index) => (
-                <span key={index} className="d-block mb-1">
+                <span
+                  key={index}
+                  className="d-block mb-1 d-inline-flex align-items-center"
+                >
                   <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
                     location_on
                   </i>
@@ -75,7 +78,7 @@ const HomeCardDefault = ({ product, clickable = false }) => {
           )}
 
           {feature && (
-            <div className="mb-2">
+            <div className="mb-2 d-inline-flex align-items-center">
               <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
                 spa
               </i>

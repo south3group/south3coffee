@@ -58,9 +58,12 @@ const HomeCardLarge = ({ product, clickable = false }) => {
           <h5 className="card-title mb-2 homecardTitle">{name}</h5>
 
           {origin.length > 0 && (
-            <div className="mb-2">
+            <div className="mb-2 ">
               {origin.map((origin, index) => (
-                <span key={index} className="d-block mb-1">
+                <span
+                  key={index}
+                  className="d-block mb-1 d-inline-flex align-items-center"
+                >
                   <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
                     location_on
                   </i>
@@ -76,8 +79,10 @@ const HomeCardLarge = ({ product, clickable = false }) => {
           )}
 
           {feature && (
-            <div className="mb-2 text-coffee-primary-800">
-              <i className="material-symbols-outlined me-1 fw-bolder">spa</i>
+            <div className="mb-2 d-inline-flex align-items-center">
+              <i className="material-symbols-outlined me-1 fw-bolder text-coffee-primary-800">
+                spa
+              </i>
               <small className="fs-3 text-coffee-primary-800 fw-bolder">
                 風味 -{' '}
               </small>

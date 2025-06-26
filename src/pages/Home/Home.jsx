@@ -66,7 +66,6 @@ const Home = () => {
   }, []); // 空陣列代表只在首次渲染時執行一次
 
   //取得咖啡用具及其他
-
   useEffect(() => {
     const fetchEquipmentProducts = async () => {
       try {
