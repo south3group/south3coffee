@@ -19,6 +19,7 @@ const CartList = () => {
   const [addingId, setAddingId] = useState(null);
   const [recommendList, setRecommendList] = useState([]);
   const [isCouponValid, setIsCouponValid] = useState(false);
+  const [couponValidationError, setCouponValidationError] = useState('');
 
   const navigate = useNavigate();
 
@@ -28,6 +29,25 @@ const CartList = () => {
   const validateCouponCode = (value) => {
     const regex = /^[A-Z0-9]{6}$/;
     return regex.test(value);
+  };
+
+  // 封裝驗證邏輯，增強可維護性與可擴充性
+  const handleCouponValidation = (value) => {
+    if (value.trim() === '') {
+      setDiscountAmount(0);
+      setIsCouponValid(false);
+      setCouponValidationError('');
+    } else if (value.length !== 6) {
+      setIsCouponValid(false);
+      setCouponValidationError('優惠碼不符合格式');
+    } else if (!/^[A-Z0-9]+$/.test(value)) {
+      setIsCouponValid(false);
+      setCouponValidationError('優惠碼不符合格式');
+    } else {
+      const isValid = validateCouponCode(value);
+      setIsCouponValid(isValid);
+      setCouponValidationError(isValid ? '' : '無此優惠劵');
+    }
   };
 
   // 取得購物車
@@ -148,6 +168,42 @@ const CartList = () => {
     }
   };
 
+  // 加入購物車
+  const handleAddToCart = async (productId) => {
+    try {
+      setAddingId(productId);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setModalMsg('尚未登入，請先登入會員');
+        setIsOpen(true);
+        return;
+      }
+
+      await axios.post(
+        `${apiUrl}/api/v1/users/membership/cart`,
+        {
+          product_id: productId,
+          quantity: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      setModalMsg('已加入購物車');
+      getCart(); //刷新購物車資料
+    } catch (error) {
+      const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
+      setModalMsg(msg);
+    } finally {
+      setAddingId(null);
+      setIsOpen(true);
+    }
+  };
+
   // 套用優惠券
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -193,42 +249,6 @@ const CartList = () => {
       setRecommendList(res.data?.data || []);
     } catch (error) {
       console.error('取得推薦商品失敗', error);
-    }
-  };
-
-  // 加入購物車
-  const handleAddToCart = async (productId) => {
-    try {
-      setAddingId(productId);
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setModalMsg('尚未登入，請先登入會員');
-        setIsOpen(true);
-        return;
-      }
-
-      await axios.post(
-        `${apiUrl}/api/v1/users/membership/cart`,
-        {
-          product_id: productId,
-          quantity: 1,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      setModalMsg('已加入購物車');
-      getCart(); //刷新購物車資料
-    } catch (error) {
-      const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
-      setModalMsg(msg);
-    } finally {
-      setAddingId(null);
-      setIsOpen(true);
     }
   };
 
@@ -602,19 +622,14 @@ const CartList = () => {
                     <input
                       type="text"
                       placeholder="請輸入優惠序號"
+                      maxLength={10}
                       value={couponCode}
                       onChange={(e) => {
-                        const value = e.target.value;
+                        const value = e.target.value.slice(0, 10);
                         setCouponCode(value);
                         setCouponError('');
                         setCouponSuccess('');
-
-                        if (value.trim() === '') {
-                          setDiscountAmount(0);
-                          setIsCouponValid(false);
-                        } else {
-                          setIsCouponValid(validateCouponCode(value));
-                        }
+                        handleCouponValidation(value);
                       }}
                     />
                     <button
@@ -635,8 +650,10 @@ const CartList = () => {
                   )}
 
                   {/* 錯誤訊息 */}
-                  {couponCode && !isCouponValid && (
-                    <p className="coupon-title text-danger mt-1">無此優惠劵</p>
+                  {couponCode && couponValidationError && (
+                    <p className="coupon-title text-danger mt-1">
+                      {couponValidationError}
+                    </p>
                   )}
                 </div>
 
