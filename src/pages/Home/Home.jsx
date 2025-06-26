@@ -18,7 +18,7 @@ const Home = () => {
   const [showTopBtn, setShowTopBtn] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
   const hotRoute = `${apiUrl}/api/v1/products/bestSeller`;
-  // const equipmentRoute = `${apiUrl}/api/v1/products`;
+  const equipmentRoute = `${apiUrl}/api/v1/products/extras`;
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -58,149 +58,39 @@ const Home = () => {
         }
       } catch (error) {
         console.error('取得熱門商品失敗:', error);
+        console.log('hotRoute:', hotRoute);
       }
     };
 
     fetchBestSellers();
-  }, []);
+  }, []); // 空陣列代表只在首次渲染時執行一次
 
   //取得咖啡用具及其他
 
-  // useEffect(() => {
-  //   const fetchequipmentProducts = async () => {
-  //     try {
-  //       const response = await axios.get(equipmentRoute);
-
-  //       if (response.status === 200 && response.data.data) {
-  //         const apiData = response.data.data.map((item) => ({
-  //           id: item.id,
-  //           name: item.name,
-  //           price: item.price,
-  //           image: item.image_url,
-  //           origin: [item.origin],
-  //           feature: item.feature,
-  //           description: item.description,
-  //         }));
-
-  //         setEquipmentProducts(apiData);
-  //       }
-  //     } catch (error) {
-  //       console.error('取得咖啡用具商品失敗:', error);
-  //     }
-  //   };
-
-  //   fetchequipmentProducts();
-  // }, []);
-
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/api/v1/products`)
-      .then((response) => {
-        setEquipmentProducts(response.data);
-      })
-      .catch((error) => {
-        console.error('API 取得咖啡用具商品失敗', error);
-      });
+    const fetchEquipmentProducts = async () => {
+      try {
+        const response = await axios.get(equipmentRoute);
+
+        if (response.status === 200 && response.data.data) {
+          const apiData = response.data.data.map((item) => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            image: item.image_url,
+            description: item.description,
+          }));
+
+          setEquipmentProducts(apiData);
+        }
+      } catch (error) {
+        console.error('取得相關用品及其他商品失敗:', error);
+        console.log('equipmentRoute:', equipmentRoute);
+      }
+    };
+
+    fetchEquipmentProducts();
   }, []); // 空陣列代表只在首次渲染時執行一次
-
-  // 假資料模擬
-  // useEffect(() => {
-  //   // 熱賣商品
-  //   const mockBestSellers = [
-  //     {
-  //       id: 1,
-  //       name: '耶加雪菲 日曬',
-  //       price: 450,
-  //       image: HomeImg.coffee[0],
-  //       origin: ['衣索比亞'],
-  //       feature: '莓果、花香',
-  //       description:
-  //         '踏上台東的賞楓之旅，感受秋天的絢爛與靜謐魅力。在山谷與林間，楓葉層層疊疊，將整個大地染成金黃與火紅，彷彿一幅大自然的絕美畫卷。從台東的鹿野高台出發，遠眺楓紅點綴的壯麗山景，讓秋風拂過臉龐，感受季節交替的詩意。 沿途探訪池上鄉的稻田步道，稻穗與紅葉交織，呈現秋日特有的田園景色。中午享用當地特色農家菜，品味來自土地的純粹美味。午後前往初鹿牧場，感受滿山楓葉與藍天的完美映襯，還能體驗手作乳製品的樂趣，為旅程增添趣味。 結束一天行程前，在知本溫泉放鬆身心，泡在溫暖的泉水中欣賞夜幕降臨，遠山的楓林在夕陽餘暉下更顯迷人。這是一場結合自然、文化與放鬆的秋日美景之旅，台東賞楓團將帶給你難以忘懷的秋天記憶。',
-  //     },
-  //     {
-  //       id: 2,
-  //       name: '肯亞 AA',
-  //       price: 520,
-  //       image: HomeImg.coffee[1],
-  //       origin: ['肯亞'],
-  //       feature: '葡萄柚、黑醋栗',
-  //       description: '中深焙帶出成熟果香與濃郁香氣，餘韻持久。',
-  //     },
-  //     {
-  //       id: 3,
-  //       name: '巴西 黃波旁',
-  //       price: 400,
-  //       image: HomeImg.coffee[2],
-  //       origin: ['巴西'],
-  //       feature: '榛果、巧克力',
-  //       description: '低酸平衡、口感滑順，是入門者首選。',
-  //     },
-  //     {
-  //       id: 4,
-  //       name: '巴西 黃波旁',
-  //       price: 400,
-  //       image: HomeImg.coffee[3],
-  //       origin: ['巴西'],
-  //       feature: '榛果、巧克力',
-  //       description: '低酸平衡、口感滑順，是入門者首選。',
-  //     },
-  //   ];
-
-  // 咖啡用具
-  useEffect(() => {
-    const mockEquipments = [
-      {
-        id: 101,
-        name: '手沖壺 Hario V60',
-        price: 980,
-        image: HomeImg.equipment[0],
-        origin: ['日本製'],
-        description: '設計流暢水流控制精準，手沖必備器具。',
-      },
-      {
-        id: 102,
-        name: '濾杯組 V60',
-        price: 450,
-        image: HomeImg.equipment[1],
-        origin: ['台灣製'],
-        description: '透明濾杯搭配量匙，輕鬆掌握每一杯風味。',
-      },
-      {
-        id: 103,
-        name: '磨豆機 手搖款',
-        price: 1200,
-        image: HomeImg.equipment[2],
-        origin: ['不鏽鋼刀盤'],
-        description: '可調粗細設計，讓你隨時享受現磨咖啡香。',
-      },
-      {
-        id: 104,
-        name: '磨豆機 手搖款',
-        price: 1200,
-        image: HomeImg.equipment[3],
-        origin: ['不鏽鋼刀盤'],
-        description: '可調粗細設計，讓你隨時享受現磨咖啡香。',
-      },
-      {
-        id: 105,
-        name: '磨豆機 手搖款',
-        price: 1200,
-        image: HomeImg.equipment[4],
-        origin: ['不鏽鋼刀盤'],
-        description: '可調粗細設計，讓你隨時享受現磨咖啡香。',
-      },
-      {
-        id: 106,
-        name: '磨豆機 手搖款',
-        price: 1200,
-        image: HomeImg.equipment[5],
-        origin: ['不鏽鋼刀盤'],
-        description: '可調粗細設計，讓你隨時享受現磨咖啡香。',
-      },
-    ];
-
-    setEquipmentProducts(mockEquipments);
-  }, []);
 
   return (
     <>
@@ -256,8 +146,8 @@ const Home = () => {
         <section className="py-4 bg-light">
           <div className="container">
             <div className="text-center mb-5 homeTitle">
-              <h1 className="mb-2">咖啡用具及其他</h1>
-              <p className="text-muted">Coffee Equipment & Extras</p>
+              <h1 className="mb-2">相關用品及其他</h1>
+              <p className="text-muted">Related Equipment & Extras</p>
               <hr
                 className="w-25 mx-auto"
                 style={{ height: '2px', background: '#8B4513' }}
