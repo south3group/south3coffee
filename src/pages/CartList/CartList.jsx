@@ -208,6 +208,15 @@ const CartList = () => {
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
 
+    // 套用時直接做格式驗證
+    const formatValid = /^[A-Z0-9]{6}$/.test(couponCode.trim());
+    if (!formatValid) {
+      setDiscountAmount(0);
+      setCouponError('無此優惠劵');
+      setCouponSuccess('');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
@@ -231,7 +240,7 @@ const CartList = () => {
         setCouponSuccess('已成功套用優惠券');
       } else {
         setDiscountAmount(0);
-        setCouponError(result.message || '優惠碼無效');
+        setCouponError(result.message || '無此優惠劵');
         setCouponSuccess('');
       }
     } catch (err) {
@@ -629,14 +638,13 @@ const CartList = () => {
                         setCouponCode(value);
                         setCouponError('');
                         setCouponSuccess('');
-                        handleCouponValidation(value);
                       }}
                     />
                     <button
                       type="button"
-                      className={`coupon-btn border-0 ${couponCode && isCouponValid ? 'active' : ''}`}
+                      className={`coupon-btn border-0 ${couponCode ? 'active' : ''}`}
                       onClick={applyCoupon}
-                      disabled={!isCouponValid}
+                      disabled={!couponCode.trim()}
                     >
                       <p className="m-0">套用</p>
                     </button>
@@ -649,10 +657,10 @@ const CartList = () => {
                     </p>
                   )}
 
-                  {/* 錯誤訊息（格式或後端） */}
-                  {(couponValidationError || couponError) && (
+                  {/* 錯誤訊息 */}
+                  {couponError && (
                     <p className="coupon-title text-danger mt-1">
-                      {couponValidationError || couponError}
+                      {couponError}
                     </p>
                   )}
                 </div>
