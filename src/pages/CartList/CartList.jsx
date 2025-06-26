@@ -649,10 +649,10 @@ const CartList = () => {
                     </p>
                   )}
 
-                  {/* 錯誤訊息 */}
-                  {couponCode && couponValidationError && (
+                  {/* 錯誤訊息（格式或後端） */}
+                  {(couponValidationError || couponError) && (
                     <p className="coupon-title text-danger mt-1">
-                      {couponValidationError}
+                      {couponValidationError || couponError}
                     </p>
                   )}
                 </div>
