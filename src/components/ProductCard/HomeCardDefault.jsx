@@ -1,10 +1,15 @@
+// import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useCart from '../../hooks/useCart';
 import './HomeCard.scss';
 import defultImg from '../../assets/Images/image12.jpg';
 import errorImg from '../../assets/Images/image13.jpg';
 
 const HomeCardDefault = ({ product, clickable = false }) => {
   const navigate = useNavigate();
+  // const [isOpen, setIsOpen] = useState(false);
+  // const [modalMsg, setModalMsg] = useState('');
+  const { addToCart, addingId } = useCart();
 
   const {
     id,
@@ -17,17 +22,27 @@ const HomeCardDefault = ({ product, clickable = false }) => {
     feature = '',
   } = product || {};
 
-  const handleClick = () => {
+  const handleClick1 = () => {
     if (clickable) {
       navigate(`/product/${id}`);
     }
+  };
+
+  const handleClick2 = (e) => {
+    e.stopPropagation();
+    e.target.blur();
+    addToCart(product.id);
+    // addToCart(product.id, 1, () => {
+    //   setModalMsg('尚未登入，請先登入會員');
+    //   setIsOpen(true);
+    // });
   };
 
   return (
     <div
       className={`card h-100 shadow-sm home-card`}
       style={{ cursor: clickable ? 'pointer' : 'default' }}
-      onClick={handleClick}
+      onClick={handleClick1}
     >
       <div className="position-relative">
         {/* 正常卡片排版 */}
@@ -59,7 +74,10 @@ const HomeCardDefault = ({ product, clickable = false }) => {
           {origin.length > 0 && (
             <div className="mb-2">
               {origin.map((origin, index) => (
-                <span key={index} className="d-block mb-1">
+                <span
+                  key={index}
+                  className="d-block mb-1 d-inline-flex align-items-center"
+                >
                   <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
                     location_on
                   </i>
@@ -75,7 +93,7 @@ const HomeCardDefault = ({ product, clickable = false }) => {
           )}
 
           {feature && (
-            <div className="mb-2">
+            <div className="mb-2 d-inline-flex align-items-center">
               <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
                 spa
               </i>
@@ -104,13 +122,51 @@ const HomeCardDefault = ({ product, clickable = false }) => {
 
             <button
               className="btn w-100 py-2 homecardBtn"
-              onClick={(e) => {
-                e.stopPropagation();
-                console.log('加入購物車:', product);
-              }}
+              onClick={handleClick2}
+              disabled={addingId === product.id}
             >
-              加入購物車
+              {addingId === product.id ? '加入中…' : '加入購物車'}
             </button>
+
+            {/* 登入提醒 Modal */}
+            {/* {isOpen && (
+              <div
+                className="modal show fade d-block custom-modal"
+                tabIndex="-1"
+                role="dialog"
+              >
+                <div className="modal-dialog custom-modal-dialog">
+                  <div className="modal-content custom-modal-content">
+                    <div className="modal-header custom-modal-header">
+                      <h5 className="custom-modal-title">系統通知</h5>
+                      <button
+                        type="button"
+                        className="custom-modal-close"
+                        onClick={() => {
+                          setIsOpen(false);
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div className="modal-body custom-modal-body">
+                      {modalMsg}
+                    </div>
+                    <div className="modal-footer custom-modal-footer">
+                      <button
+                        type="button"
+                        className="custom-modal-btn"
+                        onClick={() => {
+                          setIsOpen(false);
+                        }}
+                      >
+                        關閉
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )} */}
           </div>
         </div>
       </div>
