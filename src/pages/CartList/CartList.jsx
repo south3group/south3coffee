@@ -26,12 +26,6 @@ const CartList = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   // 驗證優惠券格式
-  const validateCouponCode = (value) => {
-    const regex = /^[A-Z0-9]{6}$/;
-    return regex.test(value);
-  };
-
-  // 封裝驗證邏輯
   const handleCouponValidation = (value) => {
     const regex = /^[A-Z0-9]{6}$/;
 
@@ -44,7 +38,6 @@ const CartList = () => {
       setCouponValidationError('');
     }
   };
-
 
   // 取得購物車
   const getCart = async () => {
@@ -716,6 +709,12 @@ const CartList = () => {
                       <p className="m-0">套用</p>
                     </button>
                   </div>
+
+                  {couponValidationError && (
+                    <p className="coupon-title text-danger mt-1">
+                      {couponValidationError}
+                    </p>
+                  )}
 
                   {/* 成功訊息 */}
                   {couponSuccess && (
