@@ -21,7 +21,7 @@ const HomeCardLarge = ({ product, clickable = false }) => {
 
   const handleClick = () => {
     if (clickable) {
-      navigate(`/product/${id}`);
+      navigate(`/products/${id}`);
     }
   };
 

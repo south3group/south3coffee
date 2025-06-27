@@ -24,7 +24,7 @@ const HomeCardDefault = ({ product, clickable = false }) => {
 
   const handleClick1 = () => {
     if (clickable) {
-      navigate(`/product/${id}`);
+      navigate(`/products/${id}`);
     }
   };
 
