@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react';
-// import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { checkAuth, logout } from '../../store/authSlice';
 import { toast } from 'react-toastify';
-
 import axios from 'axios';
 
-// import { checkAuth, logout } from '../../store/authSlice';
 import MemberSidebar from '../../components/MemberSidebar/MemberSidebar';
 import Footer from '../../components/Footer/Footer';
 
 const OrderDetail = () => {
-  // const dispatch = useDispatch();
-  // const { token, isAuthChecked } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { token, isAuthChecked } = useSelector((state) => state.auth);
 
   const [order, setOrder] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -23,19 +22,20 @@ const OrderDetail = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
-    // useEffect(() => {
-    //   dispatch(checkAuth());
-    // }, [dispatch]);
-  
-    // useEffect(() => {
-    //   if (isAuthChecked && !token) {
-    //     dispatch(logout());
-    //     navigate('/login');
-    //   }
-    // }, [isAuthChecked, token, dispatch, navigate]);
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthChecked && !token) {
+      dispatch(logout());
+      navigate('/login');
+    }
+  }, [isAuthChecked, token, dispatch, navigate]);
 
   // 取得單一訂單
   useEffect(() => {
+    if (!isAuthChecked || !token) return;
     const route = `${apiUrl}/api/v1/users/membership/${order_id}`;
 
     axios
@@ -53,7 +53,7 @@ const OrderDetail = () => {
         setModalMsg(msg);
         setIsOpen(true);
       });
-  }, [order_id]);
+  }, [isAuthChecked, token, order_id]);
 
   // 重新一鍵下單
   const handleReorder = async (order) => {
@@ -269,7 +269,7 @@ const OrderDetail = () => {
                     <div className="orders-info-total-content">
                       <p className="total-title m-0">優惠碼</p>
                       <p className="total-text m-0">
-                        {order.summary.discount_kol || '-'}
+                        {order.summary.discount_kol || '尚無使用'}
                       </p>
                     </div>
                     <div className="orders-info-total-content">
@@ -338,7 +338,7 @@ const OrderDetail = () => {
                       to={`/checkout?order_id=${order.id}`}
                       className="d-none d-md-flex border-0 rounded-0 back-btn-custom back-btn-custom-checkout"
                     >
-                      點我去付款
+                      重新付款
                     </Link>
                   )}
 

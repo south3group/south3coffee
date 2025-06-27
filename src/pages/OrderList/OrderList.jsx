@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-// import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useSelector, useDispatch } from 'react-redux';
+import { checkAuth, logout } from '../../store/authSlice';
 import axios from 'axios';
 
-// import { checkAuth, logout } from '../../store/authSlice';
 import MemberSidebar from '../../components/MemberSidebar/MemberSidebar';
 import Footer from '../../components/Footer/Footer';
 
 const OrderList = () => {
-  // const dispatch = useDispatch();
-  // const { token, isAuthChecked } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { token, isAuthChecked } = useSelector((state) => state.auth);
 
   const [orders, setOrders] = useState([]);
   const [_, setErrorMsg] = useState('');
@@ -27,19 +27,21 @@ const OrderList = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const route = `${apiUrl}/api/v1/users/membership/orders`;
 
-  // useEffect(() => {
-  //   dispatch(checkAuth());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (isAuthChecked && !token) {
-  //     dispatch(logout());
-  //     navigate('/login');
-  //   }
-  // }, [isAuthChecked, token, dispatch, navigate]);
+  useEffect(() => {
+    if (isAuthChecked && !token) {
+      dispatch(logout());
+      navigate('/login');
+    }
+  }, [isAuthChecked, token, dispatch, navigate]);
 
   // 取得訂單
   useEffect(() => {
+    if (!isAuthChecked || !token) return;
+
     axios
       .get(`${route}?page=${page}`, {
         headers: {
@@ -58,11 +60,10 @@ const OrderList = () => {
         setModalMsg(msg);
         setIsOpen(true);
       });
-  }, [page]);
+  }, [isAuthChecked, token, page]);
 
   // 重新一鍵下單
   const handleReorder = async (order) => {
-    const token = localStorage.getItem('token');
     if (!token) {
       setModalMsg('尚未登入，請先登入會員');
       setIsOpen(true);
@@ -91,11 +92,19 @@ const OrderList = () => {
         );
       }
 
-      toast.success('已加入購物車');
+      toast.success('已加入購物車', {
+        autoClose: 1000,
+        className: 'product-toast-success',
+        bodyClassName: 'product-toast-success-body',
+      });
       navigate('/cart');
     } catch (error) {
-      const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
-      toast.error(msg);
+      const msg = error.response?.data?.message || '加入失敗，請稍後再試';
+      toast.error(msg, {
+        autoClose: 2000,
+        className: 'product-toast-error',
+        bodyClassName: 'product-toast-error-body',
+      });
     }
   };
 
@@ -113,48 +122,52 @@ const OrderList = () => {
               <div className="orders-custom">
                 {/* 手機版 */}
                 <div className="d-block d-md-none orders-custom-mobile">
-                  {orders.map((order) => (
-                    <Link
-                      to={`/member/orders/${order.id}`}
-                      key={order.display_id}
-                      className="order-card-link"
-                    >
-                      <div className="order-card">
-                        <div className="date-num">
-                          <p className="m-0 date-num-style">
-                            {order.created_at}
-                          </p>
-                          <p className="m-0 date-num-style">
-                            {order.display_id}
-                          </p>
+                  {orders.length === 0 ? (
+                    <p className="text-center no-orders">查無訂單資料</p>
+                  ) : (
+                    orders.map((order) => (
+                      <Link
+                        to={`/member/orders/${order.id}`}
+                        key={order.display_id}
+                        className="order-card-link"
+                      >
+                        <div className="order-card">
+                          <div className="date-num">
+                            <p className="m-0 date-num-style">
+                              {order.created_at}
+                            </p>
+                            <p className="m-0 date-num-style">
+                              {order.display_id}
+                            </p>
+                          </div>
+                          <div className="text-group">
+                            <p className="m-0 text-group-title">購買品項</p>
+                            <p className="m-0 text-group-text">
+                              {order.product_name}
+                            </p>
+                          </div>
+                          <div className="text-group">
+                            <p className="m-0 text-group-title">總金額</p>
+                            <p className="m-0 text-group-text">
+                              NTD${order.total_price}
+                            </p>
+                          </div>
+                          <div className="text-group">
+                            <p className="m-0 text-group-title">付款狀態</p>
+                            <p className="m-0 text-group-text">
+                              {order.is_paid ? '已付款' : '未付款'}
+                            </p>
+                          </div>
+                          <div className="text-group">
+                            <p className="m-0 text-group-title">出貨狀態</p>
+                            <p className="m-0 text-group-text">
+                              {order.is_ship ? '已出貨' : '未出貨'}
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-group">
-                          <p className="m-0 text-group-title">購買品項</p>
-                          <p className="m-0 text-group-text">
-                            {order.product_name}
-                          </p>
-                        </div>
-                        <div className="text-group">
-                          <p className="m-0 text-group-title">總金額</p>
-                          <p className="m-0 text-group-text">
-                            NTD${order.total_price}
-                          </p>
-                        </div>
-                        <div className="text-group">
-                          <p className="m-0 text-group-title">付款狀態</p>
-                          <p className="m-0 text-group-text">
-                            {order.is_paid ? '已付款' : '未付款'}
-                          </p>
-                        </div>
-                        <div className="text-group">
-                          <p className="m-0 text-group-title">出貨狀態</p>
-                          <p className="m-0 text-group-text">
-                            {order.is_ship ? '已出貨' : '未出貨'}
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
+                      </Link>
+                    ))
+                  )}
                 </div>
 
                 {/* 桌電版 */}
@@ -188,10 +201,10 @@ const OrderList = () => {
                     {orders.length > 0 ? (
                       orders.map((order) => (
                         <tr key={order.display_id}>
-                          <th className="orders-custom-tbody-th">
+                          <th className="orders-custom-tbody-th table-order-text">
                             {order.created_at}
                           </th>
-                          <td className="orders-custom-tbody-td">
+                          <td className="orders-custom-tbody-td table-order-text">
                             {order.display_id}
                           </td>
                           <td className="orders-custom-tbody-td">
@@ -200,7 +213,7 @@ const OrderList = () => {
                                 to={`/member/orders/${order.id}`}
                                 className="check-order-btn-view border-0"
                               >
-                                查看完整訂單
+                                查看訂單
                               </Link>
                               <p className="check-order-text m-0">
                                 {order.product_name || '-'}
@@ -242,7 +255,7 @@ const OrderList = () => {
                                   to={`/checkout?order_id=${order.id}`}
                                   className="check-order-btn-checkout border-0"
                                 >
-                                  點我去付款
+                                  重新付款
                                 </Link>
                               )}
                             </div>
@@ -252,7 +265,7 @@ const OrderList = () => {
                     ) : (
                       <tr>
                         <td colSpan="7" className="text-center py-4">
-                          無訂單品項資料
+                          查無訂單資料
                         </td>
                       </tr>
                     )}

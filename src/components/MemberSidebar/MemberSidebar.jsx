@@ -56,6 +56,21 @@ const MemberSidebar = ({ children }) => {
     }
   }, [sidebarOpen]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if ( width >= 1300) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div className="sidebar-style">
       {/* 手機版 */}
