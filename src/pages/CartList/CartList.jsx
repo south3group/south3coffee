@@ -695,7 +695,7 @@ const CartList = () => {
                       onChange={(e) => {
                         const value = e.target.value.slice(0, 10);
                         setCouponCode(value);
-                        handleCouponValidation(value);
+                        // handleCouponValidation(value);
                         setCouponError('');
                         setCouponSuccess('');
                       }}
