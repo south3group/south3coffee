@@ -1,4 +1,4 @@
-// import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useCart from '../../hooks/useCart';
 import './HomeCard.scss';
@@ -7,9 +7,8 @@ import errorImg from '../../assets/Images/image13.jpg';
 
 const HomeCardDefault = ({ product, clickable = false }) => {
   const navigate = useNavigate();
-  // const [isOpen, setIsOpen] = useState(false);
-  // const [modalMsg, setModalMsg] = useState('');
   const { addToCart, addingId } = useCart();
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const {
     id,
@@ -17,7 +16,7 @@ const HomeCardDefault = ({ product, clickable = false }) => {
     price = 0,
     image = defultImg,
     description = '',
-    isFavorite = false,
+    // isFavorite = false,
     origin = [],
     feature = '',
   } = product || {};
@@ -32,10 +31,12 @@ const HomeCardDefault = ({ product, clickable = false }) => {
     e.stopPropagation();
     e.target.blur();
     addToCart(product.id);
-    // addToCart(product.id, 1, () => {
-    //   setModalMsg('尚未登入，請先登入會員');
-    //   setIsOpen(true);
-    // });
+  };
+
+  const toggleFavorite = (e) => {
+    e.stopPropagation();
+    console.log('切換收藏:', product);
+    setIsFavorite((prev) => !prev);
   };
 
   return (
@@ -55,16 +56,13 @@ const HomeCardDefault = ({ product, clickable = false }) => {
           />
           <button
             className="btn btn-link position-absolute end-0 m-2 p-1 homecard-favorite-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log('切換收藏:', product);
-            }}
+            onClick={toggleFavorite}
           >
-            <i
+            <span
               className={`material-symbols-outlined ${isFavorite ? 'heart-filled' : 'heart-outlined'}`}
             >
               favorite
-            </i>
+            </span>
           </button>
         </div>
 
@@ -113,7 +111,7 @@ const HomeCardDefault = ({ product, clickable = false }) => {
           )}
 
           <div className="mt-auto">
-            <div className="mb-3 ">
+            <div className="mb-3">
               <span className="h5 mb-0 homecardPrice">
                 NT$
                 {typeof price === 'number' ? price.toLocaleString() : price}
@@ -127,46 +125,6 @@ const HomeCardDefault = ({ product, clickable = false }) => {
             >
               {addingId === product.id ? '加入中…' : '加入購物車'}
             </button>
-
-            {/* 登入提醒 Modal */}
-            {/* {isOpen && (
-              <div
-                className="modal show fade d-block custom-modal"
-                tabIndex="-1"
-                role="dialog"
-              >
-                <div className="modal-dialog custom-modal-dialog">
-                  <div className="modal-content custom-modal-content">
-                    <div className="modal-header custom-modal-header">
-                      <h5 className="custom-modal-title">系統通知</h5>
-                      <button
-                        type="button"
-                        className="custom-modal-close"
-                        onClick={() => {
-                          setIsOpen(false);
-                        }}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                    <div className="modal-body custom-modal-body">
-                      {modalMsg}
-                    </div>
-                    <div className="modal-footer custom-modal-footer">
-                      <button
-                        type="button"
-                        className="custom-modal-btn"
-                        onClick={() => {
-                          setIsOpen(false);
-                        }}
-                      >
-                        關閉
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )} */}
           </div>
         </div>
       </div>

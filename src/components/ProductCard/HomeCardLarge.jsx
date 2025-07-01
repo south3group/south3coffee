@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useCart from '../../hooks/useCart';
 import './HomeCard.scss';
@@ -7,6 +8,7 @@ import errorImg from '../../assets/Images/image13.jpg';
 const HomeCardLarge = ({ product, clickable = false }) => {
   const navigate = useNavigate();
   const { addToCart, addingId } = useCart();
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const {
     id,
@@ -14,7 +16,7 @@ const HomeCardLarge = ({ product, clickable = false }) => {
     price = 0,
     image = defultImg,
     description = '',
-    isFavorite = false,
+    // isFavorite = false,
     origin = [],
     feature = '',
   } = product || {};
@@ -29,6 +31,12 @@ const HomeCardLarge = ({ product, clickable = false }) => {
     e.stopPropagation();
     e.target.blur();
     addToCart(product.id);
+  };
+
+  const toggleFavorite = (e) => {
+    e.stopPropagation();
+    console.log('切換收藏:', product);
+    setIsFavorite((prev) => !prev);
   };
 
   return (
@@ -48,16 +56,13 @@ const HomeCardLarge = ({ product, clickable = false }) => {
           />
           <button
             className="btn btn-link position-absolute top-0 end-0 m-2 p-1 homecard-favorite-btn"
-            onClick={(e) => {
-              e.stopPropagation(); // 避免點到觸發整張卡片的跳轉
-              console.log('切換收藏:', product);
-            }}
+            onClick={toggleFavorite}
           >
-            <i
+            <span
               className={`material-symbols-outlined ${isFavorite ? 'heart-filled' : 'heart-outlined'}`}
             >
               favorite
-            </i>
+            </span>
           </button>
         </div>
 
