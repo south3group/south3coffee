@@ -487,62 +487,42 @@ const CartList = () => {
 
                     {/* 桌電版 */}
                     <div className="d-none d-md-block">
-                      <table className="table cart-custom-table m-0">
-                        <colgroup>
-                          <col style={{ width: '5%' }} />
-                          <col style={{ width: '15%' }} />
-                          <col style={{ width: '30%' }} />
-                          <col style={{ width: '15%' }} />
-                          <col style={{ width: '15%' }} />
-                          <col style={{ width: '15%' }} />
-                          <col style={{ width: '5%' }} />
-                        </colgroup>
-                        <thead className="cart-custom-style">
-                          <tr>
-                            <th scope="col" className="cart-custom-style-th">
-                              <input
-                                type="checkbox"
-                                className="checkbox-custom"
-                                onChange={handleSelectAll}
-                                checked={
-                                  cartItems.length > 0 &&
-                                  selectedItems.size === cartItems.length
-                                }
-                              />
-                            </th>
-                            <th scope="col" className="cart-custom-style-th">
-                              商品圖片
-                            </th>
-                            <th scope="col" className="cart-custom-style-th">
-                              商品名稱
-                            </th>
-                            <th scope="col" className="cart-custom-style-th">
-                              單價
-                            </th>
-                            <th scope="col" className="cart-custom-style-th">
-                              數量
-                            </th>
-                            <th scope="col" className="cart-custom-style-th">
-                              小計
-                            </th>
-                            <th
-                              scope="col"
-                              className="cart-custom-style-th"
-                            ></th>
-                          </tr>
-                        </thead>
-                      </table>
                       <div className="table-body-scroll-container">
                         <table className="table cart-custom-table m-0">
-                          <colgroup>
-                            <col style={{ width: '5%' }} />
-                            <col style={{ width: '15%' }} />
-                            <col style={{ width: '30%' }} />
-                            <col style={{ width: '15%' }} />
-                            <col style={{ width: '15%' }} />
-                            <col style={{ width: '15%' }} />
-                            <col style={{ width: '5%' }} />
-                          </colgroup>
+                          <thead className="cart-custom-style">
+                            <tr>
+                              <th scope="col" className="cart-custom-style-th">
+                                <input
+                                  type="checkbox"
+                                  className="checkbox-custom"
+                                  onChange={handleSelectAll}
+                                  checked={
+                                    cartItems.length > 0 &&
+                                    selectedItems.size === cartItems.length
+                                  }
+                                />
+                              </th>
+                              <th scope="col" className="cart-custom-style-th">
+                                商品圖片
+                              </th>
+                              <th scope="col" className="cart-custom-style-th">
+                                商品名稱
+                              </th>
+                              <th scope="col" className="cart-custom-style-th">
+                                單價
+                              </th>
+                              <th scope="col" className="cart-custom-style-th">
+                                數量
+                              </th>
+                              <th scope="col" className="cart-custom-style-th">
+                                小計
+                              </th>
+                              <th
+                                scope="col"
+                                className="cart-custom-style-th"
+                              ></th>
+                            </tr>
+                          </thead>
                           <tbody className="cart-custom-tbody">
                             {cartItems.map((item) => (
                               <tr key={item.product.id}>
@@ -566,7 +546,7 @@ const CartList = () => {
                                     className="cart-product-img"
                                   />
                                 </td>
-                                <td className="cart-custom-tbody-td">
+                                <td className="cart-custom-tbody-td product-name">
                                   {item.product.name}
                                 </td>
                                 <td className="cart-custom-tbody-td">
@@ -790,21 +770,20 @@ const CartList = () => {
 
           {/* 推薦 */}
           <div className="recommend-custom">
-            <button
-              type="button"
-              className="d-none d-md-block recommend-custom-btn border-0"
-            >
-              <div className="arrow-icon">
-                <img
-                  src={images.reviewArrowL}
-                  alt="recommend-arrow-left"
-                  className="icon-detail"
-                />
-              </div>
-            </button>
-
+            <h5 className="recommend-title m-0">本期推薦</h5>
             <div className="recommend-card">
-              <h5 className="recommend-title m-0">本期推薦</h5>
+              <button
+                type="button"
+                className="recommend-custom-btn border-0"
+              >
+                <div className="arrow-icon">
+                  <img
+                    src={images.reviewArrowL}
+                    alt="recommend-arrow-left"
+                    className="icon-detail"
+                  />
+                </div>
+              </button>
 
               <div className="card-group">
                 {recommendList.map((item) => (
@@ -852,20 +831,20 @@ const CartList = () => {
                   </div>
                 ))}
               </div>
-            </div>
 
-            <button
-              type="button"
-              className="d-none d-md-block recommend-custom-btn border-0"
-            >
-              <div className="arrow-icon">
-                <img
-                  src={images.reviewArrowR}
-                  alt="recommend-arrow-right"
-                  className="icon-detail"
-                />
-              </div>
-            </button>
+              <button
+                type="button"
+                className="recommend-custom-btn border-0"
+              >
+                <div className="arrow-icon">
+                  <img
+                    src={images.reviewArrowR}
+                    alt="recommend-arrow-right"
+                    className="icon-detail"
+                  />
+                </div>
+              </button>
+            </div>
           </div>
         </div>
         <div></div>

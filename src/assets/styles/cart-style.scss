@@ -77,8 +77,7 @@
     height: 20px;
     min-width: 20px;
     min-height: 20px;
-    border: 1.5px solid #7c5c37; /* 深咖啡色外框 */
-    border-radius: 4px;
+    border: 1.5px solid $coffee-primary-100;
     background-color: #fff;
     appearance: none;
     -webkit-appearance: none;
@@ -89,8 +88,8 @@
   }
 
   .checkbox-custom:checked {
-    background-color: #7c5c37; /* 深咖啡色背景 */
-    border-color: #7c5c37;
+    background-color: $coffee-primary-700;
+    border-color: $coffee-primary-800;
   }
 
   .checkbox-custom:checked::after {
@@ -111,18 +110,27 @@
     flex-direction: column;
     flex-wrap: nowrap;
     gap: 32px;
-    padding: 12px;
-    align-items: stretch;
-
-    @media (min-width: 768px) {
-      align-items: center;
-    }
+    padding: 24px;
 
     @media (min-width: 768px) {
       flex-direction: row;
       gap: 24px;
       justify-content: space-between;
       align-items: flex-start;
+      padding: 0;
+    }
+    @media (min-width: 768px) and (max-width: 1296px) {
+      padding: 32px;
+    }
+
+    @media (max-width: 985px) {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    &-cart {
+      flex: 1;
     }
   }
 
@@ -136,7 +144,6 @@
 
     // 手機版
     &-mobile {
-      background-color: $coffee-grey-000;
       width: 100%;
 
       @media (max-width: 767px) {
@@ -169,7 +176,6 @@
               width: 108px;
               height: 108px;
               object-fit: cover;
-              border-radius: 4px;
             }
           }
 
@@ -190,12 +196,20 @@
                 .text-group-text {
                   font-weight: 700;
                   color: $coffee-primary-700;
-                  // width: 16ch;
                   flex: 1;
                   min-width: 0;
-                  overflow: hidden;
-                  white-space: nowrap;
-                  text-overflow: ellipsis;
+                  @media (max-width: 460px) {
+                    overflow: hidden;
+                    white-space: wrap;
+                    text-overflow: ellipsis;
+                    width: 12ch;
+                  }
+                  @media (max-width: 380px) {
+                    overflow: hidden;
+                    white-space: wrap;
+                    text-overflow: ellipsis;
+                    width: 9ch;
+                  }
                 }
               }
 
@@ -235,31 +249,30 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 1.6rem;
-      table-layout: fixed;
       border-spacing: 0;
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
     }
 
     .table-body-scroll-container {
       max-height: 785px; /* 5 個 item * (108px img + 48px padding + 1px border) */
       overflow-y: auto;
-      border: 1px solid #e0e0e0;
+      border: 1px solid $coffee-primary-100;
       border-top: none;
     }
 
     &-style {
-      // thead
       &-th {
         padding: 24px 16px;
         color: $coffee-primary-1000;
         font-weight: 700;
-        border-bottom: 1px solid #e0e0e0;
-        background-color: #f8f5f1;
-        vertical-align: middle;
-
-        &:nth-child(4),
-        &:nth-child(5),
-        &:nth-child(6) {
-          text-align: right;
+        border-bottom: 1px solid $coffee-primary-100;
+        background-color: #f7f7f7;
+        @media (min-width: 768px) and (max-width: 1296px) {
+          padding: 8px;
         }
       }
     }
@@ -274,39 +287,49 @@
 
       &-th,
       &-td {
-        padding: 24px 16px;
+        padding: 16px;
         color: $coffee-primary-700;
         font-weight: 700;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 1px solid $coffee-primary-100;
         vertical-align: middle;
+        text-align: center;
+        @media (min-width: 768px) and (max-width: 1296px) {
+          padding: 8px;
+        }
       }
 
       &-td {
-        &:nth-child(4),
-        &:nth-child(5),
-        &:nth-child(6) {
-          text-align: right;
+        &:nth-child(3) {
+          text-align: left;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
         }
-
         .box-currency {
           display: flex;
-          justify-content: flex-end;
+          justify-content: space-between;
           gap: 4px;
+          @media (min-width: 768px) and (max-width: 1180px) {
+            font-size: 1.4rem;
+          }
         }
 
         .order-options {
           display: flex;
-          justify-content: flex-end;
+          justify-content: space-between;
         }
       }
 
       .del-icon {
         display: flex;
-        justify-content: flex-end;
+        justify-content: center;
+        align-items: center;
         cursor: pointer;
+        width: 24px;
+        height: 24px;
         img {
-          width: 24px;
-          height: 24px;
+          width: 14px;
+          height: 18px;
         }
       }
 
@@ -314,24 +337,21 @@
         width: 108px;
         height: 108px;
         object-fit: cover;
+        @media (min-width: 768px) and (max-width: 1040px) {
+          width: 88px;
+          height: 88px;
+        }
       }
     }
-  }
 
-  .cart-custom-style-th:nth-child(3),
-  .cart-custom-style-td:nth-child(3) {
-    width: 281px;
-  }
-
-  .cart-custom-style-th:nth-child(4),
-  .cart-custom-style-td:nth-child(4) {
-    min-width: 114px;
-  }
-
-  .cart-total {
-    border: 1px solid $coffee-primary-100;
-    background-color: $coffee-grey-000;
-    padding: 24px;
+    .product-name {
+      @media (min-width: 768px) and (max-width: 1180px) {
+        max-width: 160px;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
+      }
+    }
   }
 
   // 小計 & 結帳
@@ -339,6 +359,18 @@
     border: 1px solid $coffee-primary-100;
     background-color: $coffee-grey-000;
     padding: 24px;
+    width: 100%;
+
+    @media (min-width: 1031px) {
+      max-width: 306px;
+      width: 100%;
+    }
+    @media (min-width: 986px) and (max-width: 1030px) {
+      max-width: 270px;
+    }
+    @media (min-width: 768px) and (max-width: 985px) {
+      max-width: 637px;
+    }
   }
 
   .cart-total-custom {
@@ -355,17 +387,14 @@
         display: flex;
         flex-direction: row;
         gap: 8px;
-        width: 100%;
+        max-width: 100%;
 
         input {
-          flex: 1;
           padding: 8px 12px;
           font-size: 1.6rem;
           border: 1px solid $coffee-primary-400;
-
-          @media (min-width: 768px) {
-            max-width: 182px;
-          }
+          flex-grow: 1;
+          width: 0;
         }
 
         .coupon-btn {
@@ -374,6 +403,7 @@
           color: $coffee-primary-400;
           font-weight: 700;
           transition: all 0.3s;
+          white-space: nowrap;
 
           &.active {
             background-color: $coffee-primary-700;
@@ -463,10 +493,13 @@
   .order-options {
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: space-between;
     gap: 24px;
     @media (min-width: 768px) {
-      justify-content: start;
+      justify-content: space-between;
+    }
+    @media (min-width: 768px) and (max-width: 1180px) {
+      gap: 12px;
     }
 
     &-quantity {
@@ -486,6 +519,10 @@
         background-color: $coffee-grey-000;
         width: 40px;
         height: 40px;
+        @media (min-width: 768px) and (max-width: 1180px) {
+          width: 28px;
+          height: 32px;
+        }
 
         .decrease-icon,
         .increase-icon {
@@ -526,6 +563,10 @@
         border: 1px solid $coffee-primary-400;
         width: 40px;
         height: 40px;
+        @media (min-width: 768px) and (max-width: 1180px) {
+          width: 28px;
+          height: 32px;
+        }
 
         .value-input {
           min-width: 1ch;
@@ -559,11 +600,16 @@
   // 本期推薦
   .recommend-custom {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    max-width: 100%;
+    gap: 40px;
+
+    .recommend-title {
+      font-size: 3rem;
+      color: $coffee-primary-800;
+      font-weight: 900;
+    }
 
     // 箭頭
     &-btn {
@@ -572,9 +618,13 @@
       background-color: $coffee-primary-700;
       padding: 16px 24px;
       height: 56px;
-      display: flex;
+      display: block;
       align-items: center;
       justify-content: center;
+
+      @media (max-width: 1300px) {
+        display: none;
+      }
 
       .arrow-icon {
         width: 24px;
@@ -592,41 +642,50 @@
 
     .card-group {
       display: flex;
+      justify-content: flex-start;
       flex-wrap: nowrap;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
       gap: 16px;
+      padding-inline: 8px;
+      width: 100%;
+      scroll-padding-left: 0;
+
+      @media (min-width: 1030px) {
+        justify-content: center;
+      }
 
       &::-webkit-scrollbar {
         display: none;
       }
 
-      @media (min-width: 768px) {
-        overflow-x: visible;
+      @media (min-width: 1180px) {
         flex-wrap: wrap;
+        overflow-x: visible;
+        scroll-snap-type: none;
         gap: 40px;
-        padding: 0;
+        padding-inline: 0;
+      }
+
+      @media (min-width: 768px) and (max-width: 1179px) {
+        gap: 8px;
       }
     }
 
     .recommend-card {
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
       justify-content: center;
       gap: 40px;
-
-      @media (min-width: 768px) {
-        padding: 0;
+      width: 100%;
+      @media (min-width: 768px) and (max-width: 1296px) {
+        padding: 20px;
+        gap: 32px;
       }
 
-      .recommend-title {
-        font-size: 3rem;
-        color: $coffee-primary-800;
-        font-weight: 900;
-      }
       // 卡片本體
       &-style {
         flex: 0 0 auto;
@@ -636,7 +695,7 @@
         display: flex;
         flex-direction: column;
 
-        @media (min-width: 768px) {
+        @media (min-width: 1180px) {
           flex: 1 1 auto;
           scroll-snap-align: unset;
         }
@@ -660,16 +719,22 @@
           flex-direction: row;
           flex-grow: 1;
           justify-content: space-between;
+          align-items: center;
 
           &-title {
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             color: $coffee-primary-700;
             font-weight: 900;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
 
             &-icon {
               display: flex;
               align-items: center;
-              justify-content: space-between;
+              justify-content: center;
+              min-width: 40px;
+              min-height: 40px;
             }
           }
 
@@ -679,6 +744,9 @@
             display: flex;
             height: auto;
             gap: 8px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
 
             .text-icon-group {
               display: flex;
