@@ -77,7 +77,12 @@ const CartList = () => {
         if (item.is_selected) fallbackSelected.add(item.product_id);
       });
       const localSelected = loadSelectedFromLocal();
-      const merged = localSelected.size > 0 ? localSelected : fallbackSelected;
+      const merged = new Set([
+        ...fallbackSelected,
+        ...localSelected,
+        ...Array.from(selectedItems),
+      ]);
+
       setSelectedItems(merged);
 
       const price =
@@ -183,6 +188,13 @@ const CartList = () => {
           },
         },
       );
+
+      setSelectedItems((prev) => {
+        const newSet = new Set(prev);
+        newSet.add(productId);
+        saveSelectedToLocal(newSet);
+        return newSet;
+      });
 
       setModalMsg('已加入購物車');
       getCart(); //刷新購物車資料
