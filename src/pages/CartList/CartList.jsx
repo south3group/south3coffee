@@ -256,9 +256,9 @@ const CartList = () => {
 
   // 套用優惠券
   const applyCoupon = async () => {
-    const trimmedCode = couponCode;
+    const trimmedCode = couponCode.trim();
 
-    if (!trimmedCode || !/^[A-Z0-9]{6}$/.test(trimmedCode)) {
+    if (trimmedCode.length === 0 || trimmedCode !== couponCode || !/^[A-Z0-9]{6}$/.test(trimmedCode)) {
       setDiscountAmount(0);
       setCouponError('無此優惠劵');
       setCouponSuccess('');
