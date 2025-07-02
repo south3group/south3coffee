@@ -18,10 +18,26 @@ const CartList = () => {
   const [couponError, setCouponError] = useState('');
   const [addingId, setAddingId] = useState(null);
   const [recommendList, setRecommendList] = useState([]);
+  const [isCouponValid, setIsCouponValid] = useState(false);
+  const [couponValidationError, setCouponValidationError] = useState('');
 
   const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL;
+
+  // 驗證優惠券格式
+  const handleCouponValidation = (value) => {
+    const regex = /^[A-Z0-9]{6}$/;
+
+    if (!regex.test(value)) {
+      setDiscountAmount(0);
+      setIsCouponValid(false);
+      setCouponValidationError('無此優惠劵');
+    } else {
+      setIsCouponValid(true);
+      setCouponValidationError('');
+    }
+  };
 
   // 取得購物車
   const getCart = async () => {
@@ -141,54 +157,6 @@ const CartList = () => {
     }
   };
 
-  // 套用優惠券
-  const applyCoupon = async () => {
-    if (!couponCode.trim()) return;
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(
-        `${apiUrl}/api/v1/users/membership/discount`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ discount_kol: couponCode }),
-        },
-      );
-
-      const result = await response.json();
-
-      if (response.ok) {
-        const safeDiscount = Math.min(result.data.discount_amount || 0, total);
-        setDiscountAmount(safeDiscount);
-        setCouponError('');
-        setCouponSuccess('已成功套用優惠券');
-      } else {
-        setDiscountAmount(0);
-        setCouponError(result.message || '優惠碼無效');
-        setCouponSuccess('');
-      }
-    } catch (err) {
-      setDiscountAmount(0);
-      setCouponError('伺服器錯誤，請稍後再試');
-      setCouponSuccess('');
-      console.error('applyCoupon error:', err);
-    }
-  };
-
-  // 取得推薦商品
-  const getBestSeller = async () => {
-    try {
-      const res = await axios.get(`${apiUrl}/api/v1/products/bestSeller`);
-      setRecommendList(res.data?.data || []);
-    } catch (error) {
-      console.error('取得推薦商品失敗', error);
-    }
-  };
-
   // 加入購物車
   const handleAddToCart = async (productId) => {
     try {
@@ -225,6 +193,132 @@ const CartList = () => {
     }
   };
 
+  // 重新驗證優惠券
+  const revalidateCoupon = async () => {
+    if (!couponCode || !/^[A-Z0-9]{6}$/.test(couponCode.trim())) return;
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(
+        `${apiUrl}/api/v1/users/membership/discount`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ discount_kol: couponCode }),
+        },
+      );
+      const result = await response.json();
+      if (response.ok) {
+        const safeDiscount = Math.min(result.data.discount_amount || 0, total);
+        setDiscountAmount(safeDiscount);
+        setCouponError('');
+        setCouponSuccess('已成功套用優惠券');
+      } else {
+        setDiscountAmount(0);
+        const knownMessages = [
+          '無此優惠劵',
+          '此優惠劵您已使用過',
+          '優惠劵已逾期',
+          '優惠劵已用光',
+          '您的購物車是空的，無法套用優惠券',
+          '不符活動門檻',
+          '此優惠劵已失效', // 🔧 新增
+        ];
+        if (knownMessages.includes(result.message)) {
+          setCouponError(result.message);
+        } else {
+          setCouponError('請重新套用優惠劵');
+        }
+        setCouponSuccess('');
+      }
+    } catch (err) {
+      setDiscountAmount(0);
+      setCouponError('伺服器錯誤');
+      setCouponSuccess('');
+      console.error('revalidateCoupon error:', err);
+    }
+  };
+
+  // 套用優惠券
+  const applyCoupon = async () => {
+    const trimmedCode = couponCode;
+
+    if (!trimmedCode || !/^[A-Z0-9]{6}$/.test(trimmedCode)) {
+      setDiscountAmount(0);
+      setCouponError('無此優惠劵');
+      setCouponSuccess('');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+
+      const selectedTotal = cartItems
+        .filter((item) => selectedItems.has(item.product.id))
+        .reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+      const response = await fetch(
+        `${apiUrl}/api/v1/users/membership/discount`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            discount_kol: couponCode,
+            selected_total: selectedTotal,
+          }),
+        },
+      );
+
+      const result = await response.json();
+      if (response.ok) {
+        const safeDiscount = Math.min(
+          result.data.discount_amount || 0,
+          selectedTotal,
+        );
+        setDiscountAmount(safeDiscount);
+        setCouponError('');
+        setCouponSuccess('已成功套用優惠券');
+      } else {
+        setDiscountAmount(0);
+        const knownMessages = [
+          '無此優惠劵',
+          '此優惠劵您已使用過',
+          '優惠劵已逾期',
+          '優惠劵已用光',
+          '您的購物車是空的，無法套用優惠券',
+          '不符活動門檻',
+          '此優惠劵已失效',
+        ];
+        if (knownMessages.includes(result.message)) {
+          setCouponError(result.message);
+        } else {
+          setCouponError('請重新套用優惠劵');
+        }
+        setCouponSuccess('');
+      }
+    } catch (err) {
+      setDiscountAmount(0);
+      setCouponError('伺服器錯誤');
+      setCouponSuccess('');
+      console.error('applyCoupon error:', err);
+    }
+  };
+
+  // 取得推薦商品
+  const getBestSeller = async () => {
+    try {
+      const res = await axios.get(`${apiUrl}/api/v1/products/bestSeller`);
+      setRecommendList(res.data?.data || []);
+    } catch (error) {
+      console.error('取得推薦商品失敗', error);
+    }
+  };
+
   useEffect(() => {
     getCart();
     getBestSeller();
@@ -236,6 +330,7 @@ const CartList = () => {
       .filter((item) => selectedItems.has(item.product.id))
       .reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotal(newTotal);
+    if (couponCode) revalidateCoupon();
   }, [cartItems, selectedItems]);
 
   const handleDecrease = (item) => {
@@ -392,62 +487,42 @@ const CartList = () => {
 
                     {/* 桌電版 */}
                     <div className="d-none d-md-block">
-                      <table className="table cart-custom-table m-0">
-                        <colgroup>
-                          <col style={{ width: '5%' }} />
-                          <col style={{ width: '15%' }} />
-                          <col style={{ width: '30%' }} />
-                          <col style={{ width: '15%' }} />
-                          <col style={{ width: '15%' }} />
-                          <col style={{ width: '15%' }} />
-                          <col style={{ width: '5%' }} />
-                        </colgroup>
-                        <thead className="cart-custom-style">
-                          <tr>
-                            <th scope="col" className="cart-custom-style-th">
-                              <input
-                                type="checkbox"
-                                className="checkbox-custom"
-                                onChange={handleSelectAll}
-                                checked={
-                                  cartItems.length > 0 &&
-                                  selectedItems.size === cartItems.length
-                                }
-                              />
-                            </th>
-                            <th scope="col" className="cart-custom-style-th">
-                              商品圖片
-                            </th>
-                            <th scope="col" className="cart-custom-style-th">
-                              商品名稱
-                            </th>
-                            <th scope="col" className="cart-custom-style-th">
-                              單價
-                            </th>
-                            <th scope="col" className="cart-custom-style-th">
-                              數量
-                            </th>
-                            <th scope="col" className="cart-custom-style-th">
-                              小計
-                            </th>
-                            <th
-                              scope="col"
-                              className="cart-custom-style-th"
-                            ></th>
-                          </tr>
-                        </thead>
-                      </table>
                       <div className="table-body-scroll-container">
                         <table className="table cart-custom-table m-0">
-                          <colgroup>
-                            <col style={{ width: '5%' }} />
-                            <col style={{ width: '15%' }} />
-                            <col style={{ width: '30%' }} />
-                            <col style={{ width: '15%' }} />
-                            <col style={{ width: '15%' }} />
-                            <col style={{ width: '15%' }} />
-                            <col style={{ width: '5%' }} />
-                          </colgroup>
+                          <thead className="cart-custom-style">
+                            <tr>
+                              <th scope="col" className="cart-custom-style-th">
+                                <input
+                                  type="checkbox"
+                                  className="checkbox-custom"
+                                  onChange={handleSelectAll}
+                                  checked={
+                                    cartItems.length > 0 &&
+                                    selectedItems.size === cartItems.length
+                                  }
+                                />
+                              </th>
+                              <th scope="col" className="cart-custom-style-th">
+                                商品圖片
+                              </th>
+                              <th scope="col" className="cart-custom-style-th">
+                                商品名稱
+                              </th>
+                              <th scope="col" className="cart-custom-style-th">
+                                單價
+                              </th>
+                              <th scope="col" className="cart-custom-style-th">
+                                數量
+                              </th>
+                              <th scope="col" className="cart-custom-style-th">
+                                小計
+                              </th>
+                              <th
+                                scope="col"
+                                className="cart-custom-style-th"
+                              ></th>
+                            </tr>
+                          </thead>
                           <tbody className="cart-custom-tbody">
                             {cartItems.map((item) => (
                               <tr key={item.product.id}>
@@ -471,7 +546,7 @@ const CartList = () => {
                                     className="cart-product-img"
                                   />
                                 </td>
-                                <td className="cart-custom-tbody-td">
+                                <td className="cart-custom-tbody-td product-name">
                                   {item.product.name}
                                 </td>
                                 <td className="cart-custom-tbody-td">
@@ -595,26 +670,30 @@ const CartList = () => {
                     <input
                       type="text"
                       placeholder="請輸入優惠序號"
+                      maxLength={10}
                       value={couponCode}
                       onChange={(e) => {
-                        const value = e.target.value;
+                        const value = e.target.value.slice(0, 10);
                         setCouponCode(value);
                         setCouponError('');
                         setCouponSuccess('');
-                        // 清空輸入，就把折扣金額歸 0
-                        if (value.trim() === '') {
-                          setDiscountAmount(0);
-                        }
                       }}
                     />
                     <button
                       type="button"
                       className={`coupon-btn border-0 ${couponCode ? 'active' : ''}`}
                       onClick={applyCoupon}
+                      disabled={!couponCode.trim()}
                     >
                       <p className="m-0">套用</p>
                     </button>
                   </div>
+
+                  {couponValidationError && (
+                    <p className="coupon-title text-danger mt-1">
+                      {couponValidationError}
+                    </p>
+                  )}
 
                   {/* 成功訊息 */}
                   {couponSuccess && (
@@ -690,21 +769,20 @@ const CartList = () => {
 
           {/* 推薦 */}
           <div className="recommend-custom">
-            <button
-              type="button"
-              className="d-none d-md-block recommend-custom-btn border-0"
-            >
-              <div className="arrow-icon">
-                <img
-                  src={images.reviewArrowL}
-                  alt="recommend-arrow-left"
-                  className="icon-detail"
-                />
-              </div>
-            </button>
-
+            <h5 className="recommend-title m-0">本期推薦</h5>
             <div className="recommend-card">
-              <h5 className="recommend-title m-0">本期推薦</h5>
+              <button
+                type="button"
+                className="recommend-custom-btn border-0"
+              >
+                <div className="arrow-icon">
+                  <img
+                    src={images.reviewArrowL}
+                    alt="recommend-arrow-left"
+                    className="icon-detail"
+                  />
+                </div>
+              </button>
 
               <div className="card-group">
                 {recommendList.map((item) => (
@@ -752,20 +830,20 @@ const CartList = () => {
                   </div>
                 ))}
               </div>
-            </div>
 
-            <button
-              type="button"
-              className="d-none d-md-block recommend-custom-btn border-0"
-            >
-              <div className="arrow-icon">
-                <img
-                  src={images.reviewArrowR}
-                  alt="recommend-arrow-right"
-                  className="icon-detail"
-                />
-              </div>
-            </button>
+              <button
+                type="button"
+                className="recommend-custom-btn border-0"
+              >
+                <div className="arrow-icon">
+                  <img
+                    src={images.reviewArrowR}
+                    alt="recommend-arrow-right"
+                    className="icon-detail"
+                  />
+                </div>
+              </button>
+            </div>
           </div>
         </div>
         <div></div>

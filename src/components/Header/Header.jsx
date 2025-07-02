@@ -217,7 +217,7 @@ const Header = () => {
                         </li>
                         <li>
                           <Link
-                            to="/"
+                            to="/member/orders"
                             className="dropdown-item"
                             onClick={() => setUserDropdownOpen(false)}
                           >
@@ -355,7 +355,7 @@ const Header = () => {
                     </li>
                     <li>
                       <Link
-                        to="/"
+                        to="/member/orders"
                         className="dropdown-item dropdown-item-custom"
                       >
                         訂單訊息
