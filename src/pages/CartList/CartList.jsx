@@ -263,67 +263,13 @@ const CartList = () => {
       return;
     }
     await revalidateCoupon();
-    // try {
-    //   const token = localStorage.getItem('token');
-
-    //   const selectedTotal = cartItems
-    //     .filter((item) => selectedItems.has(item.product.id))
-    //     .reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    //   const response = await fetch(
-    //     `${apiUrl}/api/v1/users/membership/discount`,
-    //     {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //       body: JSON.stringify({
-    //         discount_kol: couponCode,
-    //         selected_total: selectedTotal,
-    //       }),
-    //     },
-    //   );
-
-    //   const result = await response.json();
-    //   if (response.ok) {
-    //     const safeDiscount = Math.min(
-    //       result.data.discount_amount || 0,
-    //       selectedTotal,
-    //     );
-    //     setDiscountAmount(safeDiscount);
-    //     setCouponError('');
-    //     setCouponSuccess('已成功套用優惠券');
-    //   } else {
-    //     setDiscountAmount(0);
-    //     const knownMessages = [
-    //       '無此優惠劵',
-    //       '此優惠劵您已使用過',
-    //       '優惠劵已逾期',
-    //       '優惠劵已用光',
-    //       '您的購物車是空的，無法套用優惠券',
-    //       '不符活動門檻',
-    //       '此優惠劵已失效',
-    //     ];
-    //     if (knownMessages.includes(result.message)) {
-    //       setCouponError(result.message);
-    //     } else {
-    //       setCouponError('請重新套用優惠劵');
-    //     }
-    //     setCouponSuccess('');
-    //   }
-    // } catch (err) {
-    //   setDiscountAmount(0);
-    //   setCouponError('伺服器錯誤');
-    //   setCouponSuccess('');
-    //   console.error('applyCoupon error:', err);
-    // }
   };
 
   // 重新驗證優惠券
   const revalidateCoupon = async () => {
     try {
       const token = localStorage.getItem('token');
+
       const selectedTotal = cartItems
         .filter((item) => selectedItems.has(item.product.id))
         .reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -350,6 +296,19 @@ const CartList = () => {
         setDiscountAmount(discount);
         setCouponSuccess('已成功套用優惠券');
         setCouponError('');
+
+        if (result.data?.discount_id) {
+          await axios.patch(
+            `${apiUrl}/api/v1/users/membership/cart/discount`,
+            { discount_id: result.data.discount_id },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+        }
       } else {
         setDiscountAmount(0);
         const knownMessages = [
@@ -384,7 +343,7 @@ const CartList = () => {
     } catch (error) {
       console.error('取得推薦商品失敗', error);
     }
-  },[apiUrl]);
+  }, [apiUrl]);
 
   useEffect(() => {
     getCart();
