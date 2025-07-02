@@ -9,7 +9,6 @@ import { images } from '../../constants/image';
 const CartList = () => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState(new Set());
-  const [quantities, setQuantities] = useState({});
   const [total, setTotal] = useState(0);
   const [modalMsg, setModalMsg] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -72,15 +71,7 @@ const CartList = () => {
           price: item.price,
           is_selected: item.is_selected,
         })),
-      );
-
-      const quantityMap = {};
-      filtered.forEach((item) => {
-        quantityMap[item.product_id] = item.quantity || 1;
-      });
-      setQuantities(quantityMap);
-
-      
+      ); 
 
       const fallbackSelected = new Set();
       filtered.forEach((item) => {
@@ -734,12 +725,6 @@ const CartList = () => {
                       <p className="m-0">套用</p>
                     </button>
                   </div>
-{/* 
-                  {couponValidationError && (
-                    <p className="coupon-title text-danger mt-1">
-                      {couponValidationError}
-                    </p>
-                  )} */}
 
                   {/* 成功訊息 */}
                   {couponSuccess && (
