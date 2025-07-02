@@ -68,7 +68,7 @@ const CreateOrder = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [navigate]);
+  }, [navigate, getRoute]);
 
   //建立訂單
   const handleCreateOrder = () => {
