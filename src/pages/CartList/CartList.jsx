@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -19,7 +19,6 @@ const CartList = () => {
   const [addingId, setAddingId] = useState(null);
   const [recommendList, setRecommendList] = useState([]);
 
-
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -34,7 +33,7 @@ const CartList = () => {
   };
 
   // 取得購物車
-  const getCart = async () => {
+  const getCart = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -71,7 +70,7 @@ const CartList = () => {
           price: item.price,
           is_selected: item.is_selected,
         })),
-      ); 
+      );
 
       const fallbackSelected = new Set();
       filtered.forEach((item) => {
@@ -105,7 +104,7 @@ const CartList = () => {
         setIsOpen(true);
       }
     }
-  };
+  }, [apiUrl]);
 
   // 更新購物商商品數量
   const updateQuantity = async (productId, newQuantity) => {
@@ -223,7 +222,7 @@ const CartList = () => {
   // 前往結帳
   const handleGoToCheckout = async () => {
     const token = localStorage.getItem('token');
-    const selectedIds = Array.from(selectedItems); 
+    const selectedIds = Array.from(selectedItems);
 
     if (selectedIds.length === 0) {
       setModalMsg('請勾選至少一項商品');
@@ -249,96 +248,108 @@ const CartList = () => {
     }
   };
 
-  // 重新驗證優惠券
-  const revalidateCoupon = async () => {
-    if (!couponCode || !/^[A-Z0-9]{6}$/.test(couponCode.trim())) return;
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(
-        `${apiUrl}/api/v1/users/membership/discount`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ discount_kol: couponCode }),
-        },
-      );
-      const result = await response.json();
-      if (response.ok) {
-        const safeDiscount = Math.min(result.data.discount_amount || 0, total);
-        setDiscountAmount(safeDiscount);
-        setCouponError('');
-        setCouponSuccess('已成功套用優惠券');
-      } else {
-        setDiscountAmount(0);
-        const knownMessages = [
-          '無此優惠劵',
-          '此優惠劵您已使用過',
-          '優惠劵已逾期',
-          '優惠劵已用光',
-          '您的購物車是空的，無法套用優惠券',
-          '不符活動門檻',
-          '此優惠劵已失效', // 🔧 新增
-        ];
-        if (knownMessages.includes(result.message)) {
-          setCouponError(result.message);
-        } else {
-          setCouponError('請重新套用優惠劵');
-        }
-        setCouponSuccess('');
-      }
-    } catch (err) {
-      setDiscountAmount(0);
-      setCouponError('伺服器錯誤');
-      setCouponSuccess('');
-      console.error('revalidateCoupon error:', err);
-    }
-  };
-
   // 套用優惠券
   const applyCoupon = async () => {
     const trimmedCode = couponCode.trim();
 
-    if (trimmedCode.length === 0 || trimmedCode !== couponCode || !/^[A-Z0-9]{6}$/.test(trimmedCode)) {
+    if (
+      trimmedCode.length === 0 ||
+      trimmedCode !== couponCode ||
+      !/^[A-Z0-9]{6}$/.test(trimmedCode)
+    ) {
       setDiscountAmount(0);
       setCouponError('無此優惠劵');
       setCouponSuccess('');
       return;
     }
+    await revalidateCoupon();
+    // try {
+    //   const token = localStorage.getItem('token');
 
+    //   const selectedTotal = cartItems
+    //     .filter((item) => selectedItems.has(item.product.id))
+    //     .reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    //   const response = await fetch(
+    //     `${apiUrl}/api/v1/users/membership/discount`,
+    //     {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //       body: JSON.stringify({
+    //         discount_kol: couponCode,
+    //         selected_total: selectedTotal,
+    //       }),
+    //     },
+    //   );
+
+    //   const result = await response.json();
+    //   if (response.ok) {
+    //     const safeDiscount = Math.min(
+    //       result.data.discount_amount || 0,
+    //       selectedTotal,
+    //     );
+    //     setDiscountAmount(safeDiscount);
+    //     setCouponError('');
+    //     setCouponSuccess('已成功套用優惠券');
+    //   } else {
+    //     setDiscountAmount(0);
+    //     const knownMessages = [
+    //       '無此優惠劵',
+    //       '此優惠劵您已使用過',
+    //       '優惠劵已逾期',
+    //       '優惠劵已用光',
+    //       '您的購物車是空的，無法套用優惠券',
+    //       '不符活動門檻',
+    //       '此優惠劵已失效',
+    //     ];
+    //     if (knownMessages.includes(result.message)) {
+    //       setCouponError(result.message);
+    //     } else {
+    //       setCouponError('請重新套用優惠劵');
+    //     }
+    //     setCouponSuccess('');
+    //   }
+    // } catch (err) {
+    //   setDiscountAmount(0);
+    //   setCouponError('伺服器錯誤');
+    //   setCouponSuccess('');
+    //   console.error('applyCoupon error:', err);
+    // }
+  };
+
+  // 重新驗證優惠券
+  const revalidateCoupon = async () => {
     try {
       const token = localStorage.getItem('token');
-
       const selectedTotal = cartItems
         .filter((item) => selectedItems.has(item.product.id))
-        .reduce((sum, item) => sum + item.price * item.quantity, 0);
+        .reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-      const response = await fetch(
-        `${apiUrl}/api/v1/users/membership/discount`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            discount_kol: couponCode,
-            selected_total: selectedTotal,
-          }),
+      const res = await fetch(`${apiUrl}/api/v1/users/membership/discount`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          discount_kol: couponCode,
+          selected_total: selectedTotal,
+        }),
+      });
 
-      const result = await response.json();
-      if (response.ok) {
-        const safeDiscount = Math.min(
+      const result = await res.json();
+
+      if (res.ok) {
+        const discount = Math.min(
           result.data.discount_amount || 0,
           selectedTotal,
         );
-        setDiscountAmount(safeDiscount);
-        setCouponError('');
+        setDiscountAmount(discount);
         setCouponSuccess('已成功套用優惠券');
+        setCouponError('');
       } else {
         setDiscountAmount(0);
         const knownMessages = [
@@ -361,24 +372,24 @@ const CartList = () => {
       setDiscountAmount(0);
       setCouponError('伺服器錯誤');
       setCouponSuccess('');
-      console.error('applyCoupon error:', err);
+      console.error('revalidateCoupon error:', err);
     }
   };
 
   // 取得推薦商品
-  const getBestSeller = async () => {
+  const getBestSeller = useCallback(async () => {
     try {
       const res = await axios.get(`${apiUrl}/api/v1/products/bestSeller`);
       setRecommendList(res.data?.data || []);
     } catch (error) {
       console.error('取得推薦商品失敗', error);
     }
-  };
+  },[apiUrl]);
 
   useEffect(() => {
     getCart();
     getBestSeller();
-  }, []);
+  }, [getCart, getBestSeller]);
 
   useEffect(() => {
     // 當購物車項目或選中項目改變時，重新計算總金額
@@ -386,7 +397,6 @@ const CartList = () => {
       .filter((item) => selectedItems.has(item.product.id))
       .reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotal(newTotal);
-    if (couponCode) revalidateCoupon();
   }, [cartItems, selectedItems]);
 
   const handleDecrease = (item) => {
@@ -403,8 +413,6 @@ const CartList = () => {
       updateQuantity(item.product.id, val);
     }
   };
-
-  
 
   const minValue = 1;
 
@@ -714,6 +722,10 @@ const CartList = () => {
                         setCouponCode(value);
                         setCouponError('');
                         setCouponSuccess('');
+
+                        if (value.trim().length === 0) {
+                          setDiscountAmount(0); //使用者清空優惠碼時，自動歸零折扣金額
+                        }
                       }}
                     />
                     <button
@@ -786,7 +798,8 @@ const CartList = () => {
                     onClick={handleGoToCheckout}
                     disabled={cartItems.length === 0}
                     style={{
-                      cursor: cartItems.length === 0 ? 'not-allowed' : 'pointer',
+                      cursor:
+                        cartItems.length === 0 ? 'not-allowed' : 'pointer',
                       opacity: cartItems.length === 0 ? 0.5 : 1,
                     }}
                   >
