@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -18,26 +18,10 @@ const CartList = () => {
   const [couponError, setCouponError] = useState('');
   const [addingId, setAddingId] = useState(null);
   const [recommendList, setRecommendList] = useState([]);
-  const [isCouponValid, setIsCouponValid] = useState(false);
-  const [couponValidationError, setCouponValidationError] = useState('');
+
 
   const navigate = useNavigate();
-
   const apiUrl = import.meta.env.VITE_API_URL;
-
-  // 驗證優惠券格式
-  const handleCouponValidation = (value) => {
-    const regex = /^[A-Z0-9]{6}$/;
-
-    if (!regex.test(value)) {
-      setDiscountAmount(0);
-      setIsCouponValid(false);
-      setCouponValidationError('無此優惠劵');
-    } else {
-      setIsCouponValid(true);
-      setCouponValidationError('');
-    }
-  };
 
   // 取得購物車
   const getCart = async () => {
@@ -196,7 +180,7 @@ const CartList = () => {
   // 前往結帳
   const handleGoToCheckout = async () => {
     const token = localStorage.getItem('token');
-    const selectedIds = Array.from(selectedItems); // selectedItems 是 Set 結構
+    const selectedIds = Array.from(selectedItems); 
 
     if (selectedIds.length === 0) {
       setModalMsg('請勾選至少一項商品');
@@ -717,12 +701,12 @@ const CartList = () => {
                       <p className="m-0">套用</p>
                     </button>
                   </div>
-
+{/* 
                   {couponValidationError && (
                     <p className="coupon-title text-danger mt-1">
                       {couponValidationError}
                     </p>
-                  )}
+                  )} */}
 
                   {/* 成功訊息 */}
                   {couponSuccess && (
