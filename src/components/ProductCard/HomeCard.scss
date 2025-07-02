@@ -42,35 +42,28 @@
 }
 
 .homecard-favorite-btn {
-  // background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
 
   .heart-filled {
-    font-variation-settings: 'FILL' 1, 'wght' 600;
-    color: #dc3545;
+    font-variation-settings:
+    'FILL' 1;
     font-size: 2rem;
+    color:#E30000;
+  
   }
 
-  .heart-outlined {
-    font-variation-settings: 'FILL' 1, 'wght' 600;
-    color: #dc3545;
+   .heart-outlined {
+    font-variation-settings:
+    'FILL' 0;
     font-size: 2rem;
+    color:#E30000;
   }
   
-
-  &:hover {
-    i {
-      font-size: 3rem;
-    }
-  }
-
-
 }
 
 
