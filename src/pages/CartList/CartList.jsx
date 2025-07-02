@@ -193,6 +193,35 @@ const CartList = () => {
     }
   };
 
+  // 前往結帳
+  const handleGoToCheckout = async () => {
+    const token = localStorage.getItem('token');
+    const selectedIds = Array.from(selectedItems); // selectedItems 是 Set 結構
+
+    if (selectedIds.length === 0) {
+      setModalMsg('請勾選至少一項商品');
+      setIsOpen(true);
+      return;
+    }
+
+    try {
+      await axios.patch(
+        `${apiUrl}/api/v1/users/membership/cart/select`,
+        { selected_ids: selectedIds },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      navigate('/create-order');
+    } catch (error) {
+      const msg = error.response?.data?.message || '無法更新勾選狀態';
+      setModalMsg(msg);
+      setIsOpen(true);
+    }
+  };
+
   // 重新驗證優惠券
   const revalidateCoupon = async () => {
     if (!couponCode || !/^[A-Z0-9]{6}$/.test(couponCode.trim())) return;
@@ -752,11 +781,10 @@ const CartList = () => {
                   <button
                     type="button"
                     className="coupon-check-proceed border-0"
-                    onClick={() => navigate('/create-order')}
+                    onClick={handleGoToCheckout}
                     disabled={cartItems.length === 0}
                     style={{
-                      cursor:
-                        cartItems.length === 0 ? 'not-allowed' : 'pointer',
+                      cursor: cartItems.length === 0 ? 'not-allowed' : 'pointer',
                       opacity: cartItems.length === 0 ? 0.5 : 1,
                     }}
                   >
@@ -771,10 +799,7 @@ const CartList = () => {
           <div className="recommend-custom">
             <h5 className="recommend-title m-0">本期推薦</h5>
             <div className="recommend-card">
-              <button
-                type="button"
-                className="recommend-custom-btn border-0"
-              >
+              <button type="button" className="recommend-custom-btn border-0">
                 <div className="arrow-icon">
                   <img
                     src={images.reviewArrowL}
@@ -831,10 +856,7 @@ const CartList = () => {
                 ))}
               </div>
 
-              <button
-                type="button"
-                className="recommend-custom-btn border-0"
-              >
+              <button type="button" className="recommend-custom-btn border-0">
                 <div className="arrow-icon">
                   <img
                     src={images.reviewArrowR}
