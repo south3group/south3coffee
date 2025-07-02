@@ -9,6 +9,7 @@ import { images } from '../../constants/image';
 const CartList = () => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState(new Set());
+  const [quantities, setQuantities] = useState({});
   const [total, setTotal] = useState(0);
   const [modalMsg, setModalMsg] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +23,16 @@ const CartList = () => {
 
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_URL;
+
+  const saveSelectedToLocal = (set) => {
+    localStorage.setItem('cartSelected', JSON.stringify(Array.from(set)));
+  };
+
+  const loadSelectedFromLocal = () => {
+    const stored = localStorage.getItem('cartSelected');
+    if (stored) return new Set(JSON.parse(stored));
+    return new Set();
+  };
 
   // 取得購物車
   const getCart = async () => {
@@ -59,19 +70,36 @@ const CartList = () => {
           },
           quantity: item.quantity || 1,
           price: item.price,
+          is_selected: item.is_selected,
         })),
       );
+
+      const quantityMap = {};
+      filtered.forEach((item) => {
+        quantityMap[item.product_id] = item.quantity || 1;
+      });
+      setQuantities(quantityMap);
+
+      
+
+      const fallbackSelected = new Set();
+      filtered.forEach((item) => {
+        if (item.is_selected) fallbackSelected.add(item.product_id);
+      });
+      const localSelected = loadSelectedFromLocal();
+      const merged = localSelected.size > 0 ? localSelected : fallbackSelected;
+      setSelectedItems(merged);
 
       const price =
         cartInfo?.final_price ||
         filtered.reduce(
-          (acc, item) => acc + item.price * (item.quantity || 1),
+          (acc, item) =>
+            merged.has(item.product_id)
+              ? acc + item.price * (item.quantity || 1)
+              : acc,
           0,
         );
       setTotal(price);
-
-      const allItemIds = new Set(filtered.map((item) => item.product_id));
-      setSelectedItems(allItemIds);
     } catch (error) {
       if (
         error.response?.status === 404 ||
@@ -175,6 +203,30 @@ const CartList = () => {
       setAddingId(null);
       setIsOpen(true);
     }
+  };
+
+  const handleSelectItem = (productId) => {
+    setSelectedItems((prevSelected) => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(productId)) {
+        newSelected.delete(productId);
+      } else {
+        newSelected.add(productId);
+      }
+      saveSelectedToLocal(newSelected);
+      return newSelected;
+    });
+  };
+
+  const handleSelectAll = () => {
+    let updatedSelected;
+    if (selectedItems.size === cartItems.length) {
+      updatedSelected = new Set();
+    } else {
+      updatedSelected = new Set(cartItems.map((item) => item.product.id));
+    }
+    setSelectedItems(updatedSelected);
+    saveSelectedToLocal(updatedSelected);
   };
 
   // 前往結帳
@@ -361,26 +413,7 @@ const CartList = () => {
     }
   };
 
-  const handleSelectItem = (productId) => {
-    setSelectedItems((prevSelected) => {
-      const newSelected = new Set(prevSelected);
-      if (newSelected.has(productId)) {
-        newSelected.delete(productId);
-      } else {
-        newSelected.add(productId);
-      }
-      return newSelected;
-    });
-  };
-
-  const handleSelectAll = () => {
-    if (selectedItems.size === cartItems.length) {
-      setSelectedItems(new Set()); // Deselect all
-    } else {
-      const allItemIds = new Set(cartItems.map((item) => item.product.id));
-      setSelectedItems(allItemIds); // Select all
-    }
-  };
+  
 
   const minValue = 1;
 
