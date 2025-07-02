@@ -233,16 +233,29 @@ const CartList = () => {
     try {
       await axios.patch(
         `${apiUrl}/api/v1/users/membership/cart/select`,
-        { selected_ids: selectedIds },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          selected_ids: selectedIds,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         },
       );
+
+      if (discountAmount === 0) {
+        await axios.patch(
+          `${apiUrl}/api/v1/users/membership/cart/discount`,
+          {
+            discount_id: null,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+      }
+
       navigate('/create-order');
     } catch (error) {
-      const msg = error.response?.data?.message || '無法更新勾選狀態';
+      const msg = error.response?.data?.message || '無法前往結帳';
       setModalMsg(msg);
       setIsOpen(true);
     }
@@ -260,19 +273,36 @@ const CartList = () => {
       setDiscountAmount(0);
       setCouponError('無此優惠劵');
       setCouponSuccess('');
+
+      try {
+        const token = localStorage.getItem('token');
+        await axios.patch(
+          `${apiUrl}/api/v1/users/membership/cart/discount`,
+          {
+            discount_id: null,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+      } catch (err) {
+        console.warn('清除後端優惠劵失敗：', err);
+      }
+
       return;
     }
-    await revalidateCoupon();
+
+    await revalidateCoupon(trimmedCode);
   };
 
   // 重新驗證優惠券
-  const revalidateCoupon = async () => {
+  const revalidateCoupon = async (trimmedCode) => {
     try {
       const token = localStorage.getItem('token');
 
       const selectedTotal = cartItems
         .filter((item) => selectedItems.has(item.product.id))
-        .reduce((acc, item) => acc + item.price * item.quantity, 0);
+        .reduce((sum, item) => sum + item.price * item.quantity, 0);
 
       const res = await fetch(`${apiUrl}/api/v1/users/membership/discount`, {
         method: 'POST',
@@ -281,7 +311,7 @@ const CartList = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          discount_kol: couponCode,
+          discount_kol: trimmedCode,
           selected_total: selectedTotal,
         }),
       });
@@ -300,7 +330,9 @@ const CartList = () => {
         if (result.data?.discount_id) {
           await axios.patch(
             `${apiUrl}/api/v1/users/membership/cart/discount`,
-            { discount_id: result.data.discount_id },
+            {
+              discount_id: result.data.discount_id,
+            },
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -326,6 +358,16 @@ const CartList = () => {
           setCouponError('請重新套用優惠劵');
         }
         setCouponSuccess('');
+
+        await axios.patch(
+          `${apiUrl}/api/v1/users/membership/cart/discount`,
+          {
+            discount_id: null,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
       }
     } catch (err) {
       setDiscountAmount(0);
