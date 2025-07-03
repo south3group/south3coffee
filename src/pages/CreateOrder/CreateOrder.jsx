@@ -233,7 +233,7 @@ const CreateOrder = () => {
                         <div className="order-card" key={idx}>
                           <div className="order-card-content">
                             <div className="text-group">
-                              <p className="text-group-title m-0">購買品項</p>
+                              <p className="text-group-title m-0">商品名稱</p>
                               <p className="text-group-text m-0">{item.name}</p>
                             </div>
                             <div className="text-group">
@@ -249,7 +249,7 @@ const CreateOrder = () => {
                               </p>
                             </div>
                             <div className="text-group">
-                              <p className="text-group-title m-0">總金額</p>
+                              <p className="text-group-title m-0">小計</p>
                               <p className="text-group-text m-0">
                                 NTD$ {item.subtotal}
                               </p>
