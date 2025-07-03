@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -31,6 +31,8 @@ const CartList = () => {
     if (stored) return new Set(JSON.parse(stored));
     return new Set();
   };
+
+  const selectedItemsRef = useRef(new Set());
 
   // 取得購物車
   const getCart = useCallback(async () => {
@@ -80,10 +82,11 @@ const CartList = () => {
       const merged = new Set([
         ...fallbackSelected,
         ...localSelected,
-        ...Array.from(selectedItems),
+        ...Array.from(selectedItemsRef.current),
       ]);
-
       setSelectedItems(merged);
+
+      selectedItemsRef.current = merged;
 
       const price =
         cartInfo?.final_price ||
@@ -192,6 +195,7 @@ const CartList = () => {
       setSelectedItems((prev) => {
         const newSet = new Set(prev);
         newSet.add(productId);
+        selectedItemsRef.current = newSet;
         saveSelectedToLocal(newSet);
         return newSet;
       });
@@ -215,6 +219,7 @@ const CartList = () => {
       } else {
         newSelected.add(productId);
       }
+      selectedItemsRef.current = newSelected;
       saveSelectedToLocal(newSelected);
       return newSelected;
     });
@@ -228,6 +233,7 @@ const CartList = () => {
       updatedSelected = new Set(cartItems.map((item) => item.product.id));
     }
     setSelectedItems(updatedSelected);
+    selectedItemsRef.current = updatedSelected;
     saveSelectedToLocal(updatedSelected);
   };
 
