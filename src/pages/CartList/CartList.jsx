@@ -809,11 +809,10 @@ const CartList = () => {
                     type="button"
                     className="coupon-check-proceed border-0"
                     onClick={handleGoToCheckout}
-                    disabled={cartItems.length === 0}
+                    disabled={total === 0}
                     style={{
-                      cursor:
-                        cartItems.length === 0 ? 'not-allowed' : 'pointer',
-                      opacity: cartItems.length === 0 ? 0.5 : 1,
+                      cursor: total === 0 ? 'not-allowed' : 'pointer',
+                      opacity: total === 0 ? 0.5 : 1,
                     }}
                   >
                     前往結帳
