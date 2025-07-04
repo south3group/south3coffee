@@ -408,7 +408,7 @@ const CreateOrder = () => {
                           }
                         >
                           {totalPrice === 0 || orderData.orderItems.length === 0
-                            ? '請前往購物'
+                            ? '前往付款'
                             : '前往付款'}
                         </button>
                       </div>

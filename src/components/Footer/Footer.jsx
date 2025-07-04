@@ -31,7 +31,7 @@ const Footer = () => {
             <ul className="list-unstyled fw-lighter footer-info-item">
               <li>
                 <i className="bi bi-clock footer-info-icon"></i>
-                營業時間：平日9:00 ~ 10:00
+                營業時間：平日9:00 ~ 18:00
               </li>
               <li>
                 <i className="bi bi-telephone footer-info-icon"></i>
