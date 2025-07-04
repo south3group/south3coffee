@@ -222,7 +222,7 @@ const ProductDetail = () => {
       return;
     }
 
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     if (!token) {
       setModalMsg('尚未登入，請先登入會員');

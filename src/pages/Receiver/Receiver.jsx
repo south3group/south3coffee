@@ -48,7 +48,7 @@ const Receiver = () => {
 
   // 取得收件資訊
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) {
       navigate('/login');
       return;
@@ -101,7 +101,7 @@ const Receiver = () => {
     let isError = false;
 
     const postReceiverRoute = `${apiUrl}/api/v1/users/membership/receiver`;
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     // 姓名
     const namePattern = /^[\p{L}\p{N}]{2,10}$/u;

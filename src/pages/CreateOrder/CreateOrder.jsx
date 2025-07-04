@@ -42,7 +42,7 @@ const CreateOrder = () => {
 
   // 取得訂單
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     axios
       .get(getRoute, {
@@ -54,7 +54,7 @@ const CreateOrder = () => {
       })
       .catch((err) => {
         if (err.response?.status === 401) {
-          localStorage.removeItem('token');
+          sessionStorage.removeItem('token');
           navigate('/');
         } else if (err.response?.status === 400) {
           setModalMsg('收件資料不完整，請先填寫收件資料');
@@ -72,7 +72,7 @@ const CreateOrder = () => {
 
   //建立訂單
   const handleCreateOrder = () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     axios
       .post(
@@ -97,7 +97,7 @@ const CreateOrder = () => {
         if (err.response?.status === 401) {
           const msg = err.response?.data?.message || '';
           if (msg.includes('JWT') || msg.includes('token')) {
-            localStorage.removeItem('token');
+            sessionStorage.removeItem('token');
             navigate('/login');
           }
           navigate('/');
