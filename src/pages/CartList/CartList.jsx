@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -18,29 +18,24 @@ const CartList = () => {
   const [couponError, setCouponError] = useState('');
   const [addingId, setAddingId] = useState(null);
   const [recommendList, setRecommendList] = useState([]);
-  const [isCouponValid, setIsCouponValid] = useState(false);
-  const [couponValidationError, setCouponValidationError] = useState('');
 
   const navigate = useNavigate();
-
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // 驗證優惠券格式
-  const handleCouponValidation = (value) => {
-    const regex = /^[A-Z0-9]{6}$/;
-
-    if (!regex.test(value)) {
-      setDiscountAmount(0);
-      setIsCouponValid(false);
-      setCouponValidationError('無此優惠劵');
-    } else {
-      setIsCouponValid(true);
-      setCouponValidationError('');
-    }
+  const saveSelectedToLocal = (set) => {
+    localStorage.setItem('cartSelected', JSON.stringify(Array.from(set)));
   };
 
+  const loadSelectedFromLocal = () => {
+    const stored = localStorage.getItem('cartSelected');
+    if (stored) return new Set(JSON.parse(stored));
+    return new Set();
+  };
+
+  const selectedItemsRef = useRef(new Set());
+
   // 取得購物車
-  const getCart = async () => {
+  const getCart = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -75,19 +70,34 @@ const CartList = () => {
           },
           quantity: item.quantity || 1,
           price: item.price,
+          is_selected: item.is_selected,
         })),
       );
+
+      const fallbackSelected = new Set();
+      filtered.forEach((item) => {
+        if (item.is_selected) fallbackSelected.add(item.product_id);
+      });
+      const localSelected = loadSelectedFromLocal();
+      const merged = new Set([
+        ...fallbackSelected,
+        ...localSelected,
+        ...Array.from(selectedItemsRef.current),
+      ]);
+      setSelectedItems(merged);
+
+      selectedItemsRef.current = merged;
 
       const price =
         cartInfo?.final_price ||
         filtered.reduce(
-          (acc, item) => acc + item.price * (item.quantity || 1),
+          (acc, item) =>
+            merged.has(item.product_id)
+              ? acc + item.price * (item.quantity || 1)
+              : acc,
           0,
         );
       setTotal(price);
-
-      const allItemIds = new Set(filtered.map((item) => item.product_id));
-      setSelectedItems(allItemIds);
     } catch (error) {
       if (
         error.response?.status === 404 ||
@@ -102,7 +112,7 @@ const CartList = () => {
         setIsOpen(true);
       }
     }
-  };
+  }, [apiUrl]);
 
   // 更新購物商商品數量
   const updateQuantity = async (productId, newQuantity) => {
@@ -182,6 +192,14 @@ const CartList = () => {
         },
       );
 
+      setSelectedItems((prev) => {
+        const newSet = new Set(prev);
+        newSet.add(productId);
+        selectedItemsRef.current = newSet;
+        saveSelectedToLocal(newSet);
+        return newSet;
+      });
+
       setModalMsg('已加入購物車');
       getCart(); //刷新購物車資料
     } catch (error) {
@@ -193,65 +211,110 @@ const CartList = () => {
     }
   };
 
-  // 重新驗證優惠券
-  const revalidateCoupon = async () => {
-    if (!couponCode || !/^[A-Z0-9]{6}$/.test(couponCode.trim())) return;
+  const handleSelectItem = (productId) => {
+    setSelectedItems((prevSelected) => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(productId)) {
+        newSelected.delete(productId);
+      } else {
+        newSelected.add(productId);
+      }
+      selectedItemsRef.current = newSelected;
+      saveSelectedToLocal(newSelected);
+      return newSelected;
+    });
+  };
+
+  const handleSelectAll = () => {
+    let updatedSelected;
+    if (selectedItems.size === cartItems.length) {
+      updatedSelected = new Set();
+    } else {
+      updatedSelected = new Set(cartItems.map((item) => item.product.id));
+    }
+    setSelectedItems(updatedSelected);
+    selectedItemsRef.current = updatedSelected;
+    saveSelectedToLocal(updatedSelected);
+  };
+
+  // 前往結帳
+  const handleGoToCheckout = async () => {
+    const token = localStorage.getItem('token');
+    const selectedIds = Array.from(selectedItems);
+
+    if (selectedIds.length === 0) {
+      setModalMsg('請勾選至少一項商品');
+      setIsOpen(true);
+      return;
+    }
+
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(
-        `${apiUrl}/api/v1/users/membership/discount`,
+      await axios.patch(
+        `${apiUrl}/api/v1/users/membership/cart/select`,
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ discount_kol: couponCode }),
+          selected_ids: selectedIds,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         },
       );
-      const result = await response.json();
-      if (response.ok) {
-        const safeDiscount = Math.min(result.data.discount_amount || 0, total);
-        setDiscountAmount(safeDiscount);
-        setCouponError('');
-        setCouponSuccess('已成功套用優惠券');
-      } else {
-        setDiscountAmount(0);
-        const knownMessages = [
-          '無此優惠劵',
-          '此優惠劵您已使用過',
-          '優惠劵已逾期',
-          '優惠劵已用光',
-          '您的購物車是空的，無法套用優惠券',
-          '不符活動門檻',
-          '此優惠劵已失效', // 🔧 新增
-        ];
-        if (knownMessages.includes(result.message)) {
-          setCouponError(result.message);
-        } else {
-          setCouponError('請重新套用優惠劵');
-        }
-        setCouponSuccess('');
+
+      if (discountAmount === 0) {
+        await axios.patch(
+          `${apiUrl}/api/v1/users/membership/cart/discount`,
+          {
+            discount_id: null,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
       }
-    } catch (err) {
-      setDiscountAmount(0);
-      setCouponError('伺服器錯誤');
-      setCouponSuccess('');
-      console.error('revalidateCoupon error:', err);
+
+      navigate('/create-order');
+    } catch (error) {
+      const msg = error.response?.data?.message || '無法前往結帳';
+      setModalMsg(msg);
+      setIsOpen(true);
     }
   };
 
   // 套用優惠券
   const applyCoupon = async () => {
-    const trimmedCode = couponCode;
+    const trimmedCode = couponCode.trim();
 
-    if (!trimmedCode || !/^[A-Z0-9]{6}$/.test(trimmedCode)) {
+    if (
+      trimmedCode.length === 0 ||
+      trimmedCode !== couponCode ||
+      !/^[A-Z0-9]{6}$/.test(trimmedCode)
+    ) {
       setDiscountAmount(0);
       setCouponError('無此優惠劵');
       setCouponSuccess('');
+
+      try {
+        const token = localStorage.getItem('token');
+        await axios.patch(
+          `${apiUrl}/api/v1/users/membership/cart/discount`,
+          {
+            discount_id: null,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+      } catch (err) {
+        console.warn('清除後端優惠劵失敗：', err);
+      }
+
       return;
     }
 
+    await revalidateCoupon(trimmedCode);
+  };
+
+  // 重新驗證優惠券
+  const revalidateCoupon = async (trimmedCode) => {
     try {
       const token = localStorage.getItem('token');
 
@@ -259,30 +322,43 @@ const CartList = () => {
         .filter((item) => selectedItems.has(item.product.id))
         .reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-      const response = await fetch(
-        `${apiUrl}/api/v1/users/membership/discount`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            discount_kol: couponCode,
-            selected_total: selectedTotal,
-          }),
+      const res = await fetch(`${apiUrl}/api/v1/users/membership/discount`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          discount_kol: trimmedCode,
+          selected_total: selectedTotal,
+        }),
+      });
 
-      const result = await response.json();
-      if (response.ok) {
-        const safeDiscount = Math.min(
+      const result = await res.json();
+
+      if (res.ok) {
+        const discount = Math.min(
           result.data.discount_amount || 0,
           selectedTotal,
         );
-        setDiscountAmount(safeDiscount);
-        setCouponError('');
+        setDiscountAmount(discount);
         setCouponSuccess('已成功套用優惠券');
+        setCouponError('');
+
+        if (result.data?.discount_id) {
+          await axios.patch(
+            `${apiUrl}/api/v1/users/membership/cart/discount`,
+            {
+              discount_id: result.data.discount_id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+        }
       } else {
         setDiscountAmount(0);
         const knownMessages = [
@@ -300,29 +376,39 @@ const CartList = () => {
           setCouponError('請重新套用優惠劵');
         }
         setCouponSuccess('');
+
+        await axios.patch(
+          `${apiUrl}/api/v1/users/membership/cart/discount`,
+          {
+            discount_id: null,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
       }
     } catch (err) {
       setDiscountAmount(0);
       setCouponError('伺服器錯誤');
       setCouponSuccess('');
-      console.error('applyCoupon error:', err);
+      console.error('revalidateCoupon error:', err);
     }
   };
 
   // 取得推薦商品
-  const getBestSeller = async () => {
+  const getBestSeller = useCallback(async () => {
     try {
       const res = await axios.get(`${apiUrl}/api/v1/products/bestSeller`);
       setRecommendList(res.data?.data || []);
     } catch (error) {
       console.error('取得推薦商品失敗', error);
     }
-  };
+  }, [apiUrl]);
 
   useEffect(() => {
     getCart();
     getBestSeller();
-  }, []);
+  }, [getCart, getBestSeller]);
 
   useEffect(() => {
     // 當購物車項目或選中項目改變時，重新計算總金額
@@ -330,7 +416,6 @@ const CartList = () => {
       .filter((item) => selectedItems.has(item.product.id))
       .reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotal(newTotal);
-    if (couponCode) revalidateCoupon();
   }, [cartItems, selectedItems]);
 
   const handleDecrease = (item) => {
@@ -345,27 +430,6 @@ const CartList = () => {
     const val = Number(e.target.value);
     if (!isNaN(val)) {
       updateQuantity(item.product.id, val);
-    }
-  };
-
-  const handleSelectItem = (productId) => {
-    setSelectedItems((prevSelected) => {
-      const newSelected = new Set(prevSelected);
-      if (newSelected.has(productId)) {
-        newSelected.delete(productId);
-      } else {
-        newSelected.add(productId);
-      }
-      return newSelected;
-    });
-  };
-
-  const handleSelectAll = () => {
-    if (selectedItems.size === cartItems.length) {
-      setSelectedItems(new Set()); // Deselect all
-    } else {
-      const allItemIds = new Set(cartItems.map((item) => item.product.id));
-      setSelectedItems(allItemIds); // Select all
     }
   };
 
@@ -677,6 +741,10 @@ const CartList = () => {
                         setCouponCode(value);
                         setCouponError('');
                         setCouponSuccess('');
+
+                        if (value.trim().length === 0) {
+                          setDiscountAmount(0); //使用者清空優惠碼時，自動歸零折扣金額
+                        }
                       }}
                     />
                     <button
@@ -688,12 +756,6 @@ const CartList = () => {
                       <p className="m-0">套用</p>
                     </button>
                   </div>
-
-                  {couponValidationError && (
-                    <p className="coupon-title text-danger mt-1">
-                      {couponValidationError}
-                    </p>
-                  )}
 
                   {/* 成功訊息 */}
                   {couponSuccess && (
@@ -752,12 +814,11 @@ const CartList = () => {
                   <button
                     type="button"
                     className="coupon-check-proceed border-0"
-                    onClick={() => navigate('/create-order')}
-                    disabled={cartItems.length === 0}
+                    onClick={handleGoToCheckout}
+                    disabled={total === 0}
                     style={{
-                      cursor:
-                        cartItems.length === 0 ? 'not-allowed' : 'pointer',
-                      opacity: cartItems.length === 0 ? 0.5 : 1,
+                      cursor: total === 0 ? 'not-allowed' : 'pointer',
+                      opacity: total === 0 ? 0.5 : 1,
                     }}
                   >
                     前往結帳
@@ -771,10 +832,7 @@ const CartList = () => {
           <div className="recommend-custom">
             <h5 className="recommend-title m-0">本期推薦</h5>
             <div className="recommend-card">
-              <button
-                type="button"
-                className="recommend-custom-btn border-0"
-              >
+              <button type="button" className="recommend-custom-btn border-0">
                 <div className="arrow-icon">
                   <img
                     src={images.reviewArrowL}
@@ -831,10 +889,7 @@ const CartList = () => {
                 ))}
               </div>
 
-              <button
-                type="button"
-                className="recommend-custom-btn border-0"
-              >
+              <button type="button" className="recommend-custom-btn border-0">
                 <div className="arrow-icon">
                   <img
                     src={images.reviewArrowR}

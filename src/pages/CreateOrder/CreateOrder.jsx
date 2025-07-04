@@ -68,7 +68,7 @@ const CreateOrder = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [navigate]);
+  }, [navigate, getRoute]);
 
   //建立訂單
   const handleCreateOrder = () => {
@@ -111,6 +111,16 @@ const CreateOrder = () => {
   };
 
   if (loading) return <div>Loading...</div>;
+  if (!orderData) return null;
+
+  const {
+    totalPrice = 0,
+    discount_amount = 0,
+    shipping_fee = 0,
+  } = orderData.cost_summary || {};
+
+  const subtotal = totalPrice - discount_amount;
+  const grandTotal = subtotal + shipping_fee;
 
   if (!orderData) {
     return (
@@ -223,7 +233,7 @@ const CreateOrder = () => {
                         <div className="order-card" key={idx}>
                           <div className="order-card-content">
                             <div className="text-group">
-                              <p className="text-group-title m-0">購買品項</p>
+                              <p className="text-group-title m-0">商品名稱</p>
                               <p className="text-group-text m-0">{item.name}</p>
                             </div>
                             <div className="text-group">
@@ -239,7 +249,7 @@ const CreateOrder = () => {
                               </p>
                             </div>
                             <div className="text-group">
-                              <p className="text-group-title m-0">總金額</p>
+                              <p className="text-group-title m-0">小計</p>
                               <p className="text-group-text m-0">
                                 NTD$ {item.subtotal}
                               </p>
@@ -332,25 +342,7 @@ const CreateOrder = () => {
                         <div className="price-box">
                           <p className="product-price m-0">NTD$</p>
                           <p className="product-price m-0">
-                            {orderData.cost_summary.totalPrice}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="price-detail">
-                        <p className="account-title m-0">運費</p>
-                        <div className="price-box">
-                          <p className="account-price m-0">NTD$</p>
-                          <p className="account-price m-0">
-                            {orderData.cost_summary.shipping_fee}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="price-detail">
-                        <p className="account-title m-0">小計</p>
-                        <div className="price-box">
-                          <p className="account-price m-0">NTD$</p>
-                          <p className="account-price m-0">
-                            {orderData.cost_summary.grand_total}
+                            {totalPrice.toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -359,7 +351,25 @@ const CreateOrder = () => {
                         <div className="price-box">
                           <p className="account-price m-0">NTD$</p>
                           <p className="account-price m-0">
-                            {orderData.cost_summary.discount_amount}
+                            {discount_amount.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="price-detail">
+                        <p className="account-title m-0">小計</p>
+                        <div className="price-box">
+                          <p className="account-price m-0">NTD$</p>
+                          <p className="account-price m-0">
+                            {subtotal.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="price-detail">
+                        <p className="account-title m-0">運費</p>
+                        <div className="price-box">
+                          <p className="account-price m-0">NTD$</p>
+                          <p className="account-price m-0">
+                            {shipping_fee.toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -371,7 +381,7 @@ const CreateOrder = () => {
                         <div className="price-box">
                           <p className="total-price m-0">NTD$</p>
                           <p className="total-price m-0">
-                            {orderData.cost_summary.grand_total}
+                            {grandTotal.toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -386,19 +396,18 @@ const CreateOrder = () => {
                         </button>
                         <button
                           className={`total-check-proceed border-0 ${
-                            orderData.cost_summary.totalPrice === 0 ||
+                            totalPrice === 0 ||
                             orderData.orderItems.length === 0
                               ? 'cant-check'
                               : ''
                           }`}
                           onClick={handleCreateOrder}
                           disabled={
-                            orderData.cost_summary.totalPrice === 0 ||
+                            totalPrice === 0 ||
                             orderData.orderItems.length === 0
                           }
                         >
-                          {orderData.cost_summary.totalPrice === 0 ||
-                          orderData.orderItems.length === 0
+                          {totalPrice === 0 || orderData.orderItems.length === 0
                             ? '請前往購物'
                             : '前往付款'}
                         </button>
