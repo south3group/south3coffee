@@ -31,19 +31,19 @@ const Footer = () => {
             <ul className="list-unstyled fw-lighter footer-info-item">
               <li>
                 <i className="bi bi-clock footer-info-icon"></i>
-                營業時間：平日9:00 ~ 10:00
+                營業時間：平日9:00 ~ 18:00
               </li>
               <li>
                 <i className="bi bi-telephone footer-info-icon"></i>
-                客服專線：09XX-XXXXXX
+                客服專線：0912-345678
               </li>
               <li>
                 <i className="bi bi-envelope footer-info-icon"></i>
-                客服信箱：Service@travel.com
+                客服信箱：Coffee3Service@travel.com
               </li>
               <li>
                 <i className="bi bi-geo-alt footer-info-icon"></i>
-                聯絡地址：新北市板橋區仁愛路XXX號
+                聯絡地址：新北市板橋區仁愛路123號
               </li>
             </ul>
           </div>

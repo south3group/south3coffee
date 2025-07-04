@@ -31,7 +31,6 @@ const ProductDetail = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
-
   const [showTopBtn, setShowTopBtn] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -39,7 +38,7 @@ const ProductDetail = () => {
   const cartRoute = `${apiUrl}/api/v1/users/membership/cart`;
 
   const handleGoBack = () => {
-    navigate('/products');
+    navigate(-1);
   };
 
   const scrollToTop = () => {
@@ -65,6 +64,125 @@ const ProductDetail = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // 評論相關
+  const [touchStart, setTouchStart] = useState(0);
+
+  const reviews = [
+    {
+      name: 'Soham',
+      date: '2024/09/22',
+      content:
+        '這款豆子帶有優雅的花香與柑橘果酸，口感明亮清爽，是我每天早上最喜歡的手沖選擇，喝起來就像陽光灑進窗台的味道。沖煮時，香氣慢慢瀰漫整個空間，像是一種柔和而穩定的提醒：新的一天可以這樣溫柔開始。冷卻後的風味依然乾淨不雜，酸甜平衡，尾韻輕柔帶點蜜香，特別適合在安靜的早晨中靜靜享受，成為我日常生活中最小而確實的幸福。',
+      stars: 5,
+      profile: images.commentProfile[0],
+    },
+    {
+      name: 'Ronald',
+      date: '2024/08/10',
+      content:
+        '期待更多風味變化，但這款對我來說偏平淡，沒有預期中的層次，可能不太適合喜歡重香氣的咖啡迷。',
+      stars: 2,
+      profile: images.commentProfile[1],
+    },
+    {
+      name: 'Grey',
+      date: '2024/07/18',
+      content:
+        '香氣還不錯，但萃取時有點難掌握，不知道是不是我研磨太細。喝起來中規中矩，適合不喜歡酸感的人。',
+      stars: 3,
+      profile: images.commentProfile[2],
+    },
+    {
+      name: 'Aubrey',
+      date: '2024/07/18',
+      content:
+        '可能不是我喜歡的類型，味道偏淡，香氣也不太突出，入口後的層次感比較單一，沒有留下太深刻的印象。我原本是抱著對花果香調的期待來嘗試，但實際風味與商品描述有些落差，可能是烘焙時間或豆子保存方式影響了品質。不過包裝設計和出貨速度都很不錯，整體體驗仍算用心，也許會更適合喜歡清淡風格、低酸型豆子的朋友。',
+      stars: 1,
+      profile: images.commentProfile[3],
+    },
+    {
+      name: 'Lynn',
+      date: '2024/06/12',
+      content:
+        '入口的瞬間有微微堅果香，後段轉成溫潤的焦糖調性，很適合下午搭配甜點一起享用。口感圓潤，風味穩定，是屬於那種不會出錯的安全牌。',
+      stars: 4,
+      profile: images.commentProfile[4],
+    },
+    {
+      name: 'Kyle',
+      date: '2024/05/25',
+      content:
+        '前段果酸明亮，讓人想起紅蘋果與莓果的組合，尾韻乾淨俐落。用 V60 表現不錯，加一點悶蒸時間會更有層次，是我近期喝到最驚喜的一款。',
+      stars: 5,
+      profile: images.commentProfile[5],
+    },
+    {
+      name: 'Mike',
+      date: '2024/05/03',
+      content:
+        '喝起來比較厚實一點，整體偏苦甜調性，風味集中。不是我喜歡的清爽果酸系，但應該會很受深焙派的喜愛者喜歡。',
+      stars: 3,
+      profile: images.commentProfile[6],
+    },
+    {
+      name: 'Ivy',
+      date: '2024/04/16',
+      content:
+        '風味細緻，冷掉後還保有甜感和香氣，很適合做冷萃。前段有柑橘調，尾韻帶點白花香，連續三天都喝這款都不膩。',
+      stars: 5,
+      profile: images.commentProfile[7],
+    },
+    {
+      name: 'Hana',
+      date: '2024/03/28',
+      content:
+        '這支豆子的乾香超迷人，有點像焦糖爆米花，磨豆時就很期待。可惜實際喝起來酸感有點搶戲，適合調整水溫或濃度試試。',
+      stars: 4,
+      profile: images.commentProfile[8],
+    },
+    {
+      name: 'Bob',
+      date: '2024/03/05',
+      content:
+        '本來以為只是普通的日常豆，結果一沖就被香氣圈粉。前段有水蜜桃的果香，溫度變化後竟然出現花香尾韻，真的蠻驚喜的。',
+      stars: 5,
+      profile: images.commentProfile[9],
+    },
+    {
+      name: 'Asuka',
+      date: '2024/02/20',
+      content:
+        '個人覺得這支表現比較平，沒有太多記憶點，但整體還是順口耐喝，適合在辦公室泡一壺慢慢喝的類型。',
+      stars: 2,
+      profile: images.commentProfile[10],
+    },
+    {
+      name: 'Ethan',
+      date: '2024/01/30',
+      content:
+        '回甘很明顯，喝完口腔有點甜甜的感覺，像是紅糖的尾韻，配上剛出爐的麵包超搭。應該會回購！',
+      stars: 4,
+      profile: images.commentProfile[11],
+    },
+  ];
+
+  const [page, setPage] = useState(0);
+  const perPage = 4;
+  const totalPages = Math.ceil(reviews.length / perPage);
+
+  const handlePrev = () => {
+    setPage((prev) => (prev === 0 ? totalPages - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setPage((prev) => (prev === totalPages - 1 ? 0 : prev + 1));
+  };
+
+  const currentReviews = reviews.slice(
+    page * perPage,
+    page * perPage + perPage,
+  );
+
   // 取單商品詳情
   useEffect(() => {
     axios
@@ -89,30 +207,30 @@ const ProductDetail = () => {
   const handleAddToCart = (productId, event) => {
     if (addingId) return;
     setAddingId(productId);
-  
+
     if (!product || !product.id) {
       setModalMsg('商品資訊有誤，請稍後再試');
       setIsOpen(true);
       setAddingId(null);
       return;
     }
-  
+
     if (selectedQuantity <= 0) {
       setModalMsg('數量無效，請重新輸入');
       setIsOpen(true);
       setAddingId(null);
       return;
     }
-  
-    const token = localStorage.getItem('token');
-  
+
+    const token = sessionStorage.getItem('token');
+
     if (!token) {
       setModalMsg('尚未登入，請先登入會員');
       setIsOpen(true);
       setAddingId(null);
       return;
     }
-  
+
     axios
       .post(
         cartRoute,
@@ -125,11 +243,11 @@ const ProductDetail = () => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-        }
+        },
       )
       .then(() => {
         toast.success('已加入購物車', {
-          autoClose: 1000,
+          autoClose: 800,
           className: 'product-toast-success',
           bodyClassName: 'product-toast-success-body',
         });
@@ -144,10 +262,9 @@ const ProductDetail = () => {
         });
       })
       .finally(() => {
-        setTimeout(() => setAddingId(null), 1000);
+        setTimeout(() => setAddingId(null), 800);
       });
   };
-  
 
   // 數量加減事件
   const handleDecrease = () => {
@@ -194,9 +311,18 @@ const ProductDetail = () => {
             </li>
             <li className="products-breadcrumb-arrow">&gt;</li>
             <li className="products-breadcrumb-item">
-              <Link to="/products" className="products-breadcrumb-link">
-                所有商品
-              </Link>
+              {product.classification_name ? (
+                <Link
+                  to={`/products?classification=${product.classification_name}&page=1`}
+                  className="products-breadcrumb-link"
+                >
+                  {product.classification_name}
+                </Link>
+              ) : (
+                <Link to="/products" className="products-breadcrumb-link">
+                  所有商品
+                </Link>
+              )}
             </li>
           </ul>
 
@@ -262,9 +388,7 @@ const ProductDetail = () => {
                         </div>
                         <p className="text-title m-0">風味</p>
                       </div>
-                      <p className="text-content">
-                        {product.flavor || ' '}
-                      </p>{' '}
+                      <p className="text-content">{product.flavor || ' '}</p>
                     </div>
                     <div className="product-main-content-detail m-0">
                       <div className="text-icon-group">
@@ -343,7 +467,7 @@ const ProductDetail = () => {
                             className={`product-order-options-stock ${isSoldOut ? 'sold-out-text' : ''}`}
                           >
                             {isSoldOut ? '售罄' : `庫存：${product.stock}`}
-                          </div>{' '}
+                          </div>
                         </div>
                       </div>
 
@@ -379,7 +503,11 @@ const ProductDetail = () => {
 
           {/* 評論 */}
           <div className="reviews-custom">
-            <button type="button" className="reviews-custom-btn border-0">
+            <button
+              type="button"
+              className="reviews-custom-btn border-0"
+              onClick={handlePrev}
+            >
               <div className="arrow-icon">
                 <img
                   src={images.reviewArrowL}
@@ -394,176 +522,75 @@ const ProductDetail = () => {
                 <h5 className="title-detail m-0">客戶評論</h5>
                 <span className="d-none d-md-flex title-line"></span>
               </div>
-              <div className="reviews-select">
-                {/* 單一則評論 */}
-                <div className="reviews-box">
-                  <div className="reviews-box-top">
-                    <img src={images.profile} alt="customer profile" />
-                    <div className="reviews-box-top-detail">
-                      <div className="reviews-box-top-detail-text">
-                        <p className="customer-name m-0">Soham</p>
-                        <p className="review-time  m-0">2024/09/22</p>
-                      </div>
-                      <div className="reviews-box-top-stars">
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="reviews-box-content">
-                    這款豆子帶有優雅的花香與柑橘果酸，口感明亮清爽，是我每天早上最喜歡的手沖選擇，喝起來就像陽光灑進窗台的味道。沖煮時，香氣慢慢瀰漫整個空間，像是一種柔和而穩定的提醒：新的一天可以這樣溫柔開始。冷卻後的風味依然乾淨不雜，酸甜平衡，尾韻輕柔帶點蜜香，特別適合在安靜的早晨中靜靜享受，成為我日常生活中最小而確實的幸福。
-                  </div>
-                </div>
-                <div className="reviews-box">
-                  <div className="reviews-box-top">
-                    <img src={images.profile} alt="customer profile" />
-                    <div className="reviews-box-top-detail">
-                      <div className="reviews-box-top-detail-text">
-                        <p className="customer-name m-0">Soham</p>
-                        <p className="review-time  m-0">2024/09/22</p>
-                      </div>
-                      <div className="reviews-box-top-stars">
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
+
+              {/* 單一評論 */}
+              <div
+                className="reviews-select"
+                onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
+                onTouchEnd={(e) => {
+                  const touchEnd = e.changedTouches[0].clientX;
+                  const distance = touchStart - touchEnd;
+
+                  if (window.innerWidth <= 1315) {
+                    if (distance > 50) handleNext();
+                    if (distance < -50) handlePrev();
+                  }
+                }}
+              >
+                {currentReviews.map((r, idx) => (
+                  <div className="reviews-box" key={idx}>
+                    <div className="reviews-box-top">
+                      <img src={r.profile} alt="customer profile" />
+                      <div className="reviews-box-top-detail">
+                        <div className="reviews-box-top-detail-text">
+                          <p className="customer-name m-0">{r.name}</p>
+                          <p className="review-time m-0">{r.date}</p>
+                        </div>
+
+                        <div className="reviews-box-top-stars">
+                          {Array.from({ length: r.stars }).map((_, i) => (
+                            <div className="review-starts" key={`yellow-${i}`}>
+                              <img
+                                src={images.starIcon[0]}
+                                alt="yellow star"
+                                className="starts-icon"
+                              />
+                            </div>
+                          ))}
+                          {Array.from({ length: 5 - r.stars }).map((_, i) => (
+                            <div className="review-starts" key={`gray-${i}`}>
+                              <img
+                                src={images.starIcon[1]}
+                                alt="gray star"
+                                className="starts-icon"
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
+                    <div className="reviews-box-content">{r.content}</div>
                   </div>
-                  <div className="reviews-box-content">
-                    這款豆子帶有優雅的花香與柑橘果酸，口感明亮清爽，是我每天早上最喜歡的手沖選擇，喝起來就像陽光灑進窗台的味道。沖煮時，香氣慢慢瀰漫整個空間，像是一種柔和而穩定的提醒：新的一天可以這樣溫柔開始。冷卻後的風味依然乾淨不雜，酸甜平衡，尾韻輕柔帶點蜜香，特別適合在安靜的早晨中靜靜享受，成為我日常生活中最小而確實的幸福。
-                  </div>
-                </div>
-                <div className="reviews-box">
-                  <div className="reviews-box-top">
-                    <img src={images.profile} alt="customer profile" />
-                    <div className="reviews-box-top-detail">
-                      <div className="reviews-box-top-detail-text">
-                        <p className="customer-name m-0">Soham</p>
-                        <p className="review-time  m-0">2024/09/22</p>
-                      </div>
-                      <div className="reviews-box-top-stars">
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="reviews-box-content">
-                    這款豆子帶有優雅的花香與柑橘果酸，口感明亮清爽，是我每天早上最喜歡的手沖選擇，喝起來就像陽光灑進窗台的味道。沖煮時，香氣慢慢瀰漫整個空間，像是一種柔和而穩定的提醒：新的一天可以這樣溫柔開始。冷卻後的風味依然乾淨不雜，酸甜平衡，尾韻輕柔帶點蜜香，特別適合在安靜的早晨中靜靜享受，成為我日常生活中最小而確實的幸福。
-                  </div>
-                </div>
-                <div className="reviews-box">
-                  <div className="reviews-box-top">
-                    <img src={images.profile} alt="customer profile" />
-                    <div className="reviews-box-top-detail">
-                      <div className="reviews-box-top-detail-text">
-                        <p className="customer-name m-0">Soham</p>
-                        <p className="review-time  m-0">2024/09/22</p>
-                      </div>
-                      <div className="reviews-box-top-stars">
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                        <img
-                          src={images.starIcon}
-                          alt="starts"
-                          className="review-starts"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="reviews-box-content">
-                    這款豆子帶有優雅的花香與柑橘果酸，口感明亮清爽，是我每天早上最喜歡的手沖選擇，喝起來就像陽光灑進窗台的味道。沖煮時，香氣慢慢瀰漫整個空間，像是一種柔和而穩定的提醒：新的一天可以這樣溫柔開始。冷卻後的風味依然乾淨不雜，酸甜平衡，尾韻輕柔帶點蜜香，特別適合在安靜的早晨中靜靜享受，成為我日常生活中最小而確實的幸福。
-                  </div>
-                </div>
+                ))}
+              </div>
+
+              {/* 點點 */}
+              <div className="reviews-dots">
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`dot ${i === page ? 'active' : ''}`}
+                    onClick={() => setPage(i)}
+                  ></span>
+                ))}
               </div>
             </div>
 
-            <button type="button" className="reviews-custom-btn border-0">
+            <button
+              type="button"
+              className="reviews-custom-btn border-0"
+              onClick={handleNext}
+            >
               <div className="arrow-icon">
                 <img
                   src={images.reviewArrowR}
@@ -616,7 +643,7 @@ const ProductDetail = () => {
 
       {showTopBtn && (
         <button className="back-to-top" onClick={scrollToTop}>
-          <img src={images.topBtn} alt="back to top btn" />
+          <img src={images.topBtn} alt="back to top btn" className="icon" />
         </button>
       )}
       <Footer />

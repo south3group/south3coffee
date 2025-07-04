@@ -19,9 +19,9 @@ const authSlice = createSlice({
       state.isAuthChecked = true;
     },
     logout: (state) => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      localStorage.removeItem('username');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('role');
+      sessionStorage.removeItem('username');
       state.token = null;
       state.role = null;
       state.isAuthChecked = true;
@@ -33,9 +33,9 @@ export const { setCredentials, logout } = authSlice.actions;
 export default authSlice.reducer;
 
 export const checkAuth = () => (dispatch) => {
-  const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role');
-  const username = localStorage.getItem('username');
+  const token = sessionStorage.getItem('token');
+  const role = sessionStorage.getItem('role');
+  const username = sessionStorage.getItem('username');
   if (token && role) {
     dispatch(setCredentials({ token, role, username }));
   } else {

@@ -23,11 +23,11 @@ const CartList = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const saveSelectedToLocal = (set) => {
-    localStorage.setItem('cartSelected', JSON.stringify(Array.from(set)));
+    sessionStorage.setItem('cartSelected', JSON.stringify(Array.from(set)));
   };
 
   const loadSelectedFromLocal = () => {
-    const stored = localStorage.getItem('cartSelected');
+    const stored = sessionStorage.getItem('cartSelected');
     if (stored) return new Set(JSON.parse(stored));
     return new Set();
   };
@@ -37,7 +37,7 @@ const CartList = () => {
   // 取得購物車
   const getCart = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         setModalMsg('請先登入會員');
         setIsOpen(true);
@@ -124,7 +124,7 @@ const CartList = () => {
     );
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         setModalMsg('請先登入會員');
         setIsOpen(true);
@@ -152,7 +152,7 @@ const CartList = () => {
     setCartItems(cartItems.filter((item) => item.product.id !== productId));
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       await axios.post(
         `${apiUrl}/api/v1/users/membership/cart/delete`,
         { product_id: productId },
@@ -171,7 +171,7 @@ const CartList = () => {
   const handleAddToCart = async (productId) => {
     try {
       setAddingId(productId);
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         setModalMsg('尚未登入，請先登入會員');
         setIsOpen(true);
@@ -239,7 +239,7 @@ const CartList = () => {
 
   // 前往結帳
   const handleGoToCheckout = async () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const selectedIds = Array.from(selectedItems);
 
     if (selectedIds.length === 0) {
@@ -293,7 +293,7 @@ const CartList = () => {
       setCouponSuccess('');
 
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         await axios.patch(
           `${apiUrl}/api/v1/users/membership/cart/discount`,
           {
@@ -316,7 +316,7 @@ const CartList = () => {
   // 重新驗證優惠券
   const revalidateCoupon = async (trimmedCode) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
 
       const selectedTotal = cartItems
         .filter((item) => selectedItems.has(item.product.id))

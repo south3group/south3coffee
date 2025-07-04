@@ -86,7 +86,7 @@ const Products = () => {
     setAddingId(productId);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         setModalMsg('尚未登入，請先登入會員');
         setIsOpen(true);
@@ -109,7 +109,7 @@ const Products = () => {
       );
 
       toast.success('已加入購物車', {
-        autoClose: 1000,
+        autoClose: 800,
         className: 'product-toast-success',
         bodyClassName: 'product-toast-success-body',
       });
@@ -123,7 +123,7 @@ const Products = () => {
         bodyClassName: 'product-toast-error-body',
       });
     } finally {
-      setTimeout(() => setAddingId(null), 1000);
+      setTimeout(() => setAddingId(null), 800);
     }
   };
 
@@ -137,8 +137,8 @@ const Products = () => {
           className="narrow-banner"
         />
       </div>
-      <div></div>
       <div className="bg-coffee-bg-light products-custom-style">
+      <div></div>
         <div className="container products-container p-0 ">
           {/* 分類項目 */}
           <ul className="products-breadcrumb m-0 p-0">
