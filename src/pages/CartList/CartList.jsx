@@ -854,7 +854,11 @@ const CartList = () => {
           <div className="recommend-custom">
             <h5 className="recommend-title m-0">本期推薦</h5>
             <div className="recommend-card">
-              <button type="button" className="recommend-custom-btn border-0" on>
+              <button
+                type="button"
+                className="recommend-custom-btn border-0"
+                onClick={handleRecommendPrev}
+              >
                 <div className="arrow-icon">
                   <img
                     src={images.reviewArrowL}
@@ -865,7 +869,7 @@ const CartList = () => {
               </button>
 
               <div className="card-group">
-                {recommendList.map((item) => (
+                {currentRecommendList.map((item) => (
                   <div
                     className="card recommend-card-style m-0 rounded-0 border-0"
                     key={item.id}
@@ -911,7 +915,11 @@ const CartList = () => {
                 ))}
               </div>
 
-              <button type="button" className="recommend-custom-btn border-0">
+              <button
+                type="button"
+                className="recommend-custom-btn border-0"
+                onClick={handleRecommendNext}
+              >
                 <div className="arrow-icon">
                   <img
                     src={images.reviewArrowR}
