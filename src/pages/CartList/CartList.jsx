@@ -931,6 +931,16 @@ const CartList = () => {
                 </div>
               </button>
             </div>
+            {/* 輪播「點點頁碼」指示器 */}
+            <div className="recommend-dots">
+              {Array.from({ length: totalRecommendPages }).map((_, i) => (
+                <span
+                  key={i}
+                  className={`dot ${i === recommendPage ? 'active' : ''}`}
+                  onClick={() => setRecommendPage(i)}
+                ></span>
+              ))}
+            </div>
           </div>
         </div>
         <div></div>
