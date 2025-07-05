@@ -440,6 +440,23 @@ const CartList = () => {
   const perRecommendPage = 4;
   const totalRecommendPages = Math.ceil(recommendList.length / perRecommendPage);
 
+  const handleRecommendPrev = () => {
+    setRecommendPage((prev) =>
+      prev === 0 ? totalRecommendPages - 1 : prev - 1,
+    );
+  };
+
+  const handleRecommendNext = () => {
+    setRecommendPage((prev) =>
+      prev === totalRecommendPages - 1 ? 0 : prev + 1,
+    );
+  };
+
+  const currentRecommendList = recommendList.slice(
+    recommendPage * perRecommendPage,
+    recommendPage * perRecommendPage + perRecommendPage,
+  );
+
   return (
     <>
       <Header />
