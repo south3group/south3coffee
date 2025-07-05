@@ -424,7 +424,9 @@ const CartList = () => {
   // 取得推薦商品
   const getBestSeller = useCallback(async () => {
     try {
-      const res = await axios.get(`${apiUrl}/api/v1/products/bestSeller`);
+      const res = await axios.get(
+        `${apiUrl}/api/v1/products/bestSeller?limit=12`,
+      );
       setRecommendList(res.data?.data || []);
     } catch (error) {
       console.error('取得推薦商品失敗', error);
