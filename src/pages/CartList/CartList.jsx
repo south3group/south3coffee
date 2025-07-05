@@ -18,6 +18,7 @@ const CartList = () => {
   const [couponError, setCouponError] = useState('');
   const [addingId, setAddingId] = useState(null);
   const [recommendList, setRecommendList] = useState([]);
+  const [recommendPage, setRecommendPage] = useState(0);
 
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -435,7 +436,9 @@ const CartList = () => {
     getBestSeller();
   }, [getCart, getBestSeller]);
 
-  
+  // 推薦商品用分頁輪播
+  const perRecommendPage = 4;
+  const totalRecommendPages = Math.ceil(recommendList.length / perRecommendPage);
 
   return (
     <>
