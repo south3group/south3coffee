@@ -211,6 +211,18 @@ const CartList = () => {
     }
   };
 
+  const handleSelectAll = () => {
+    let updatedSelected;
+    if (selectedItems.size === cartItems.length) {
+      updatedSelected = new Set();
+    } else {
+      updatedSelected = new Set(cartItems.map((item) => item.product.id));
+    }
+    setSelectedItems(updatedSelected);
+    selectedItemsRef.current = updatedSelected;
+    saveSelectedToLocal(updatedSelected);
+  };
+
   const handleSelectItem = (productId) => {
     setSelectedItems((prevSelected) => {
       const newSelected = new Set(prevSelected);
@@ -225,59 +237,30 @@ const CartList = () => {
     });
   };
 
-  const handleSelectAll = () => {
-    let updatedSelected;
-    if (selectedItems.size === cartItems.length) {
-      updatedSelected = new Set();
-    } else {
-      updatedSelected = new Set(cartItems.map((item) => item.product.id));
-    }
-    setSelectedItems(updatedSelected);
-    selectedItemsRef.current = updatedSelected;
-    saveSelectedToLocal(updatedSelected);
+  useEffect(() => {
+    // 當購物車項目或選中項目改變時，重新計算總金額
+    const newTotal = cartItems
+      .filter((item) => selectedItems.has(item.product.id))
+      .reduce((acc, item) => acc + item.price * item.quantity, 0);
+    setTotal(newTotal);
+  }, [cartItems, selectedItems]);
+
+  const handleDecrease = (item) => {
+    updateQuantity(item.product.id, item.quantity - 1);
   };
 
-  // 前往結帳
-  const handleGoToCheckout = async () => {
-    const token = sessionStorage.getItem('token');
-    const selectedIds = Array.from(selectedItems);
+  const handleIncrease = (item) => {
+    updateQuantity(item.product.id, item.quantity + 1);
+  };
 
-    if (selectedIds.length === 0) {
-      setModalMsg('請勾選至少一項商品');
-      setIsOpen(true);
-      return;
-    }
-
-    try {
-      await axios.patch(
-        `${apiUrl}/api/v1/users/membership/cart/select`,
-        {
-          selected_ids: selectedIds,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-
-      if (discountAmount === 0) {
-        await axios.patch(
-          `${apiUrl}/api/v1/users/membership/cart/discount`,
-          {
-            discount_id: null,
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-      }
-
-      navigate('/create-order');
-    } catch (error) {
-      const msg = error.response?.data?.message || '無法前往結帳';
-      setModalMsg(msg);
-      setIsOpen(true);
+  const handleChange = (e, item) => {
+    const val = Number(e.target.value);
+    if (!isNaN(val)) {
+      updateQuantity(item.product.id, val);
     }
   };
+
+  const minValue = 1;
 
   // 套用優惠券
   const applyCoupon = async () => {
@@ -395,6 +378,48 @@ const CartList = () => {
     }
   };
 
+  // 前往結帳
+  const handleGoToCheckout = async () => {
+    const token = sessionStorage.getItem('token');
+    const selectedIds = Array.from(selectedItems);
+
+    if (selectedIds.length === 0) {
+      setModalMsg('請勾選至少一項商品');
+      setIsOpen(true);
+      return;
+    }
+
+    try {
+      await axios.patch(
+        `${apiUrl}/api/v1/users/membership/cart/select`,
+        {
+          selected_ids: selectedIds,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (discountAmount === 0) {
+        await axios.patch(
+          `${apiUrl}/api/v1/users/membership/cart/discount`,
+          {
+            discount_id: null,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+      }
+
+      navigate('/create-order');
+    } catch (error) {
+      const msg = error.response?.data?.message || '無法前往結帳';
+      setModalMsg(msg);
+      setIsOpen(true);
+    }
+  };
+
   // 取得推薦商品
   const getBestSeller = useCallback(async () => {
     try {
@@ -410,30 +435,7 @@ const CartList = () => {
     getBestSeller();
   }, [getCart, getBestSeller]);
 
-  useEffect(() => {
-    // 當購物車項目或選中項目改變時，重新計算總金額
-    const newTotal = cartItems
-      .filter((item) => selectedItems.has(item.product.id))
-      .reduce((acc, item) => acc + item.price * item.quantity, 0);
-    setTotal(newTotal);
-  }, [cartItems, selectedItems]);
-
-  const handleDecrease = (item) => {
-    updateQuantity(item.product.id, item.quantity - 1);
-  };
-
-  const handleIncrease = (item) => {
-    updateQuantity(item.product.id, item.quantity + 1);
-  };
-
-  const handleChange = (e, item) => {
-    const val = Number(e.target.value);
-    if (!isNaN(val)) {
-      updateQuantity(item.product.id, val);
-    }
-  };
-
-  const minValue = 1;
+  
 
   return (
     <>
@@ -832,7 +834,7 @@ const CartList = () => {
           <div className="recommend-custom">
             <h5 className="recommend-title m-0">本期推薦</h5>
             <div className="recommend-card">
-              <button type="button" className="recommend-custom-btn border-0">
+              <button type="button" className="recommend-custom-btn border-0" on>
                 <div className="arrow-icon">
                   <img
                     src={images.reviewArrowL}
