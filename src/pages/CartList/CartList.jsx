@@ -26,11 +26,11 @@ const CartList = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const saveSelectedToLocal = (set) => {
-    sessionStorage.setItem('cartSelected', JSON.stringify(Array.from(set)));
+    localStorage.setItem('cartSelected', JSON.stringify(Array.from(set)));
   };
 
   const loadSelectedFromLocal = () => {
-    const stored = sessionStorage.getItem('cartSelected');
+    const stored = localStorage.getItem('cartSelected');
     if (stored) return new Set(JSON.parse(stored));
     return new Set();
   };
@@ -40,7 +40,7 @@ const CartList = () => {
   // 取得購物車
   const getCart = useCallback(async () => {
     try {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       if (!token) {
         setModalMsg('請先登入會員');
         setIsOpen(true);
@@ -127,7 +127,7 @@ const CartList = () => {
     );
 
     try {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       if (!token) {
         setModalMsg('請先登入會員');
         setIsOpen(true);
@@ -155,7 +155,7 @@ const CartList = () => {
     setCartItems(cartItems.filter((item) => item.product.id !== productId));
 
     try {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       await axios.post(
         `${apiUrl}/api/v1/users/membership/cart/delete`,
         { product_id: productId },
@@ -176,7 +176,7 @@ const CartList = () => {
     setAddingId(productId);
 
     try {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       if (!token) {
         setModalMsg('尚未登入，請先登入會員');
         setIsOpen(true);
@@ -210,12 +210,12 @@ const CartList = () => {
     } catch (error) {
       const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
       toast.error(msg, {
-        autoClose: 2000,
+        autoClose: 1000,
         className: 'product-toast-error',
         bodyClassName: 'product-toast-error-body',
       });
     } finally {
-      setTimeout(() => setAddingId(null), 800);
+      setTimeout(() => setAddingId(null), 500);
     }
   };
 
@@ -284,7 +284,7 @@ const CartList = () => {
       setCouponSuccess('');
 
       try {
-        const token = sessionStorage.getItem('token');
+        const token = localStorage.getItem('token');
         await axios.patch(
           `${apiUrl}/api/v1/users/membership/cart/discount`,
           {
@@ -307,7 +307,7 @@ const CartList = () => {
   // 重新驗證優惠券
   const revalidateCoupon = async (trimmedCode) => {
     try {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
 
       const selectedTotal = cartItems
         .filter((item) => selectedItems.has(item.product.id))
@@ -388,7 +388,7 @@ const CartList = () => {
 
   // 前往結帳
   const handleGoToCheckout = async () => {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     const selectedIds = Array.from(selectedItems);
 
     if (selectedIds.length === 0) {

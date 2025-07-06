@@ -53,7 +53,7 @@ const Checkout = () => {
     const fetchOrderInfo = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
-        const token = sessionStorage.getItem('token');
+        const token = localStorage.getItem('token');
         
         const response = await axios.get(
           `${apiUrl}/api/v1/users/checkout?order_id=${order_id}`,
@@ -131,7 +131,7 @@ const Checkout = () => {
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       
       const response = await axios.put(
         `${apiUrl}/api/v1/users/checkout`,

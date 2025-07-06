@@ -62,7 +62,7 @@ const EditProfile = () => {
   }, []);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
       return;
@@ -97,7 +97,7 @@ const EditProfile = () => {
   const editHandler = (e) => {
     e.preventDefault();
     let isError = false;
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
     // 姓名
     const namePattern = /^[\p{L}\p{N}]{2,10}$/u;

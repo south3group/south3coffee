@@ -13,7 +13,7 @@ const useCart = () => {
     setAddingId(productId);
 
     try {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       if (!token) {
         if (onNotLogin) {
           onNotLogin(); // 提醒登入
