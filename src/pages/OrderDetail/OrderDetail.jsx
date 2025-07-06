@@ -336,7 +336,7 @@ const OrderDetail = () => {
                   ) : (
                     <Link
                       to={`/checkout?order_id=${order.id}`}
-                      className="d-none d-md-flex border-0 rounded-0 back-btn-custom back-btn-custom-checkout"
+                      className="border-0 rounded-0 back-btn-custom back-btn-custom-checkout"
                     >
                       重新付款
                     </Link>
