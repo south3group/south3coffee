@@ -79,9 +79,9 @@ const Login = () => {
         const name = res.data.data.user.name;
         const role = res.data.data.user.role;
 
-        sessionStorage.setItem('token', token);
-        sessionStorage.setItem('role', role);
-        sessionStorage.setItem('username', name);
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
+        localStorage.setItem('username', name);
 
         console.log(res)
 
