@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -19,6 +20,7 @@ const CartList = () => {
   const [addingId, setAddingId] = useState(null);
   const [recommendList, setRecommendList] = useState([]);
   const [recommendPage, setRecommendPage] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
 
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -169,13 +171,16 @@ const CartList = () => {
   };
 
   // 加入購物車
-  const handleAddToCart = async (productId) => {
+  const handleAddToCart = async (productId, event) => {
+    if (addingId) return;
+    setAddingId(productId);
+
     try {
-      setAddingId(productId);
       const token = sessionStorage.getItem('token');
       if (!token) {
         setModalMsg('尚未登入，請先登入會員');
         setIsOpen(true);
+        setAddingId(null);
         return;
       }
 
@@ -193,22 +198,24 @@ const CartList = () => {
         },
       );
 
-      setSelectedItems((prev) => {
-        const newSet = new Set(prev);
-        newSet.add(productId);
-        selectedItemsRef.current = newSet;
-        saveSelectedToLocal(newSet);
-        return newSet;
+      toast.success('已加入購物車', {
+        autoClose: 500,
+        className: 'product-toast-success',
+        bodyClassName: 'product-toast-success-body',
+        onClose: () => {
+          navigate(0);
+        }
       });
-
-      setModalMsg('已加入購物車');
-      getCart(); //刷新購物車資料
+      if (event?.target) event.target.blur();
     } catch (error) {
       const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
-      setModalMsg(msg);
+      toast.error(msg, {
+        autoClose: 2000,
+        className: 'product-toast-error',
+        bodyClassName: 'product-toast-error-body',
+      });
     } finally {
-      setAddingId(null);
-      setIsOpen(true);
+      setTimeout(() => setAddingId(null), 800);
     }
   };
 
@@ -440,7 +447,9 @@ const CartList = () => {
 
   // 推薦商品用分頁輪播
   const perRecommendPage = 4;
-  const totalRecommendPages = Math.ceil(recommendList.length / perRecommendPage);
+  const totalRecommendPages = Math.ceil(
+    recommendList.length / perRecommendPage,
+  );
 
   const handleRecommendPrev = () => {
     setRecommendPage((prev) =>
@@ -854,93 +863,125 @@ const CartList = () => {
 
           {/* 推薦 */}
           <div className="recommend-custom">
-            <h5 className="recommend-title m-0">本期推薦</h5>
-            <div className="recommend-card">
-              <button
-                type="button"
-                className="recommend-custom-btn border-0"
-                onClick={handleRecommendPrev}
-              >
-                <div className="arrow-icon">
-                  <img
-                    src={images.reviewArrowL}
-                    alt="recommend-arrow-left"
-                    className="icon-detail"
-                  />
-                </div>
-              </button>
+            <button
+              type="button"
+              className="recommend-custom-btn border-0"
+              onClick={handleRecommendPrev}
+            >
+              <div className="arrow-icon">
+                <img
+                  src={images.reviewArrowL}
+                  alt="recommend-arrow-left"
+                  className="icon-detail"
+                />
+              </div>
+            </button>
 
-              <div className="card-group">
-                {currentRecommendList.map((item) => (
-                  <div
-                    className="card recommend-card-style m-0 rounded-0 border-0"
-                    key={item.id}
-                  >
-                    <img
-                      src={item.image_url}
-                      className="card-img-top card-img rounded-0"
-                      alt={item.name}
-                    />
-                    <div className="recommend-card-content">
-                      <div className="recommend-card-body">
-                        <h5 className="card-title recommend-card-body-title m-0">
-                          {item.name}
-                        </h5>
-                        <div className="recommend-card-body-title-icon">
-                          <img
-                            src={images.unlikeIcon}
-                            alt="unlike icon"
-                            className="icon-detail"
-                          />
-                        </div>
-                      </div>
-                      <div className="recommend-card-body-text">
-                        <p className="text-content m-0">
-                          {item.feature || item.description || '無商品特色描述'}
-                        </p>
-                      </div>
-                      <div className="recommend-card-bottom">
-                        <div className="recommend-price-box">
-                          <p className="recommend-price m-0">NTD$</p>
-                          <p className="recommend-price m-0">{item.price}</p>
-                        </div>
-                      </div>
-                      <button
-                        className="btn recommend-card-btn rounded-0"
-                        onClick={() => handleAddToCart(item.id)}
-                        disabled={addingId === item.id}
-                      >
-                        {addingId === item.id ? '加入中...' : '加入購物車'}
-                      </button>
-                    </div>
-                  </div>
-                ))}
+            <div className="recommend-card">
+              <div className="recommend-header">
+                <h5 className="recommend-title m-0">本期推薦</h5>
               </div>
 
-              <button
-                type="button"
-                className="recommend-custom-btn border-0"
-                onClick={handleRecommendNext}
-              >
-                <div className="arrow-icon">
-                  <img
-                    src={images.reviewArrowR}
-                    alt="recommend-arrow-right"
-                    className="icon-detail"
-                  />
-                </div>
-              </button>
+              <div className="card-group"
+                onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
+                onTouchEnd={(e) => {
+                  const touchEnd = e.changedTouches[0].clientX;
+                  const distance = touchStart - touchEnd;
+                  const threshold = 50; // 滑動門檻
+              
+                  if (distance > threshold) {
+                    handleRecommendNext();
+                  } else if (distance < -threshold) {
+                    handleRecommendPrev();
+                  }
+                }}>
+                {currentRecommendList.map((item) => {
+                  const isSoldOut = item.stock === 0;
+                  return (
+                    <Link
+                      to={`/products/${item.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="card recommend-card-style m-0 rounded-0 border-0"
+                      key={item.id}
+                    >
+                      <img
+                        src={item.image_url}
+                        className="card-img-top card-img rounded-0"
+                        alt={item.name}
+                      />
+                      <div className="recommend-card-content">
+                        <div className="recommend-card-body">
+                          <h5 className="card-title recommend-card-body-title m-0">
+                            {item.name}
+                          </h5>
+                          <div className="recommend-card-body-title-icon">
+                            <img
+                              src={images.unlikeIcon}
+                              alt="unlike icon"
+                              className="icon-detail"
+                            />
+                          </div>
+                        </div>
+                        <div className="recommend-card-body-text">
+                          <p className="text-content m-0">
+                            {item.feature ||
+                              item.description ||
+                              '無商品特色描述'}
+                          </p>
+                        </div>
+                        <div className="recommend-card-bottom">
+                          <div className="recommend-price-box">
+                            <p className="recommend-price m-0">NTD$</p>
+                            <p className="recommend-price m-0">{item.price}</p>
+                          </div>
+                        </div>
+                        <button
+                          className={`btn recommend-card-btn rounded-0 ${isSoldOut ? 'sold-out' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleAddToCart(item.id);
+                          }}
+                          disabled={addingId === item.id || isSoldOut}
+                        >
+                          {isSoldOut
+                            ? '已售罄'
+                            : addingId === item.id
+                              ? '加入中...'
+                              : '加入購物車'}
+                        </button>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* 輪播「點點頁碼」指示器 */}
+              <div className="recommend-dots">
+                {Array.from({ length: totalRecommendPages }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`dot ${i === recommendPage ? 'active' : ''}`}
+                    onClick={() => setRecommendPage(i)}
+                  ></span>
+                ))}
+              </div>
             </div>
-            {/* 輪播「點點頁碼」指示器 */}
-            <div className="recommend-dots">
-              {Array.from({ length: totalRecommendPages }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`dot ${i === recommendPage ? 'active' : ''}`}
-                  onClick={() => setRecommendPage(i)}
-                ></span>
-              ))}
-            </div>
+
+            <button
+              type="button"
+              className="recommend-custom-btn border-0"
+              onClick={handleRecommendNext}
+            >
+              <div className="arrow-icon">
+                <img
+                  src={images.reviewArrowR}
+                  alt="recommend-arrow-right"
+                  className="icon-detail"
+                />
+              </div>
+            </button>
           </div>
         </div>
         <div></div>
