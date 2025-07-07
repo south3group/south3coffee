@@ -5,6 +5,7 @@ import scaleImg from '../assets/images/scale.png';
 import keyboardArrow from '../assets/images/keyboard_arrow.png';
 import logoDark from '../assets/images/logo_dark.png';
 import productsBanner from '../assets/images/product_banner_01.jpg';
+import membershipBanner from '../assets/images/membership_banner.jpg';
 import originIcon from '../assets/images/origin.png';
 import unlikeIcon from '../assets/images/unlike.png';
 import flavorIcon from '../assets/images/flavor.png';
@@ -31,6 +32,10 @@ import comment09 from '../assets/images/comment09.png';
 import comment10 from '../assets/images/comment10.png';
 import comment11 from '../assets/images/comment11.png';
 import comment12 from '../assets/images/comment12.png';
+import peopleIcon from '../assets/images/people_icon.png';
+import formIcon from '../assets/images/form_icon.png';
+import tableIcon from '../assets/images/table_icon.png';
+import loveIcon from '../assets/images/love_icon.png';
 
 export const images = {
   logo: logoImg,
@@ -40,6 +45,7 @@ export const images = {
   scale: scaleImg,
   keyboardArrow: keyboardArrow,
   productsBanner: productsBanner,
+  membershipBanner: membershipBanner,
   originIcon: originIcon,
   unlikeIcon: unlikeIcon,
   flavorIcon: flavorIcon,
@@ -67,4 +73,8 @@ export const images = {
     comment11,
     comment12,
   ],
+  peopleIcon: peopleIcon,
+  formIcon: formIcon,
+  tableIcon: tableIcon,
+  loveIcon: loveIcon,
 };
