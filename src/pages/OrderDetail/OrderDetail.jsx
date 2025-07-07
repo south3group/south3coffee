@@ -304,7 +304,7 @@ const OrderDetail = () => {
                       <div className="price-box-discount m-0">
                         <p className="box-currency m-0">NTD$</p>
                         <p className="box-price m-0">
-                          -{order.summary.discount}
+                          {order.summary.discount}
                         </p>
                       </div>
                     </div>

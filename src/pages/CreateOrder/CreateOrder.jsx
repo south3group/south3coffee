@@ -57,7 +57,8 @@ const CreateOrder = () => {
           localStorage.removeItem('token');
           navigate('/');
         } else if (err.response?.status === 400) {
-          setModalMsg('收件資料不完整，請先填寫收件資料');
+          const msg = err.response?.data?.message || '發生錯誤';
+          setModalMsg(msg);
           setIsReceiverModalOpen(true);
         } else {
           const msg = err.response?.data?.message || '發生錯誤';
@@ -111,16 +112,6 @@ const CreateOrder = () => {
   };
 
   if (loading) return <div>Loading...</div>;
-  if (!orderData) return null;
-
-  const {
-    totalPrice = 0,
-    discount_amount = 0,
-    shipping_fee = 0,
-  } = orderData.cost_summary || {};
-
-  const subtotal = totalPrice - discount_amount;
-  const grandTotal = subtotal + shipping_fee;
 
   if (!orderData) {
     return (
@@ -202,6 +193,17 @@ const CreateOrder = () => {
       </>
     );
   }
+
+  
+  const {
+    totalPrice = 0,
+    discount_amount = 0,
+    shipping_fee = 0,
+  } = orderData.cost_summary || {};
+
+  const subtotal = totalPrice - discount_amount;
+  const grandTotal = subtotal + shipping_fee;
+  
   return (
     <>
       <Header />
