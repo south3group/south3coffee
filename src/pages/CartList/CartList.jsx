@@ -204,7 +204,7 @@ const CartList = () => {
         bodyClassName: 'product-toast-success-body',
         onClose: () => {
           navigate(0);
-        }
+        },
       });
       if (event?.target) event.target.blur();
     } catch (error) {
@@ -251,6 +251,13 @@ const CartList = () => {
       .filter((item) => selectedItems.has(item.product.id))
       .reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotal(newTotal);
+    
+    if (couponCode) {
+      setCouponCode('');
+      setCouponError('商品變動，請重新輸入優惠券');
+      setCouponSuccess('');
+      setDiscountAmount(0);
+    }
   }, [cartItems, selectedItems]);
 
   const handleDecrease = (item) => {
@@ -882,19 +889,21 @@ const CartList = () => {
                 <h5 className="recommend-title m-0">本期推薦</h5>
               </div>
 
-              <div className="card-group"
+              <div
+                className="card-group"
                 onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
                 onTouchEnd={(e) => {
                   const touchEnd = e.changedTouches[0].clientX;
                   const distance = touchStart - touchEnd;
                   const threshold = 50; // 滑動門檻
-              
+
                   if (distance > threshold) {
                     handleRecommendNext();
                   } else if (distance < -threshold) {
                     handleRecommendPrev();
                   }
-                }}>
+                }}
+              >
                 {currentRecommendList.map((item) => {
                   const isSoldOut = item.stock === 0;
                   return (
