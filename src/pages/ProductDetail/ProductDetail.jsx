@@ -331,11 +331,6 @@ const ProductDetail = () => {
             <div className="img-custom-layout">
               {/* 商品 */}
               <div className="product-main">
-                <img
-                  src={mainImage}
-                  alt="thumbnails 1"
-                  className="product-main-img"
-                />
                 {/* 商品縮圖 */}
                 <div className="product-thumbnails">
                   {[product.image_url, ...thumbnailUrls]
@@ -345,11 +340,16 @@ const ProductDetail = () => {
                         key={idx}
                         src={url}
                         alt={`thumbnail-${idx}`}
-                        className="img-style"
+                        className={`img-style ${mainImage === url ? 'selected' : ''}`}
                         onClick={() => setMainImage(url)}
                       />
                     ))}
                 </div>
+                <img
+                  src={mainImage}
+                  alt="thumbnails 1"
+                  className="product-main-img"
+                />
 
                 {/* 商品內容 */}
                 <div className="product-main-content">
@@ -482,7 +482,7 @@ const ProductDetail = () => {
                       disabled={addingId || isSoldOut}
                     >
                       {isSoldOut
-                        ? '已售罄'
+                        ? '加入購物車'
                         : addingId
                           ? '加入中...'
                           : '加入購物車'}
@@ -520,7 +520,7 @@ const ProductDetail = () => {
             <div className="reviews-custom-content">
               <div className="reviews-title">
                 <h5 className="title-detail m-0">客戶評論</h5>
-                <span className="d-none d-md-flex title-line"></span>
+                <span className="title-line"></span>
               </div>
 
               {/* 單一評論 */}
