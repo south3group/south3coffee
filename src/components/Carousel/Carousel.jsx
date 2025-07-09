@@ -100,7 +100,7 @@ const Carousel = () => {
       id="myCarousel"
       className="carousel slide align-content-center"
       data-bs-ride="carousel"
-      // data-bs-interval="8000"
+      data-bs-interval="8000"
     >
       {/* 左箭頭 */}
       <button
