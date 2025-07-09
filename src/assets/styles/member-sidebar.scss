@@ -107,7 +107,7 @@ $header-height: 74.75px;
   height: calc(100% - #{$header-height});
   padding: 8px;
   gap: 8px;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+  // box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
   overflow-y: auto;
 
   ul {
@@ -164,7 +164,6 @@ $header-height: 74.75px;
   }
   .main-content {
     width: 100%;
-    max-width: 1200px;
   }
 
 }

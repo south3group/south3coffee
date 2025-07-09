@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 import Header from '../../components/Header/Header';
@@ -18,29 +19,26 @@ const CartList = () => {
   const [couponError, setCouponError] = useState('');
   const [addingId, setAddingId] = useState(null);
   const [recommendList, setRecommendList] = useState([]);
-  const [isCouponValid, setIsCouponValid] = useState(false);
-  const [couponValidationError, setCouponValidationError] = useState('');
+  const [recommendPage, setRecommendPage] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
 
   const navigate = useNavigate();
-
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // 驗證優惠券格式
-  const handleCouponValidation = (value) => {
-    const regex = /^[A-Z0-9]{6}$/;
-
-    if (!regex.test(value)) {
-      setDiscountAmount(0);
-      setIsCouponValid(false);
-      setCouponValidationError('無此優惠劵');
-    } else {
-      setIsCouponValid(true);
-      setCouponValidationError('');
-    }
+  const saveSelectedToLocal = (set) => {
+    localStorage.setItem('cartSelected', JSON.stringify(Array.from(set)));
   };
 
+  const loadSelectedFromLocal = () => {
+    const stored = localStorage.getItem('cartSelected');
+    if (stored) return new Set(JSON.parse(stored));
+    return new Set();
+  };
+
+  const selectedItemsRef = useRef(new Set());
+
   // 取得購物車
-  const getCart = async () => {
+  const getCart = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -75,19 +73,34 @@ const CartList = () => {
           },
           quantity: item.quantity || 1,
           price: item.price,
+          is_selected: item.is_selected,
         })),
       );
+
+      const fallbackSelected = new Set();
+      filtered.forEach((item) => {
+        if (item.is_selected) fallbackSelected.add(item.product_id);
+      });
+      const localSelected = loadSelectedFromLocal();
+      const merged = new Set([
+        ...fallbackSelected,
+        ...localSelected,
+        ...Array.from(selectedItemsRef.current),
+      ]);
+      setSelectedItems(merged);
+
+      selectedItemsRef.current = merged;
 
       const price =
         cartInfo?.final_price ||
         filtered.reduce(
-          (acc, item) => acc + item.price * (item.quantity || 1),
+          (acc, item) =>
+            merged.has(item.product_id)
+              ? acc + item.price * (item.quantity || 1)
+              : acc,
           0,
         );
       setTotal(price);
-
-      const allItemIds = new Set(filtered.map((item) => item.product_id));
-      setSelectedItems(allItemIds);
     } catch (error) {
       if (
         error.response?.status === 404 ||
@@ -102,7 +115,7 @@ const CartList = () => {
         setIsOpen(true);
       }
     }
-  };
+  }, [apiUrl]);
 
   // 更新購物商商品數量
   const updateQuantity = async (productId, newQuantity) => {
@@ -158,13 +171,16 @@ const CartList = () => {
   };
 
   // 加入購物車
-  const handleAddToCart = async (productId) => {
+  const handleAddToCart = async (productId, event) => {
+    if (addingId) return;
+    setAddingId(productId);
+
     try {
-      setAddingId(productId);
       const token = localStorage.getItem('token');
       if (!token) {
         setModalMsg('尚未登入，請先登入會員');
         setIsOpen(true);
+        setAddingId(null);
         return;
       }
 
@@ -182,147 +198,52 @@ const CartList = () => {
         },
       );
 
-      setModalMsg('已加入購物車');
-      getCart(); //刷新購物車資料
+      toast.success('已加入購物車', {
+        autoClose: 500,
+        className: 'product-toast-success',
+        bodyClassName: 'product-toast-success-body',
+        onClose: () => {
+          navigate(0);
+        },
+      });
+      if (event?.target) event.target.blur();
     } catch (error) {
       const msg = error.response?.data?.message || '加入失敗，請稍後再操作';
-      setModalMsg(msg);
+      toast.error(msg, {
+        autoClose: 1000,
+        className: 'product-toast-error',
+        bodyClassName: 'product-toast-error-body',
+      });
     } finally {
-      setAddingId(null);
-      setIsOpen(true);
+      setTimeout(() => setAddingId(null), 500);
     }
   };
 
-  // 重新驗證優惠券
-  const revalidateCoupon = async () => {
-    if (!couponCode || !/^[A-Z0-9]{6}$/.test(couponCode.trim())) return;
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(
-        `${apiUrl}/api/v1/users/membership/discount`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ discount_kol: couponCode }),
-        },
-      );
-      const result = await response.json();
-      if (response.ok) {
-        const safeDiscount = Math.min(result.data.discount_amount || 0, total);
-        setDiscountAmount(safeDiscount);
-        setCouponError('');
-        setCouponSuccess('已成功套用優惠券');
+  const handleSelectAll = () => {
+    let updatedSelected;
+    if (selectedItems.size === cartItems.length) {
+      updatedSelected = new Set();
+    } else {
+      updatedSelected = new Set(cartItems.map((item) => item.product.id));
+    }
+    setSelectedItems(updatedSelected);
+    selectedItemsRef.current = updatedSelected;
+    saveSelectedToLocal(updatedSelected);
+  };
+
+  const handleSelectItem = (productId) => {
+    setSelectedItems((prevSelected) => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(productId)) {
+        newSelected.delete(productId);
       } else {
-        setDiscountAmount(0);
-        const knownMessages = [
-          '無此優惠劵',
-          '此優惠劵您已使用過',
-          '優惠劵已逾期',
-          '優惠劵已用光',
-          '您的購物車是空的，無法套用優惠券',
-          '不符活動門檻',
-          '此優惠劵已失效', // 🔧 新增
-        ];
-        if (knownMessages.includes(result.message)) {
-          setCouponError(result.message);
-        } else {
-          setCouponError('請重新套用優惠劵');
-        }
-        setCouponSuccess('');
+        newSelected.add(productId);
       }
-    } catch (err) {
-      setDiscountAmount(0);
-      setCouponError('伺服器錯誤');
-      setCouponSuccess('');
-      console.error('revalidateCoupon error:', err);
-    }
+      selectedItemsRef.current = newSelected;
+      saveSelectedToLocal(newSelected);
+      return newSelected;
+    });
   };
-
-  // 套用優惠券
-  const applyCoupon = async () => {
-    const trimmedCode = couponCode;
-
-    if (!trimmedCode || !/^[A-Z0-9]{6}$/.test(trimmedCode)) {
-      setDiscountAmount(0);
-      setCouponError('無此優惠劵');
-      setCouponSuccess('');
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-
-      const selectedTotal = cartItems
-        .filter((item) => selectedItems.has(item.product.id))
-        .reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-      const response = await fetch(
-        `${apiUrl}/api/v1/users/membership/discount`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            discount_kol: couponCode,
-            selected_total: selectedTotal,
-          }),
-        },
-      );
-
-      const result = await response.json();
-      if (response.ok) {
-        const safeDiscount = Math.min(
-          result.data.discount_amount || 0,
-          selectedTotal,
-        );
-        setDiscountAmount(safeDiscount);
-        setCouponError('');
-        setCouponSuccess('已成功套用優惠券');
-      } else {
-        setDiscountAmount(0);
-        const knownMessages = [
-          '無此優惠劵',
-          '此優惠劵您已使用過',
-          '優惠劵已逾期',
-          '優惠劵已用光',
-          '您的購物車是空的，無法套用優惠券',
-          '不符活動門檻',
-          '此優惠劵已失效',
-        ];
-        if (knownMessages.includes(result.message)) {
-          setCouponError(result.message);
-        } else {
-          setCouponError('請重新套用優惠劵');
-        }
-        setCouponSuccess('');
-      }
-    } catch (err) {
-      setDiscountAmount(0);
-      setCouponError('伺服器錯誤');
-      setCouponSuccess('');
-      console.error('applyCoupon error:', err);
-    }
-  };
-
-  // 取得推薦商品
-  const getBestSeller = async () => {
-    try {
-      const res = await axios.get(`${apiUrl}/api/v1/products/bestSeller`);
-      setRecommendList(res.data?.data || []);
-    } catch (error) {
-      console.error('取得推薦商品失敗', error);
-    }
-  };
-
-  useEffect(() => {
-    getCart();
-    getBestSeller();
-  }, []);
 
   useEffect(() => {
     // 當購物車項目或選中項目改變時，重新計算總金額
@@ -330,7 +251,13 @@ const CartList = () => {
       .filter((item) => selectedItems.has(item.product.id))
       .reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotal(newTotal);
-    if (couponCode) revalidateCoupon();
+    
+    if (couponCode) {
+      setCouponCode('');
+      setCouponError('商品變動，請重新輸入優惠券');
+      setCouponSuccess('');
+      setDiscountAmount(0);
+    }
   }, [cartItems, selectedItems]);
 
   const handleDecrease = (item) => {
@@ -348,28 +275,205 @@ const CartList = () => {
     }
   };
 
-  const handleSelectItem = (productId) => {
-    setSelectedItems((prevSelected) => {
-      const newSelected = new Set(prevSelected);
-      if (newSelected.has(productId)) {
-        newSelected.delete(productId);
-      } else {
-        newSelected.add(productId);
+  const minValue = 1;
+
+  // 套用優惠券
+  const applyCoupon = async () => {
+    const trimmedCode = couponCode.trim();
+
+    if (
+      trimmedCode.length === 0 ||
+      trimmedCode !== couponCode ||
+      !/^[A-Z0-9]{6}$/.test(trimmedCode)
+    ) {
+      setDiscountAmount(0);
+      setCouponError('無此優惠劵');
+      setCouponSuccess('');
+
+      try {
+        const token = localStorage.getItem('token');
+        await axios.patch(
+          `${apiUrl}/api/v1/users/membership/cart/discount`,
+          {
+            discount_id: null,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+      } catch (err) {
+        console.warn('清除後端優惠劵失敗：', err);
       }
-      return newSelected;
-    });
+
+      return;
+    }
+
+    await revalidateCoupon(trimmedCode);
   };
 
-  const handleSelectAll = () => {
-    if (selectedItems.size === cartItems.length) {
-      setSelectedItems(new Set()); // Deselect all
-    } else {
-      const allItemIds = new Set(cartItems.map((item) => item.product.id));
-      setSelectedItems(allItemIds); // Select all
+  // 重新驗證優惠券
+  const revalidateCoupon = async (trimmedCode) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      const selectedTotal = cartItems
+        .filter((item) => selectedItems.has(item.product.id))
+        .reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+      const res = await fetch(`${apiUrl}/api/v1/users/membership/discount`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          discount_kol: trimmedCode,
+          selected_total: selectedTotal,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        const discount = Math.min(
+          result.data.discount_amount || 0,
+          selectedTotal,
+        );
+        setDiscountAmount(discount);
+        setCouponSuccess('已成功套用優惠券');
+        setCouponError('');
+
+        if (result.data?.discount_id) {
+          await axios.patch(
+            `${apiUrl}/api/v1/users/membership/cart/discount`,
+            {
+              discount_id: result.data.discount_id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+        }
+      } else {
+        setDiscountAmount(0);
+        const knownMessages = [
+          '無此優惠劵',
+          '此優惠劵您已使用過',
+          '優惠劵已逾期',
+          '優惠劵已用光',
+          '您的購物車是空的，無法套用優惠券',
+          '不符活動門檻',
+          '此優惠劵已失效',
+        ];
+        if (knownMessages.includes(result.message)) {
+          setCouponError(result.message);
+        } else {
+          setCouponError('請重新套用優惠劵');
+        }
+        setCouponSuccess('');
+
+        await axios.patch(
+          `${apiUrl}/api/v1/users/membership/cart/discount`,
+          {
+            discount_id: null,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+      }
+    } catch (err) {
+      setDiscountAmount(0);
+      setCouponError('伺服器錯誤');
+      setCouponSuccess('');
+      console.error('revalidateCoupon error:', err);
     }
   };
 
-  const minValue = 1;
+  // 前往結帳
+  const handleGoToCheckout = async () => {
+    const token = localStorage.getItem('token');
+    const selectedIds = Array.from(selectedItems);
+
+    if (selectedIds.length === 0) {
+      setModalMsg('請勾選至少一項商品');
+      setIsOpen(true);
+      return;
+    }
+
+    try {
+      await axios.patch(
+        `${apiUrl}/api/v1/users/membership/cart/select`,
+        {
+          selected_ids: selectedIds,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (discountAmount === 0) {
+        await axios.patch(
+          `${apiUrl}/api/v1/users/membership/cart/discount`,
+          {
+            discount_id: null,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+      }
+
+      navigate('/create-order');
+    } catch (error) {
+      const msg = error.response?.data?.message || '無法前往結帳';
+      setModalMsg(msg);
+      setIsOpen(true);
+    }
+  };
+
+  // 取得推薦商品
+  const getBestSeller = useCallback(async () => {
+    try {
+      const res = await axios.get(
+        `${apiUrl}/api/v1/products/bestSeller?limit=12`,
+      );
+      setRecommendList(res.data?.data || []);
+    } catch (error) {
+      console.error('取得推薦商品失敗', error);
+    }
+  }, [apiUrl]);
+
+  useEffect(() => {
+    getCart();
+    getBestSeller();
+  }, [getCart, getBestSeller]);
+
+  // 推薦商品用分頁輪播
+  const perRecommendPage = 4;
+  const totalRecommendPages = Math.ceil(
+    recommendList.length / perRecommendPage,
+  );
+
+  const handleRecommendPrev = () => {
+    setRecommendPage((prev) =>
+      prev === 0 ? totalRecommendPages - 1 : prev - 1,
+    );
+  };
+
+  const handleRecommendNext = () => {
+    setRecommendPage((prev) =>
+      prev === totalRecommendPages - 1 ? 0 : prev + 1,
+    );
+  };
+
+  const currentRecommendList = recommendList.slice(
+    recommendPage * perRecommendPage,
+    recommendPage * perRecommendPage + perRecommendPage,
+  );
 
   return (
     <>
@@ -677,6 +781,10 @@ const CartList = () => {
                         setCouponCode(value);
                         setCouponError('');
                         setCouponSuccess('');
+
+                        if (value.trim().length === 0) {
+                          setDiscountAmount(0); //使用者清空優惠碼時，自動歸零折扣金額
+                        }
                       }}
                     />
                     <button
@@ -688,12 +796,6 @@ const CartList = () => {
                       <p className="m-0">套用</p>
                     </button>
                   </div>
-
-                  {couponValidationError && (
-                    <p className="coupon-title text-danger mt-1">
-                      {couponValidationError}
-                    </p>
-                  )}
 
                   {/* 成功訊息 */}
                   {couponSuccess && (
@@ -752,12 +854,11 @@ const CartList = () => {
                   <button
                     type="button"
                     className="coupon-check-proceed border-0"
-                    onClick={() => navigate('/create-order')}
-                    disabled={cartItems.length === 0}
+                    onClick={handleGoToCheckout}
+                    disabled={total === 0}
                     style={{
-                      cursor:
-                        cartItems.length === 0 ? 'not-allowed' : 'pointer',
-                      opacity: cartItems.length === 0 ? 0.5 : 1,
+                      cursor: total === 0 ? 'not-allowed' : 'pointer',
+                      opacity: total === 0 ? 0.5 : 1,
                     }}
                   >
                     前往結帳
@@ -769,81 +870,127 @@ const CartList = () => {
 
           {/* 推薦 */}
           <div className="recommend-custom">
-            <h5 className="recommend-title m-0">本期推薦</h5>
-            <div className="recommend-card">
-              <button
-                type="button"
-                className="recommend-custom-btn border-0"
-              >
-                <div className="arrow-icon">
-                  <img
-                    src={images.reviewArrowL}
-                    alt="recommend-arrow-left"
-                    className="icon-detail"
-                  />
-                </div>
-              </button>
+            <button
+              type="button"
+              className="recommend-custom-btn border-0"
+              onClick={handleRecommendPrev}
+            >
+              <div className="arrow-icon">
+                <img
+                  src={images.reviewArrowL}
+                  alt="recommend-arrow-left"
+                  className="icon-detail"
+                />
+              </div>
+            </button>
 
-              <div className="card-group">
-                {recommendList.map((item) => (
-                  <div
-                    className="card recommend-card-style m-0 rounded-0 border-0"
-                    key={item.id}
-                  >
-                    <img
-                      src={item.image_url}
-                      className="card-img-top card-img rounded-0"
-                      alt={item.name}
-                    />
-                    <div className="recommend-card-content">
-                      <div className="recommend-card-body">
-                        <h5 className="card-title recommend-card-body-title m-0">
-                          {item.name}
-                        </h5>
-                        <div className="recommend-card-body-title-icon">
-                          <img
-                            src={images.unlikeIcon}
-                            alt="unlike icon"
-                            className="icon-detail"
-                          />
-                        </div>
-                      </div>
-                      <div className="recommend-card-body-text">
-                        <p className="text-content m-0">
-                          {item.feature || item.description || '無商品特色描述'}
-                        </p>
-                      </div>
-                      <div className="recommend-card-bottom">
-                        <div className="recommend-price-box">
-                          <p className="recommend-price m-0">NTD$</p>
-                          <p className="recommend-price m-0">{item.price}</p>
-                        </div>
-                      </div>
-                      <button
-                        className="btn recommend-card-btn rounded-0"
-                        onClick={() => handleAddToCart(item.id)}
-                        disabled={addingId === item.id}
-                      >
-                        {addingId === item.id ? '加入中...' : '加入購物車'}
-                      </button>
-                    </div>
-                  </div>
-                ))}
+            <div className="recommend-card">
+              <div className="recommend-header">
+                <h5 className="recommend-title m-0">本期推薦</h5>
               </div>
 
-              <button
-                type="button"
-                className="recommend-custom-btn border-0"
+              <div
+                className="card-group"
+                onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
+                onTouchEnd={(e) => {
+                  const touchEnd = e.changedTouches[0].clientX;
+                  const distance = touchStart - touchEnd;
+                  const threshold = 50; // 滑動門檻
+
+                  if (distance > threshold) {
+                    handleRecommendNext();
+                  } else if (distance < -threshold) {
+                    handleRecommendPrev();
+                  }
+                }}
               >
-                <div className="arrow-icon">
-                  <img
-                    src={images.reviewArrowR}
-                    alt="recommend-arrow-right"
-                    className="icon-detail"
-                  />
-                </div>
-              </button>
+                {currentRecommendList.map((item) => {
+                  const isSoldOut = item.stock === 0;
+                  return (
+                    <Link
+                      to={`/products/${item.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="card recommend-card-style m-0 rounded-0 border-0"
+                      key={item.id}
+                    >
+                      <img
+                        src={item.image_url}
+                        className="card-img-top card-img rounded-0"
+                        alt={item.name}
+                      />
+                      <div className="recommend-card-content">
+                        <div className="recommend-card-body">
+                          <h5 className="card-title recommend-card-body-title m-0">
+                            {item.name}
+                          </h5>
+                          <div className="recommend-card-body-title-icon">
+                            <img
+                              src={images.unlikeIcon}
+                              alt="unlike icon"
+                              className="icon-detail"
+                            />
+                          </div>
+                        </div>
+                        <div className="recommend-card-body-text">
+                          <p className="text-content m-0">
+                            {item.feature ||
+                              item.description ||
+                              '無商品特色描述'}
+                          </p>
+                        </div>
+                        <div className="recommend-card-bottom">
+                          <div className="recommend-price-box">
+                            <p className="recommend-price m-0">NTD$</p>
+                            <p className="recommend-price m-0">{item.price}</p>
+                          </div>
+                        </div>
+                        <button
+                          className={`btn recommend-card-btn rounded-0 ${isSoldOut ? 'sold-out' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleAddToCart(item.id);
+                          }}
+                          disabled={addingId === item.id || isSoldOut}
+                        >
+                          {isSoldOut
+                            ? '已售罄'
+                            : addingId === item.id
+                              ? '加入中...'
+                              : '加入購物車'}
+                        </button>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* 輪播「點點頁碼」指示器 */}
+              <div className="recommend-dots">
+                {Array.from({ length: totalRecommendPages }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`dot ${i === recommendPage ? 'active' : ''}`}
+                    onClick={() => setRecommendPage(i)}
+                  ></span>
+                ))}
+              </div>
             </div>
+
+            <button
+              type="button"
+              className="recommend-custom-btn border-0"
+              onClick={handleRecommendNext}
+            >
+              <div className="arrow-icon">
+                <img
+                  src={images.reviewArrowR}
+                  alt="recommend-arrow-right"
+                  className="icon-detail"
+                />
+              </div>
+            </button>
           </div>
         </div>
         <div></div>

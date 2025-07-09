@@ -59,7 +59,7 @@ const MemberSidebar = ({ children }) => {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      if ( width >= 1300) {
+      if ( width >= 1330) {
         setSidebarOpen(false);
       } else {
         setSidebarOpen(true);

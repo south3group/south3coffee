@@ -304,7 +304,7 @@ const OrderDetail = () => {
                       <div className="price-box-discount m-0">
                         <p className="box-currency m-0">NTD$</p>
                         <p className="box-price m-0">
-                          -{order.summary.discount}
+                          {order.summary.discount}
                         </p>
                       </div>
                     </div>
@@ -336,7 +336,7 @@ const OrderDetail = () => {
                   ) : (
                     <Link
                       to={`/checkout?order_id=${order.id}`}
-                      className="d-none d-md-flex border-0 rounded-0 back-btn-custom back-btn-custom-checkout"
+                      className="border-0 rounded-0 back-btn-custom back-btn-custom-checkout"
                     >
                       重新付款
                     </Link>

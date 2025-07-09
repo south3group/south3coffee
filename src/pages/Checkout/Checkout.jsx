@@ -28,7 +28,7 @@ const Checkout = () => {
   const cardRefs = [useRef(), useRef(), useRef(), useRef()];
   const ccvRef = useRef();
 
-  const [agreeCOD, _] = useState(false);
+  // const [agreeCOD, _] = useState(false);
   const [agreeChecked, setAgreeChecked] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -276,7 +276,7 @@ const Checkout = () => {
                   <div className="box-content ">
                     <p className="box-content-title">付款人信箱</p>
                     <div className="box-content-card-input">
-                      <p className="box-content-text">dgdgdgdd@gmail.com</p>
+                      <p className="box-content-text">{orderInfo.user.email}</p>
                     </div>
                   </div>
 
