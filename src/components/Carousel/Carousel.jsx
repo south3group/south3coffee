@@ -132,10 +132,10 @@ const Carousel = () => {
                       <React.Fragment key={i}>
                         <div className="text-start carouselContent position-relative">
                           <div className="carouselSubtitle">
-                            <p className="d-flex">
+                            <div className="d-flex">
                               <h3 className="fw-bold">{text.subtitle}</h3>
                               <span>{text.titleTxt}</span>
-                            </p>
+                            </div>
                             <h4>{text.titleText}</h4>
                           </div>
                           <div className="informationText">
