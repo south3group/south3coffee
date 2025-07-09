@@ -71,6 +71,45 @@ const MemberSidebar = ({ children }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    const preventScroll = (e) => e.preventDefault();
+  
+    if (userDropdownOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+  
+      const overlay = document.querySelector('.member-mobile-menu-overlay');
+      overlay?.addEventListener('touchmove', preventScroll, { passive: false });
+      overlay?.addEventListener('wheel', preventScroll, { passive: false });
+  
+      document.addEventListener('wheel', preventScroll, { passive: false });
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+  
+      const overlay = document.querySelector('.member-mobile-menu-overlay');
+      overlay?.removeEventListener('touchmove', preventScroll);
+      overlay?.removeEventListener('wheel', preventScroll);
+  
+      document.removeEventListener('wheel', preventScroll);
+    }
+  
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+  
+      const overlay = document.querySelector('.member-mobile-menu-overlay');
+      overlay?.removeEventListener('touchmove', preventScroll);
+      overlay?.removeEventListener('wheel', preventScroll);
+  
+      document.removeEventListener('wheel', preventScroll);
+    };
+  }, [userDropdownOpen]);
+  
+
   return (
     <div className="sidebar-style">
       {/* 手機版 */}
