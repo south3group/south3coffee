@@ -9,7 +9,7 @@ const HomeCard = ({ product, clickable = false, isLarge = false }) => {
 
   if (isMobile === null)
     return (
-      <div className="card placeholder-glow p-4 home-card-loading">
+      <div className="card placeholder-glow home-card-loading">
         <div
           className="placeholder col-12 mb-3"
           style={{ height: '180px', backgroundColor: '#eee' }}

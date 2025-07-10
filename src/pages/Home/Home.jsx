@@ -95,42 +95,44 @@ const Home = () => {
     <>
       <Header />
 
-      <div className="banner-container ">
+      <div className="banner-container p-0 ">
         <HomeBanner />
       </div>
 
       {/* 熱賣商品區塊 */}
       {bestSellerProducts.length > 0 && (
-        <section className="py-4">
-          <div className="container">
-            <div className="text-center homeTitle mb-5">
-              <h1 className="mb-2">熱賣商品</h1>
-              <p className="text-muted">Best seller</p>
-              <hr
-                className="w-25 mx-auto"
-                style={{ height: '2px', background: '#8B4513' }}
-              />
+        <section
+          className="bestSellerSection"
+          style={{ backgroundColor: '#FFF7F7' }}
+        >
+          <div className="container p-md-0">
+            <div className="text-center cardTitle">
+              <h1 className="m-0">熱賣商品</h1>
+              <hr className="cardLine mx-auto my-0" />
+              <p className="cardEngTitle my-0">Best seller</p>
             </div>
-            <div className="row g-4">
-              {bestSellerProducts.map((product, index) => (
-                <div
-                  key={product.id}
-                  className={index === 0 ? 'col-12' : 'col-lg-4 col-md-6'}
-                >
-                  <HomeCard product={product} clickable isLarge={index === 0} />
+
+            <HomeCard
+              product={bestSellerProducts[0]}
+              clickable
+              isLarge={true}
+            />
+
+            <div className="bestSellerCardList">
+              {bestSellerProducts.slice(1).map((product) => (
+                <div key={product.id} className={`bestseller-card`}>
+                  <HomeCard product={product} clickable />
                 </div>
               ))}
             </div>
 
             {/* 查看更多按鈕 */}
-            <div className="text-center mt-4 mb-5">
-              <button
-                className="btn btn-outline-coffee-primary-300 btn-lg text-coffee-primary-800 px-5"
-                onClick={() => navigate('/products')}
-              >
-                查看更多
-              </button>
-            </div>
+            <button
+              className="btn btn-outline-coffee-primary-400 btn-lg text-coffee-primary-600 rounded-0 moreBtn d-block mx-auto"
+              onClick={() => navigate('/products')}
+            >
+              瀏覽更多
+            </button>
           </div>
         </section>
       )}
@@ -142,69 +144,63 @@ const Home = () => {
 
       {/* 咖啡用品區 */}
       {equipmentProducts.length > 0 && (
-        <section className="py-4 bg-light">
-          <div className="container">
-            <div className="text-center mb-5 homeTitle">
-              <h1 className="mb-2">相關用品及其他</h1>
-              <p className="text-muted">Related Equipment & Extras</p>
-              <hr
-                className="w-25 mx-auto"
-                style={{ height: '2px', background: '#8B4513' }}
-              />
+        <section
+          className="equipmentSection"
+          style={{ backgroundColor: '#FFF7F7' }}
+        >
+          <div className="container p-md-0">
+            <div className="text-center cardTitle">
+              <h1 className="m-0">相關用品及其他</h1>
+              <hr className="cardLine mx-auto my-0" />
+              <p className="cardEngTitle my-0">Related Equipment & Extras</p>
             </div>
-            <div className="row g-4">
+            <div className="equipmentCardList">
               {equipmentProducts.map((product) => (
-                <div key={product.id} className="col-lg-4 col-md-6">
+                <div key={product.id}>
+                  <HomeCard product={product} clickable />
+                </div>
+              ))}
+            </div>
+
+            {/* 手機版：橫向滑動 */}
+            <div className="equipmentCard-scroll">
+              {equipmentProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="equipmentCard equipmentCard-mobile m-0"
+                >
                   <HomeCard product={product} clickable />
                 </div>
               ))}
             </div>
 
             {/* 查看更多按鈕 */}
-            <div className="text-center mt-4 mb-5">
-              <button
-                className="btn btn-outline-coffee-primary-300 btn-lg text-coffee-primary-800 px-5"
-                onClick={() => navigate('/products')}
-              >
-                查看更多
-              </button>
-            </div>
+
+            <button
+              className="btn btn-outline-coffee-primary-400 btn-lg text-coffee-primary-600 rounded-0 moreBtn d-block mx-auto"
+              onClick={() => navigate('/products')}
+            >
+              瀏覽更多
+            </button>
           </div>
         </section>
       )}
 
       {/* 賽事認證 */}
-      <section className="py-4" style={{ backgroundColor: '#f8f6f3' }}>
-        <div className="container">
-          <div className="text-center homeTitle mb-5">
-            <h1>榮獲國內外賽事及評鑒的得獎咖啡豆</h1>
+      <section
+        className="certificationSection "
+        style={{ backgroundColor: '#f8f6f3' }}
+      >
+        <div className="container p-md-0">
+          <div className="text-center certificationTitle">
+            <h1 className="m-0 fw-bold ">榮獲國內外賽事及評鑒的得獎咖啡豆</h1>
           </div>
 
-          {/* 手機版滑動logo */}
-          <div className="d-flex d-md-none overflow-auto px-2">
+          {/* logo */}
+          <div className=" d-flex desk-certification">
             {HomeImg.logos.map((logo, index) => (
-              <div
-                key={index}
-                className="flex-shrink-0 text-center me-3 cert-logo-slide"
-              >
-                <img
-                  src={logo}
-                  alt={`logo-${index}`}
-                  className="img-fluid cert-logo"
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* 電腦版logo */}
-          <div className="row justify-content-center align-items-center g-4 d-none d-md-flex">
-            {HomeImg.logos.map((logo, index) => (
-              <div key={index} className="col-6 col-md-4 col-lg-2 text-center">
-                <img
-                  src={logo}
-                  alt={`logo-${index}`}
-                  className="img-fluid cert-logo"
-                />
+              <div key={index} className="desk-certificationLogo">
+                <img src={logo} alt={`logo-${index}`} className="img-fluid" />
               </div>
             ))}
           </div>
