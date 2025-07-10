@@ -23,6 +23,7 @@ const ProductDetail = () => {
   const minValue = 1;
   const [selectedQuantity, setSelectedQuantity] = useState(minValue);
   const [mainImage, setMainImage] = useState('');
+  const [thumbnails, setThumbnails] = useState([]);
   const [product, setProduct] = useState(null);
 
   const [addingId, setAddingId] = useState(null);
@@ -192,7 +193,13 @@ const ProductDetail = () => {
 
         if (data) {
           setProduct(data);
-          setMainImage(data.image_url || thumbnailUrls[0]);
+          const mergedImages = [
+            ...(Array.isArray(data.image_urls) ? data.image_urls : []),
+            ...thumbnailUrls,
+          ].slice(0, 4); 
+
+          setThumbnails(mergedImages);
+          setMainImage(mergedImages[0]);
         } else {
           navigate('/products');
         }
@@ -333,17 +340,15 @@ const ProductDetail = () => {
               <div className="product-main">
                 {/* 商品縮圖 */}
                 <div className="product-thumbnails">
-                  {[product.image_url, ...thumbnailUrls]
-                    .slice(0, 8)
-                    .map((url, idx) => (
-                      <img
-                        key={idx}
-                        src={url}
-                        alt={`thumbnail-${idx}`}
-                        className={`img-style ${mainImage === url ? 'selected' : ''}`}
-                        onClick={() => setMainImage(url)}
-                      />
-                    ))}
+                  {thumbnails.map((url, idx) => (
+                    <img
+                      key={idx}
+                      src={url}
+                      alt={`thumbnail-${idx}`}
+                      className={`img-style ${mainImage === url ? 'selected' : ''}`}
+                      onClick={() => setMainImage(url)}
+                    />
+                  ))}
                 </div>
                 <img
                   src={mainImage}

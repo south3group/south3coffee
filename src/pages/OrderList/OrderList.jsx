@@ -155,7 +155,7 @@ const OrderList = () => {
                           <div className="text-group">
                             <p className="m-0 text-group-title">付款狀態</p>
                             <p className="m-0 text-group-text">
-                              {order.is_paid ? '已付款' : '未付款'}
+                              {order.is_paid ? '付款確認中' : '未付款'}
                             </p>
                           </div>
                           <div className="text-group">
@@ -177,7 +177,7 @@ const OrderList = () => {
                       <th scope="col" className="orders-custom-style-th">
                         購買時間
                       </th>
-                      <th scope="col" className="orders-custom-style-th">
+                      <th scope="col" className="d-none d-xxl-table-cell orders-custom-style-th">
                         訂單編號
                       </th>
                       <th scope="col" className="orders-custom-style-th">
@@ -204,7 +204,7 @@ const OrderList = () => {
                           <th className="orders-custom-tbody-th table-order-text">
                             {order.created_at}
                           </th>
-                          <td className="orders-custom-tbody-td table-order-text">
+                          <td className="d-none d-xxl-table-cell orders-custom-tbody-td table-order-text">
                             {order.display_id}
                           </td>
                           <td className="orders-custom-tbody-td">
@@ -230,7 +230,7 @@ const OrderList = () => {
                                 : 'orders-custom-tbody-td-unpaid'
                             }
                           >
-                            {order.is_paid ? '已付款' : '未付款'}
+                            {order.is_paid ? '付款確認中' : '未付款'}
                           </td>
                           <td
                             className={
