@@ -41,21 +41,27 @@ const HomeCardDefault = ({ product, clickable = false }) => {
 
   return (
     <div
-      className={`card h-100 shadow-sm home-card`}
+      className={`card home-card rounded-0 d-flex`}
       style={{ cursor: clickable ? 'pointer' : 'default' }}
       onClick={handleClick1}
     >
-      <div className="position-relative">
-        {/* 正常卡片排版 */}
-        <div className="card-img-top overflow-hidden">
-          <img
-            src={image}
-            alt={name}
-            className="img-fluid homecardImage"
-            onError={(e) => (e.target.src = errorImg)}
-          />
+      {/* 正常卡片排版 */}
+      <div className="card-img-top overflow-hidden rounded-0">
+        <img
+          src={image}
+          alt={name}
+          className="img-fluid homecardImage"
+          onError={(e) => (e.target.src = errorImg)}
+        />
+      </div>
+
+      <div className="card-body d-flex flex-column">
+        <div className="d-flex justify-content-between align-items-start">
+          <div className="d-flex flex-grow-1 align-items-center h-100">
+            <h5 className="homecardTitle m-0">{name}</h5>
+          </div>
           <button
-            className="btn btn-link position-absolute end-0 m-2 p-1 homecard-favorite-btn"
+            className="btn btn-link m-2 p-1 homecard-favorite-btn"
             onClick={toggleFavorite}
           >
             <span
@@ -66,66 +72,57 @@ const HomeCardDefault = ({ product, clickable = false }) => {
           </button>
         </div>
 
-        <div className="card-body d-flex flex-column p-3">
-          <h5 className="card-title mb-2 homecardTitle">{name}</h5>
-
-          {origin.length > 0 && (
-            <div className="mb-2">
-              {origin.map((origin, index) => (
-                <span
-                  key={index}
-                  className="d-block mb-1 d-inline-flex align-items-center"
-                >
-                  <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
-                    location_on
-                  </i>
-                  <small className="fs-3 text-coffee-primary-800 fw-bolder">
-                    產地 -{' '}
-                  </small>
-                  <small className="fs-4 text-coffee-primary-800">
-                    {origin}
-                  </small>
-                </span>
-              ))}
-            </div>
-          )}
-
-          {feature && (
-            <div className="mb-2 d-inline-flex align-items-center">
-              <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
-                spa
-              </i>
-              <small className="fs-3 text-coffee-primary-800 fw-bolder">
-                風味 -{' '}
-              </small>
-              <small className="fs-4 text-coffee-primary-800"> {feature}</small>
-            </div>
-          )}
-
-          {description && (
-            <p className="card-text homecardText flex-grow-1 mb-3 text-coffee-grey-600">
-              {description.length > 56
-                ? `${description.substring(0, 56)}...`
-                : description}
-            </p>
-          )}
-
-          <div className="mt-auto">
-            <div className="mb-3">
-              <span className="h5 mb-0 homecardPrice">
-                NT$
-                {typeof price === 'number' ? price.toLocaleString() : price}
+        {origin.length > 0 && (
+          <div className="mb-1">
+            {origin.map((origin, index) => (
+              <span
+                key={index}
+                className="d-block d-inline-flex align-items-center"
+              >
+                <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
+                  location_on
+                </i>
+                <small className="fs-3 text-coffee-primary-800 fw-bolder">
+                  產地 -{' '}
+                </small>
+                <small className="fs-4 text-coffee-primary-800">{origin}</small>
               </span>
-            </div>
-
-            <button
-              className="btn w-100 py-2 homecardBtn"
-              onClick={handleClick2}
-              disabled={addingId === product.id}
-            >
-              {addingId === product.id ? '加入中…' : '加入購物車'}
-            </button>
+            ))}
           </div>
+        )}
+
+        {feature && (
+          <div className="mb-3 d-inline-flex align-items-center">
+            <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
+              spa
+            </i>
+            <small className="fs-3 text-coffee-primary-800 fw-bolder">
+              風味 -{' '}
+            </small>
+            <small className="fs-4 text-coffee-primary-800"> {feature}</small>
+          </div>
+        )}
+
+        {description && (
+          <p className="card-text homecardText flex-grow-1 text-coffee-grey-600">
+            {description}
+          </p>
+        )}
+
+        {/* 右下 */}
+        <div className="mt-auto">
+          <p className="homecardPrice">
+            NT$
+            {typeof price === 'number' ? price.toLocaleString() : price}
+          </p>
+
+          <button
+            className="btn w-100 homecartBtn"
+            onClick={handleClick2}
+            disabled={addingId === product.id}
+          >
+            {addingId === product.id ? '加入中…' : '加入購物車'}
+          </button>
         </div>
       </div>
     </div>

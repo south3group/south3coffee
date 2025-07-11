@@ -45,37 +45,39 @@ const HomeCardLarge = ({ product, clickable = false }) => {
       style={{ cursor: clickable ? 'pointer' : 'default' }}
       onClick={handleClick}
     >
-      <div className="row g-0 position-relative">
+      <div className="row">
         {/* 圖片在左 */}
-        <div className="col-md-5 overflow-hidden">
+        <div className="col-md-5 overflow-hidden imgContainer">
           <img
             src={image}
             alt={name}
             className="img-fluid homecardImage"
             onError={(e) => (e.target.src = errorImg)}
           />
-          <button
-            className="btn btn-link position-absolute top-0 end-0 m-2 p-1 homecard-favorite-btn"
-            onClick={toggleFavorite}
-          >
-            <span
-              className={`material-symbols-outlined ${isFavorite ? 'heart-filled' : 'heart-outlined'}`}
-            >
-              favorite
-            </span>
-          </button>
         </div>
 
         {/* 文字在右 */}
-        <div className="col-md-7 d-flex flex-column p-3 home-card">
-          <h5 className="card-title mb-2 homecardTitle">{name}</h5>
+        <div className="col-md-7 d-flex flex-column textContainer">
+          <div className="d-flex justify-content-between align-items-center">
+            <h5 className="card-title mb-2 homecardTitle w-75">{name}</h5>
+            <button
+              className="btn btn-link m-2 p-1 homecard-favorite-btn"
+              onClick={toggleFavorite}
+            >
+              <span
+                className={`material-symbols-outlined ${isFavorite ? 'heart-filled' : 'heart-outlined'}`}
+              >
+                favorite
+              </span>
+            </button>
+          </div>
 
           {origin.length > 0 && (
-            <div className="mb-2 ">
+            <div className="mb-1">
               {origin.map((origin, index) => (
                 <span
                   key={index}
-                  className="d-block mb-1 d-inline-flex align-items-center"
+                  className="d-block d-inline-flex align-items-center"
                 >
                   <i className="material-symbols-outlined me-1 text-coffee-primary-800 fw-bolder">
                     location_on
@@ -92,7 +94,7 @@ const HomeCardLarge = ({ product, clickable = false }) => {
           )}
 
           {feature && (
-            <div className="mb-2 d-inline-flex align-items-center">
+            <div className="mb-3 d-inline-flex align-items-center">
               <i className="material-symbols-outlined me-1 fw-bolder text-coffee-primary-800">
                 spa
               </i>
@@ -104,26 +106,22 @@ const HomeCardLarge = ({ product, clickable = false }) => {
           )}
 
           {description && (
-            <p
-              className="card-text  homecardText flex-grow-1 mb-3 text-coffee-grey-600"
-              style={{ lineHeight: '1.4' }}
-            >
-              {description.length > 56
+            <p className="card-text  homecardText flex-grow-1 text-coffee-grey-600">
+              {description}
+              {/* {description.length > 56
                 ? `${description.substring(0, 56)}...`
-                : description}
+                : description} */}
             </p>
           )}
 
           <div className="mt-auto">
-            <div className="mb-3">
-              <span className="h5 mb-0 homecardPrice">
-                NT$
-                {typeof price === 'number' ? price.toLocaleString() : price}
-              </span>
-            </div>
+            <p className="homecardPrice">
+              NT$
+              {typeof price === 'number' ? price.toLocaleString() : price}
+            </p>
 
             <button
-              className="btn w-100 py-2 homecardBtn"
+              className="btn w-100 homecartBtn"
               onClick={handleClick2}
               disabled={addingId === product.id}
             >
